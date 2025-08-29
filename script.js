@@ -185,21 +185,21 @@ document.addEventListener("DOMContentLoaded", () => {
                   : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
               return `
                     <div class="task-item" data-id="${task.id}">
-                        <div class="task-id">#${task.id}</div>
-                        <div class="task-details">
+                        <div class="task-cell task-id-col">#${task.id}</div>
+                        <div class="task-cell task-title-col">
                             <span class="task-title">${task.title}</span>
                             <span class="task-description">${
                               task.description || ""
                             }</span>
                         </div>
-                        <div class="task-category"><span class="task-category-badge" style="background-color: ${
+                        <div class="task-cell task-category-col"><span class="task-category-badge" style="background-color: ${
                           category.color
                         };">${category.icon} ${category.name}</span></div>
-                        <div class="task-duration">${formatTime(
+                        <div class="task-cell task-duration-col">${formatTime(
                           task.duration
                         )}</div>
-                        <div class="task-lap-interval">${intervalText}</div>
-                        <div class="actions">
+                        <div class="task-cell task-interval-col">${intervalText}</div>
+                        <div class="task-cell task-actions-col">
                             <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
                             <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
                             <button class="copy-btn" title="Duplicate"><i class="fas fa-copy"></i></button>
@@ -556,18 +556,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentCumulativeDuration = 0;
     const activeLapMap = new Map();
     let activeLapCounter = 0;
+    const lastRunLap = new Map();
 
-    // --- THIS IS THE FIX ---
-    // The logic is now: a task runs on Lap 1 (lap index 0).
-    // For subsequent laps, it runs if (lap_index) is a multiple of the interval.
     for (let lap = 0; lap < totalLaps; lap++) {
       lapStartCumulativeDurations[lap] = currentCumulativeDuration;
       lapList.forEach((taskId) => {
         const task = taskMap.get(taskId);
         if (!task) return;
         const interval = task.lapInterval || 1;
-        if (lap === 0 || (lap > 0 && lap % interval === 0)) {
+        const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;
+
+        if (lap === 0 || (lap > lastRun && (lap - lastRun) % interval === 0)) {
           tasksByLap[lap].push({ taskId });
+          lastRunLap.set(taskId, lap);
         }
       });
 
@@ -710,7 +711,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const hideConfirmationModal = () => {
     confirmModal.classList.remove("show");
-    // Allow animation to finish before hiding
     setTimeout(() => {
       confirmModal.style.display = "none";
     }, 200);
@@ -912,47 +912,71 @@ document.addEventListener("DOMContentLoaded", () => {
           tasks = [
             {
               id: 1,
-              title: "Morning Exercise",
-              description: "15 minutes of stretching and cardio.",
-              categoryId: "cat-1",
-              duration: 900,
+              title: "Quick Stand-up Prep",
+              description: "Review yesterday's work and plan today's points.",
+              categoryId: "cat-3",
+              duration: 180,
               lapInterval: 1,
             },
             {
               id: 2,
-              title: "Team Stand-up Meeting",
-              description: "Daily sync with the development team.",
-              categoryId: "cat-3",
-              duration: 1500,
+              title: "Morning Meditation",
+              description: "10 minutes of mindfulness.",
+              categoryId: "cat-2",
+              duration: 600,
               lapInterval: 1,
             },
             {
               id: 3,
-              title: "Read a Chapter",
-              description: "Read one chapter of 'Atomic Habits'.",
-              categoryId: "cat-7",
-              duration: 1200,
+              title: "HIIT Workout",
+              description: "High-Intensity Interval Training.",
+              categoryId: "cat-1",
+              duration: 1500,
               lapInterval: 2,
             },
             {
               id: 4,
-              title: "Plan Next Week",
-              description: "Outline key priorities for the upcoming week.",
-              categoryId: "cat-9",
-              duration: 1800,
-              lapInterval: 3,
+              title: "Pay Monthly Bills",
+              description: "Handle rent, utilities, and credit card payments.",
+              categoryId: "cat-8",
+              duration: 300,
+              lapInterval: 4,
             },
             {
               id: 5,
-              title: "Weekly Budget Review",
-              description: "Check spending and update budget spreadsheet.",
-              categoryId: "cat-8",
-              duration: 600,
+              title: "Call Mom",
+              description: "Catch up for 15 minutes.",
+              categoryId: "cat-5",
+              duration: 900,
               lapInterval: 1,
             },
+            {
+              id: 6,
+              title: "Language Flashcards",
+              description: "Quick Duolingo-style review.",
+              categoryId: "cat-7",
+              duration: 120,
+              lapInterval: 1,
+            },
+            {
+              id: 7,
+              title: "Water the Plants",
+              description: "Just a quick hydration for the little guys.",
+              categoryId: "cat-4",
+              duration: 30,
+              lapInterval: 3,
+            },
+            {
+              id: 8,
+              title: "Weekly Review & Plan",
+              description: "Go over last week's goals and plan the next.",
+              categoryId: "cat-9",
+              duration: 1200,
+              lapInterval: 5,
+            },
           ];
-          lapList = [1, 2, 3, 4, 5];
-          lastId = 5;
+          lapList = [1, 2, 3, 4, 5, 6, 7, 8];
+          lastId = 8;
           saveState();
           renderAll();
         }
@@ -1005,27 +1029,35 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("click", (e) => {
       const collapseBtn = e.target.closest(".collapse-btn");
       if (!collapseBtn) return;
-      const panel = collapseBtn.closest(".panel");
+      const panel = collapseBtn.closest(".panel, section");
+      if (!panel) return;
       panel.classList.toggle("collapsed");
       const isCollapsed = panel.classList.contains("collapsed");
       collapseBtn.setAttribute("aria-expanded", !isCollapsed);
-      panelCollapseState[panel.id] = isCollapsed;
-      localStorage.setItem(
-        "panelCollapseState",
-        JSON.stringify(panelCollapseState)
-      );
+
+      if (panel.id) {
+        panelCollapseState[panel.id] = isCollapsed;
+        localStorage.setItem(
+          "panelCollapseState",
+          JSON.stringify(panelCollapseState)
+        );
+      }
     });
   };
 
   const init = () => {
     applyTheme(localStorage.getItem("theme") || "dark");
-    document.querySelectorAll(".panel").forEach((panel) => {
-      if (panelCollapseState[panel.id]) {
-        panel.classList.add("collapsed");
-        const btn = panel.querySelector(".collapse-btn");
-        if (btn) btn.setAttribute("aria-expanded", "false");
-      }
-    });
+    document
+      .querySelectorAll(
+        "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel"
+      )
+      .forEach((section) => {
+        if (panelCollapseState[section.id]) {
+          section.classList.add("collapsed");
+          const btn = section.querySelector(".collapse-btn");
+          if (btn) btn.setAttribute("aria-expanded", "false");
+        }
+      });
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
     setupEventListeners();
