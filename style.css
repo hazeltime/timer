@@ -384,6 +384,7 @@ body.dark-theme .progress-label {
   color: var(--text-secondary-dark);
 }
 .progress-bar-container {
+  position: relative;
   width: 100%;
   height: 10px;
   border-radius: 5px;
@@ -408,6 +409,20 @@ body.dark-theme #task-progress-bar,
 body.dark-theme #lap-progress-bar,
 body.dark-theme #session-progress-bar {
   background-color: var(--accent-blue-dark);
+}
+.percentage-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: var(--text-primary-light);
+  mix-blend-mode: difference;
+  filter: invert(1) grayscale(1) contrast(100);
+}
+body.dark-theme .percentage-indicator {
+  color: var(--text-primary-dark);
 }
 .timer-display {
   display: flex;

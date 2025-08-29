@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const runnerTaskCategory = document.getElementById("runner-task-category");
   const runnerTaskTitle = document.getElementById("runner-task-title");
   const taskProgressBar = document.getElementById("task-progress-bar");
+  const taskPercentage = document.getElementById("task-percentage");
   const timeElapsedEl = document.getElementById("time-elapsed");
   const timeRemainingEl = document.getElementById("time-remaining");
   const prevTaskBtn = document.getElementById("prev-task-btn");
@@ -49,7 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const lapsProgressLabel = document.getElementById("laps-progress-label");
   const lapProgressBar = document.getElementById("lap-progress-bar");
+  const lapPercentage = document.getElementById("lap-percentage");
+  const lapTimeElapsedEl = document.getElementById("lap-time-elapsed");
+  const lapTimeRemainingEl = document.getElementById("lap-time-remaining");
   const sessionProgressBar = document.getElementById("session-progress-bar");
+  const sessionPercentage = document.getElementById("session-percentage");
+  const sessionTimeElapsedEl = document.getElementById("session-time-elapsed");
+  const sessionTimeRemainingEl = document.getElementById(
+    "session-time-remaining"
+  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -301,8 +310,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const elapsed = task.duration - currentTaskTimeLeft;
         timeElapsedEl.textContent = formatTime(elapsed);
         timeRemainingEl.textContent = `-${formatTime(currentTaskTimeLeft)}`;
-        taskProgressBar.style.width =
-          task.duration > 0 ? `${(elapsed / task.duration) * 100}%` : "0%";
+        const taskPercent =
+          task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
+        taskProgressBar.style.width = `${taskPercent}%`;
+        taskPercentage.textContent = `${taskPercent}%`;
       }
     }
 
@@ -326,17 +337,27 @@ document.addEventListener("DOMContentLoaded", () => {
         ? currentTask.duration - currentTaskTimeLeft
         : 0;
       const lapTimeElapsed = completedTasksDurationInLap + currentTaskElapsed;
+      const lapTimeRemaining = singleLapDuration - lapTimeElapsed;
 
-      lapProgressBar.style.width =
+      const lapPercent =
         singleLapDuration > 0
-          ? `${(lapTimeElapsed / singleLapDuration) * 100}%`
-          : "0%";
+          ? Math.floor((lapTimeElapsed / singleLapDuration) * 100)
+          : 0;
+      lapProgressBar.style.width = `${lapPercent}%`;
+      lapPercentage.textContent = `${lapPercent}%`;
+      lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
+      lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
 
       const sessionElapsed = currentLap * singleLapDuration + lapTimeElapsed;
-      sessionProgressBar.style.width =
+      const sessionTimeLeft = totalSessionTime - sessionElapsed;
+      const sessionPercent =
         totalSessionTime > 0
-          ? `${(sessionElapsed / totalSessionTime) * 100}%`
-          : "0%";
+          ? Math.floor((sessionElapsed / totalSessionTime) * 100)
+          : 0;
+      sessionProgressBar.style.width = `${sessionPercent}%`;
+      sessionPercentage.textContent = `${sessionPercent}%`;
+      sessionTimeElapsedEl.textContent = formatTime(sessionElapsed);
+      sessionTimeRemainingEl.textContent = `-${formatTime(sessionTimeLeft)}`;
     }
   };
 
@@ -412,6 +433,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${totalLaps} laps)`;
+      showConfirmationModal(
+        `Session Complete! You finished ${totalLaps} lap(s).`,
+        () => {
+          lapsProgressContainer.style.display = "none";
+          loadTaskToRunner(0); // Reset to first task visually
+        },
+        "alert"
+      );
     } else {
       lapsProgressContainer.style.display = "none";
     }
@@ -447,9 +476,16 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", theme);
   };
 
-  const showConfirmationModal = (text, onConfirm) => {
+  const showConfirmationModal = (text, onConfirm, type = "confirm") => {
     modalText.textContent = text;
     confirmCallback = onConfirm;
+    if (type === "alert") {
+      modalCancelBtn.style.display = "none";
+      modalConfirmBtn.textContent = "OK";
+    } else {
+      modalCancelBtn.style.display = "inline-block";
+      modalConfirmBtn.textContent = "Confirm";
+    }
     confirmModal.style.display = "flex";
   };
 
