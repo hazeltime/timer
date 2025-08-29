@@ -14,6 +14,8 @@
   --accent-blue: #3b82f6;
   --accent-green: #22c55e;
   --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --accent-orange: #f97316;
   --accent-blue-focus-shadow: rgba(59, 130, 246, 0.25);
   --add-task-btn-hover-bg: #16a34a;
 
@@ -47,12 +49,14 @@ body.dark-theme {
   --accent-blue: #60a5fa;
   --accent-green: #4ade80;
   --accent-red: #f87171;
+  --accent-purple: #a78bfa;
+  --accent-orange: #fb923c;
   --accent-blue-focus-shadow: rgba(96, 165, 250, 0.25);
   --add-task-btn-hover-bg: #34d399;
 
   /* Override variables for duration controls (Dark Theme) */
   --preset-btn-bg: #38bdf8;
-  --preset-btn-text: #ffffff; /* FIXED: Changed from dark text to white */
+  --preset-btn-text: #ffffff;
   --preset-btn-border: #38bdf8;
   --preset-btn-hover-bg: #7dd3fc;
   --stepper-btn-text: #ffffff;
@@ -123,7 +127,7 @@ h3 {
 }
 h2 {
   font-size: 1.5rem;
-  margin-bottom: 0; /* Adjusted for panel header */
+  margin-bottom: 0;
 }
 h3 {
   font-size: 1.25rem;
@@ -224,7 +228,7 @@ textarea {
   background-color: var(--input-bg);
   color: var(--text-primary);
   transition: background-color 0.3s, border-color 0.3s, box-shadow 0.2s;
-  font-family: inherit; /* Ensure consistency */
+  font-family: inherit;
 }
 input:focus,
 textarea:focus {
@@ -295,7 +299,7 @@ textarea::placeholder {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
-  font-weight: 600; /* Bolder for better readability */
+  font-weight: 600;
 }
 .stepper-btn:active,
 .preset-btn:active {
@@ -355,8 +359,8 @@ textarea::placeholder {
 
 /* --- LAP PLAYLIST --- */
 .lap-list-header {
-  flex-grow: 1; /* Allow header to take space */
-  margin-bottom: 0; /* Handled by panel-header */
+  flex-grow: 1;
+  margin-bottom: 0;
 }
 .lap-list-controls {
   display: flex;
@@ -385,14 +389,24 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem; /* Adjusted padding */
   border-radius: 6px;
   margin-bottom: 0.5rem;
   background-color: var(--input-bg);
+  position: relative;
 }
 .lap-list-item.running {
   outline: 2px solid var(--accent-blue);
   background-color: color-mix(in srgb, var(--accent-blue) 15%, transparent);
+}
+.lap-list-item[draggable="true"] {
+  cursor: grab;
+}
+.lap-list-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+.lap-list-item.dragging {
+  opacity: 0.4;
 }
 .lap-list-item .lap-category-icon {
   font-size: 1.2rem;
@@ -401,15 +415,46 @@ textarea::placeholder {
   flex-grow: 1;
   font-weight: 500;
 }
-.lap-list-item .remove-btn {
+/* NEW: Drag and Drop visual indicator */
+.lap-list-item.drag-over-bottom::after,
+.lap-list-item.drag-over-top::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--accent-blue);
+}
+.lap-list-item.drag-over-bottom::after {
+  bottom: -2px;
+}
+.lap-list-item.drag-over-top::before {
+  top: -2px;
+}
+
+/* NEW: Styles for playlist item actions */
+.lap-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.lap-item-actions button {
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 1.1rem;
+  padding: 0.25rem;
+  transition: color 0.2s, transform 0.2s;
 }
-.lap-list-item .remove-btn:hover {
+.lap-item-actions button:hover {
+  transform: scale(1.2);
+}
+.lap-item-actions .remove-btn:hover {
   color: var(--accent-red);
+}
+.lap-item-actions .move-btn:hover {
+  color: var(--accent-blue);
 }
 
 /* --- TASK RUNNER --- */
@@ -562,7 +607,6 @@ textarea::placeholder {
 }
 .repo-btn,
 .delete-all {
-  /* OPTIMIZED: Removed 'border: none' from shared rule */
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
@@ -576,7 +620,7 @@ textarea::placeholder {
 .delete-all {
   background-color: var(--accent-red);
   color: white;
-  border: none; /* OPTIMIZED: Moved 'border: none' here */
+  border: none;
 }
 .task-list-header {
   display: grid;
@@ -646,6 +690,20 @@ textarea::placeholder {
 .task-item .actions button:hover {
   transform: scale(1.2);
 }
+/* NEW: Colored action buttons */
+.task-item .actions .add-to-lap-btn:hover {
+  color: var(--accent-green);
+}
+.task-item .actions .edit-btn:hover {
+  color: var(--accent-blue);
+}
+.task-item .actions .copy-btn:hover {
+  color: var(--accent-purple);
+}
+.task-item .actions .delete-btn:hover {
+  color: var(--accent-red);
+}
+
 .task-list-footer {
   padding: 1rem;
   border-top: 2px solid var(--border-color);

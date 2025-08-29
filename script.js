@@ -1,4 +1,4 @@
-// script.js for Todo Task Timer (TTT) - Optimized Version
+// script.js for Todo Task Timer (TTT) - Refactored Version
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Constants ---
@@ -75,10 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
   );
-  // Cache selector to avoid repeated DOM queries
-  const lapStepperBtns = document.querySelectorAll(
-    '.stepper-btn[data-field="laps"]'
-  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -98,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLap = 0;
   let totalLaps = 1;
   let confirmCallback = null;
+  let draggedItemId = null; // For drag and drop
 
   let sessionCache = {
     taskMap: new Map(),
@@ -128,11 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Helper Functions ---
   const isSessionActive = () => runnerState !== "STOPPED";
-  const isTaskInActiveSession = (id) =>
-    isSessionActive() && lapList.includes(id);
-
-  // Helper to generate a task map, avoiding code duplication
-  const getTaskMap = () => new Map(tasks.map((task) => [task.id, task]));
 
   // --- UI Rendering ---
   const renderAll = () => {
@@ -203,12 +195,16 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderLapList = () => {
-    const taskMap = getTaskMap(); // Use the helper function
+    const taskMap = new Map(tasks.map((task) => [task.id, task]));
     const lapDuration = lapList.reduce(
       (sum, taskId) => sum + (taskMap.get(taskId)?.duration || 0),
       0
     );
     lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
+
+    const sessionInactive = !isSessionActive();
+    const draggable = sessionInactive ? 'draggable="true"' : "";
+
     lapListEl.innerHTML =
       lapList.length === 0
         ? '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>'
@@ -220,18 +216,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
               const isRunning =
                 isSessionActive() && index === currentLapTaskIndex;
+
+              const actionButtons = sessionInactive
+                ? `
+                <div class="lap-item-actions">
+                    <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
+                    <button class="move-btn" data-action="bottom" title="Move to Bottom"><i class="fas fa-angle-double-down"></i></button>
+                    <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
+                </div>
+                `
+                : `
+                <div class="lap-item-actions">
+                    <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
+                </div>
+                `;
+
               return `
                     <div class="lap-list-item ${
                       isRunning ? "running" : ""
-                    }" data-id="${taskId}">
+                    }" ${draggable} data-id="${taskId}">
                         <span class="lap-category-icon" title="${
                           category.name
                         }">${category.icon}</span>
-                        <span class="title">${task.title}</span>
+                        <div class="title">${task.title}</div>
                         <span class="duration">${formatTime(
                           task.duration
                         )}</span>
-                        <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
+                        ${actionButtons}
                     </div>`;
             })
             .join("");
@@ -285,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const loadTaskIntoForm = (id) => {
-    if (isTaskInActiveSession(id))
+    if (isSessionActive())
       return alert("Cannot edit a task that is part of an active lap session.");
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
@@ -316,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const deleteTask = (id) => {
-    if (isTaskInActiveSession(id))
+    if (isSessionActive())
       return alert(
         "Cannot delete a task that is part of an active lap session."
       );
@@ -489,27 +500,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const skipToLap = (direction) => {
     if (!isSessionActive()) return;
     const newLap = currentLap + direction;
-
     if (direction === 1 && newLap >= totalLaps) {
       stopSession(true);
       return;
     }
     if (newLap < 0) return;
-
     const wasRunning = runnerState === "RUNNING";
     if (wasRunning) stopTimerInterval();
-
     currentLap = newLap;
     updateLapLabel();
     loadTaskToRunner(0);
-
     if (wasRunning) startTimerInterval();
   };
 
   const startSession = () => {
     totalLaps = parseInt(lapsInput.value, 10) || 1;
     currentLap = 0;
-    const taskMap = getTaskMap(); // Use the helper function
+    const taskMap = new Map(tasks.map((task) => [task.id, task]));
     let cumulativeDuration = 0;
     const cumulativeLapDurations = [];
     lapList.forEach((taskId) => {
@@ -529,7 +536,9 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "none";
     sessionControls.style.display = "flex";
     lapsInput.disabled = true;
-    lapStepperBtns.forEach((btn) => (btn.disabled = true)); // Use cached selector
+    document
+      .querySelectorAll('.stepper-btn[data-field="laps"]')
+      .forEach((btn) => (btn.disabled = true));
   };
 
   const stopSession = (finished = false) => {
@@ -539,7 +548,9 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "flex";
     sessionControls.style.display = "none";
     lapsInput.disabled = false;
-    lapStepperBtns.forEach((btn) => (btn.disabled = false)); // Use cached selector
+    document
+      .querySelectorAll('.stepper-btn[data-field="laps"]')
+      .forEach((btn) => (btn.disabled = false));
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${totalLaps} laps)`;
       showConfirmationModal(
@@ -556,7 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resetRunnerDisplay();
     }
     currentLapTaskIndex = -1;
-    renderLapList();
+    renderLapList(); // Re-render to enable draggable etc.
   };
 
   // --- Event Listeners and Setup ---
@@ -618,12 +629,114 @@ document.addEventListener("DOMContentLoaded", () => {
       if (button.classList.contains("add-to-lap-btn")) addTaskToLap(id);
       if (button.classList.contains("edit-btn")) loadTaskIntoForm(id);
     });
+    // MODIFIED: Lap list listener handles more actions
     lapListEl.addEventListener("click", (e) => {
-      const button = e.target.closest(".remove-btn");
+      if (isSessionActive()) return; // Prevent all actions during session
+      const button = e.target.closest("button");
       if (!button) return;
       const lapItem = e.target.closest(".lap-list-item");
-      removeTaskFromLap(Number(lapItem.dataset.id));
+      const id = Number(lapItem.dataset.id);
+
+      if (button.classList.contains("remove-btn")) {
+        removeTaskFromLap(id);
+      } else if (button.classList.contains("move-btn")) {
+        const { action } = button.dataset;
+        const currentIndex = lapList.indexOf(id);
+        if (currentIndex === -1) return;
+
+        lapList.splice(currentIndex, 1); // Remove item
+
+        if (action === "top") {
+          lapList.unshift(id); // Add to beginning
+        } else if (action === "bottom") {
+          lapList.push(id); // Add to end
+        }
+        saveState();
+        renderLapList();
+      }
     });
+
+    // NEW: Drag and Drop Listeners
+    lapListEl.addEventListener("dragstart", (e) => {
+      if (isSessionActive()) return;
+      const item = e.target.closest(".lap-list-item");
+      if (!item) return;
+      draggedItemId = Number(item.dataset.id);
+      // Timeout to allow DOM to update before adding class
+      setTimeout(() => item.classList.add("dragging"), 0);
+    });
+
+    lapListEl.addEventListener("dragend", (e) => {
+      const item = e.target.closest(".lap-list-item");
+      if (item) item.classList.remove("dragging");
+      draggedItemId = null;
+    });
+
+    lapListEl.addEventListener("dragover", (e) => {
+      if (isSessionActive()) return;
+      e.preventDefault();
+      const afterElement = getDragAfterElement(lapListEl, e.clientY);
+      document
+        .querySelectorAll(".drag-over-top, .drag-over-bottom")
+        .forEach((el) => {
+          el.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+
+      if (afterElement) {
+        afterElement.classList.add("drag-over-top");
+      } else {
+        const lastChild = lapListEl.lastElementChild;
+        if (lastChild) {
+          lastChild.classList.add("drag-over-bottom");
+        }
+      }
+    });
+
+    lapListEl.addEventListener("drop", (e) => {
+      if (isSessionActive()) return;
+      e.preventDefault();
+      document
+        .querySelectorAll(".drag-over-top, .drag-over-bottom")
+        .forEach((el) => {
+          el.classList.remove("drag-over-top", "drag-over-bottom");
+        });
+      if (draggedItemId === null) return;
+
+      const afterElement = getDragAfterElement(lapListEl, e.clientY);
+      const oldIndex = lapList.indexOf(draggedItemId);
+      if (oldIndex > -1) {
+        lapList.splice(oldIndex, 1);
+      }
+
+      if (afterElement) {
+        const afterId = Number(afterElement.dataset.id);
+        const newIndex = lapList.indexOf(afterId);
+        lapList.splice(newIndex, 0, draggedItemId);
+      } else {
+        lapList.push(draggedItemId);
+      }
+      saveState();
+      renderLapList();
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [
+        ...container.querySelectorAll(".lap-list-item:not(.dragging)"),
+      ];
+      return draggableElements.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          } else {
+            return closest;
+          }
+        },
+        { offset: Number.NEGATIVE_INFINITY }
+      ).element;
+    }
+
     categoryGrid.addEventListener("click", (e) => {
       const button = e.target.closest(".category-btn");
       if (!button) return;
