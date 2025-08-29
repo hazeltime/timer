@@ -185,9 +185,11 @@ body.dark-theme .theme-btn .fa-moon {
   align-items: center;
   margin-bottom: 1.25rem;
 }
+
 .panel.collapsed .panel-header {
   margin-bottom: 0;
 }
+
 .collapse-btn {
   background: none;
   border: none;
@@ -202,22 +204,30 @@ body.dark-theme .theme-btn .fa-moon {
   align-items: center;
   justify-content: center;
 }
+
 .collapse-btn:hover {
   background-color: var(--hover-bg);
 }
+
 .collapse-btn i {
   transition: transform 0.3s ease;
 }
+
 .panel.collapsed .collapse-btn i {
   transform: rotate(180deg);
 }
+
+/* collapse animation fix */
 .panel-content {
   display: grid;
   grid-template-rows: 1fr;
   transition: grid-template-rows 0.3s ease-in-out;
+  overflow: hidden; /* ensures collapse doesn’t leak content */
 }
+
 .panel-content > div {
-  overflow: visible; /* safer for buttons and category grid */
+  min-height: 0; /* allows shrink */
+  overflow: visible; /* keeps buttons & grid usable */
 }
 
 .panel.collapsed .panel-content {
