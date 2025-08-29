@@ -108,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
     lapDurations: [],
     cumulativeSessionDurations: [],
     lapStartCumulativeDurations: [],
+    totalLaps: 1,
+    totalSessionDuration: 0,
   };
 
   // --- Core Functions ---
@@ -453,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
     taskProgressBar.style.width = `${taskPercent}%`;
     taskPercentage.textContent = `${taskPercent}%`;
 
-    // Lap Progress (FIXED: Uses pre-calculated values for performance)
+    // Lap Progress
     const currentLapDuration = sessionCache.lapDurations[lap];
     const lapStartTime = sessionCache.lapStartCumulativeDurations[lap];
     const completedDurationInLap =
@@ -468,7 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lapProgressBar.style.width = `${lapPercent}%`;
     lapPercentage.textContent = `${lapPercent}%`;
     lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
-    lapTimeRemainingEl.textContent`-${formatTime(lapTimeRemaining)}`;
+    lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
     lapsProgressLabel.textContent = `Lap ${lap + 1} of ${
       sessionCache.totalLaps
     } (Task ${taskIndexInLap + 1} of ${tasksInLap.length})`;
@@ -562,6 +564,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const task = taskMap.get(taskId);
         if (!task) return;
         const interval = task.lapInterval || 1;
+        // The lap number is 1-based (1, 2, 3...), while the loop is 0-based.
+        // This check correctly schedules tasks based on the user-facing lap number.
         if ((lap + 1) % interval === 0) {
           tasksByLap[lap].push({ taskId });
           lapDurations[lap] += task.duration;
@@ -597,7 +601,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const startSession = () => {
     const totalLaps = parseInt(lapsInput.value, 10) || 1;
     const taskMap = getTaskMap();
-
     const playlistData = buildVirtualPlaylist(taskMap, totalLaps);
 
     if (playlistData.virtualSessionPlaylist.length === 0) {
@@ -671,7 +674,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const applyTheme = (theme) => {
-    document.body.className = theme + "-theme";
+    // FIXED: Ensure only one theme class is applied at a time.
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(`${theme}-theme`);
     localStorage.setItem("theme", theme);
   };
 
