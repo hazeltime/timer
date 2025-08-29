@@ -184,6 +184,41 @@
                       </div>
                     </fieldset>
 
+                    <!-- NEW GROWTH FACTOR FIELD -->
+                    <fieldset class="form-group">
+                      <legend>Duration Growth/Decay</legend>
+                      <div class="growth-factor-controls">
+                        <div class="stepper-input">
+                          <button
+                            class="stepper-btn"
+                            data-field="growthFactor"
+                            data-step="-5"
+                            aria-label="Decrease growth factor"
+                          >
+                            -5%
+                          </button>
+                          <input
+                            type="number"
+                            id="growth-factor-input"
+                            value="0"
+                            min="-99"
+                            max="99"
+                          />
+                          <button
+                            class="stepper-btn"
+                            data-field="growthFactor"
+                            data-step="5"
+                            aria-label="Increase growth factor"
+                          >
+                            +5%
+                          </button>
+                        </div>
+                        <span class="field-description"
+                          >Changes duration by this % each run</span
+                        >
+                      </div>
+                    </fieldset>
+
                     <div class="form-group add-btn-group">
                       <button id="add-task-btn">
                         <i class="fas fa-plus"></i> Add Task
@@ -261,6 +296,15 @@
                         tabindex="0"
                       >
                         Interval <i class="fas"></i>
+                      </div>
+                      <!-- NEW COLUMN -->
+                      <div
+                        class="task-cell task-growth-col sort-header"
+                        id="sort-by-growthFactor-btn"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Growth <i class="fas"></i>
                       </div>
                       <div class="task-cell task-actions-col">Actions</div>
                     </div>

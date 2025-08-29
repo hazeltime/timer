@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
   const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
 
+  // Max and min duration in seconds
+  const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
+  const MIN_DURATION_SECONDS = 1;
+
   // ----------------------
   // DOM refs grouped for clarity
   // ----------------------
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     durationMinutesInput: $("#task-duration-minutes"),
     durationSecondsInput: $("#task-duration-seconds"),
     lapIntervalInput: $("#lap-interval-input"),
+    growthFactorInput: $("#growth-factor-input"), // NEW
     addTaskBtn: $("#add-task-btn"),
     cancelEditBtn: $("#cancel-edit-btn"),
 
@@ -93,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tasks: (JSON.parse(localStorage.getItem("tasks")) || []).map((t) => ({
       ...t,
       lapInterval: t.lapInterval || 1,
+      growthFactor: t.growthFactor !== undefined ? t.growthFactor : 0, // NEW: default to 0
     })),
     lapList: JSON.parse(localStorage.getItem("lapList")) || [],
     lastId: JSON.parse(localStorage.getItem("lastId")) || 0,
@@ -119,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
       activeLapMap: new Map(),
       totalActiveLaps: 0,
       totalLaps: 1,
+      taskOccurenceCounts: new Map(), // NEW: to track occurrences for the growth factor
     },
   };
 
@@ -195,6 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         case "lapInterval":
           return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
+        case "growthFactor": // NEW sort by growth factor
+          return ((a.growthFactor || 0) - (b.growthFactor || 0)) * order;
         default:
           return (a.id - b.id) * order;
       }
@@ -215,6 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
             task.lapInterval === 1
               ? "Always"
               : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
+          const growthText = `${task.growthFactor || 0}%`; // NEW
           return `
           <div class="task-item" data-id="${task.id}">
             <div class="task-cell task-id-col">#${task.id}</div>
@@ -229,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
               task.duration
             )}</div>
             <div class="task-cell task-interval-col">${intervalText}</div>
+            <div class="task-cell task-growth-col">${growthText}</div>
             <div class="task-cell task-actions-col">
               <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
               <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
@@ -312,6 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.durationMinutesInput.value = 1;
     DOM.durationSecondsInput.value = 30;
     DOM.lapIntervalInput.value = 1;
+    DOM.growthFactorInput.value = 0; // NEW: reset growth factor
     DOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
     DOM.cancelEditBtn.style.display = "none";
     renderCategoryButtons();
@@ -320,7 +332,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleTaskFormSubmit = () => {
     const title = DOM.taskInput.value.trim();
-    if (!title) return alert("Task title cannot be empty.");
+    if (!title) {
+      alert("Task title cannot be empty.");
+      return;
+    }
+
     const minutes = parseInt(DOM.durationMinutesInput.value, 10) || 0;
     const seconds = parseInt(DOM.durationSecondsInput.value, 10) || 0;
     const totalDuration = minutes * 60 + seconds;
@@ -329,8 +345,16 @@ document.addEventListener("DOMContentLoaded", () => {
       1,
       99
     );
-    if (totalDuration <= 0)
-      return alert("Duration must be greater than 0 seconds.");
+    const growthFactor = clamp(
+      parseInt(DOM.growthFactorInput.value, 10) || 0,
+      -99,
+      99
+    );
+
+    if (totalDuration <= 0) {
+      alert("Duration must be greater than 0 seconds.");
+      return;
+    }
 
     if (state.editingTaskId !== null) {
       const task = state.tasks.find((t) => t.id === state.editingTaskId);
@@ -340,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
         task.categoryId = state.selectedCategoryId;
         task.duration = totalDuration;
         task.lapInterval = lapInterval;
+        task.growthFactor = growthFactor; // NEW: save growth factor
       }
     } else {
       state.lastId++;
@@ -350,6 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
         categoryId: state.selectedCategoryId,
         duration: totalDuration,
         lapInterval,
+        growthFactor, // NEW: save growth factor
       });
     }
 
@@ -359,8 +385,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const loadTaskIntoForm = (id) => {
-    if (isSessionActive())
-      return alert("Cannot edit a task that is part of an active lap session.");
+    if (isSessionActive()) {
+      alert("Cannot edit a task that is part of an active lap session.");
+      return;
+    }
     const task = state.tasks.find((t) => t.id === id);
     if (!task) return;
     state.editingTaskId = id;
@@ -371,16 +399,17 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.durationMinutesInput.value = Math.floor(task.duration / 60);
     DOM.durationSecondsInput.value = task.duration % 60;
     DOM.lapIntervalInput.value = task.lapInterval || 1;
+    DOM.growthFactorInput.value = task.growthFactor || 0; // NEW: load growth factor
     DOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
     DOM.cancelEditBtn.style.display = "inline-block";
     renderCategoryButtons();
   };
 
   const deleteTask = (id) => {
-    if (isSessionActive())
-      return alert(
-        "Cannot delete a task that is part of an active lap session."
-      );
+    if (isSessionActive()) {
+      alert("Cannot delete a task that is part of an active lap session.");
+      return;
+    }
     state.tasks = state.tasks.filter((t) => t.id !== id);
     state.lapList = state.lapList.filter((l) => l !== id);
     saveState();
@@ -393,14 +422,17 @@ document.addEventListener("DOMContentLoaded", () => {
     state.lastId++;
     const copy = { ...original, id: state.lastId };
     if (!copy.lapInterval) copy.lapInterval = 1;
+    if (copy.growthFactor === undefined) copy.growthFactor = 0; // NEW: ensure growth factor exists
     state.tasks.push(copy);
     saveState();
     renderAll();
   };
 
   const addTaskToLap = (id) => {
-    if (isSessionActive())
-      return alert("Please stop the lap session to modify the playlist.");
+    if (isSessionActive()) {
+      alert("Please stop the lap session to modify the playlist.");
+      return;
+    }
     if (!state.lapList.includes(id)) {
       state.lapList.push(id);
       saveState();
@@ -409,8 +441,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const removeTaskFromLap = (id) => {
-    if (isSessionActive())
-      return alert("Please stop the lap session to modify the playlist.");
+    if (isSessionActive()) {
+      alert("Please stop the lap session to modify the playlist.");
+      return;
+    }
     state.lapList = state.lapList.filter((l) => l !== id);
     saveState();
     renderLapList();
@@ -457,14 +491,15 @@ document.addEventListener("DOMContentLoaded", () => {
       virtualIndex >= state.sessionCache.virtualSessionPlaylist.length
     )
       return stopSession(true);
-    const { taskId } = state.sessionCache.virtualSessionPlaylist[virtualIndex];
+    const { taskId, calculatedDuration } =
+      state.sessionCache.virtualSessionPlaylist[virtualIndex];
     const task = state.sessionCache.taskMap.get(taskId);
     if (!task) return stopSession(true);
     const category =
       categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     DOM.runnerTaskCategory.textContent = `${category.icon} ${category.name}`;
     DOM.runnerTaskTitle.textContent = task.title;
-    state.currentTaskTimeLeft = task.duration;
+    state.currentTaskTimeLeft = calculatedDuration; // Use the pre-calculated duration
     updateTimerDisplay();
     renderLapList();
   };
@@ -475,13 +510,13 @@ document.addEventListener("DOMContentLoaded", () => {
       state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
     if (!currentVirtualTask) return;
 
-    const { taskId, lap, tasksInLap, taskIndexInLap } = currentVirtualTask;
-    const task = state.sessionCache.taskMap.get(taskId);
-    if (!task) return;
-
-    const elapsed = task.duration - state.currentTaskTimeLeft;
+    const { taskId, calculatedDuration, lap, tasksInLap, taskIndexInLap } =
+      currentVirtualTask;
+    const elapsed = calculatedDuration - state.currentTaskTimeLeft;
     const taskPercent =
-      task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
+      calculatedDuration > 0
+        ? Math.floor((elapsed / calculatedDuration) * 100)
+        : 0;
     DOM.timeElapsedEl.textContent = formatTime(elapsed);
     DOM.timeRemainingEl.textContent = `-${formatTime(
       state.currentTaskTimeLeft
@@ -541,9 +576,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (state.lapList.length === 0)
-      return alert("Add tasks to the Lap Playlist before starting.");
-    if (state.runnerState === "STOPPED") if (!startSession()) return;
+    if (state.lapList.length === 0) {
+      alert("Add tasks to the Lap Playlist before starting.");
+      return;
+    }
+    if (state.runnerState === "STOPPED") {
+      if (!startSession()) return;
+    }
     if (
       state.currentVirtualTaskIndex >=
       state.sessionCache.virtualSessionPlaylist.length
@@ -606,6 +645,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeLapMap = new Map();
     let activeLapCounter = 0;
     const lastRunLap = new Map();
+    const taskOccurenceCounts = new Map();
 
     for (let lap = 0; lap < totalLaps; lap++) {
       lapStartCumulativeDurations[lap] = currentCumulativeDuration;
@@ -615,7 +655,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const interval = task.lapInterval || 1;
         const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;
         if (lap === 0 || (lap > lastRun && (lap - lastRun) % interval === 0)) {
-          tasksByLap[lap].push({ taskId });
+          // Increment occurrence count for this task
+          const occurrences = (taskOccurenceCounts.get(taskId) || 0) + 1;
+          taskOccurenceCounts.set(taskId, occurrences);
+
+          // Calculate new duration based on the growth factor and occurrence
+          let calculatedDuration = task.duration;
+          if (task.growthFactor !== 0) {
+            calculatedDuration = Math.round(
+              task.duration *
+                Math.pow(1 + task.growthFactor / 100, occurrences - 1)
+            );
+            // Apply min/max duration constraints
+            calculatedDuration = clamp(
+              calculatedDuration,
+              MIN_DURATION_SECONDS,
+              MAX_DURATION_SECONDS
+            );
+          }
+          tasksByLap[lap].push({ taskId, calculatedDuration });
           lastRunLap.set(taskId, lap);
         }
       });
@@ -624,9 +682,8 @@ document.addEventListener("DOMContentLoaded", () => {
         activeLapCounter++;
         activeLapMap.set(lap, activeLapCounter);
         tasksByLap[lap].forEach((taskInfo) => {
-          const t = taskMap.get(taskInfo.taskId);
-          lapDurations[lap] += t.duration;
-          currentCumulativeDuration += t.duration;
+          lapDurations[lap] += taskInfo.calculatedDuration;
+          currentCumulativeDuration += taskInfo.calculatedDuration;
         });
       }
     }
@@ -642,7 +699,7 @@ document.addEventListener("DOMContentLoaded", () => {
           taskIndexInLap,
         });
         cumulativeSessionDurations.push(currentCumulativeDuration);
-        currentCumulativeDuration += taskMap.get(taskInfo.taskId).duration;
+        currentCumulativeDuration += taskInfo.calculatedDuration;
       });
     });
 
@@ -654,6 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
       totalSessionDuration: currentCumulativeDuration,
       activeLapMap,
       totalActiveLaps: activeLapCounter,
+      taskOccurenceCounts,
     };
   };
 
@@ -669,7 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
 
-    state.sessionCache = { taskMap, totalLaps, ...playlistData };
+    state.sessionCache = { ...playlistData, taskMap, totalLaps };
 
     DOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
@@ -932,6 +990,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-3",
               duration: 180,
               lapInterval: 1,
+              growthFactor: 0,
             },
             {
               id: 2,
@@ -940,6 +999,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-2",
               duration: 600,
               lapInterval: 1,
+              growthFactor: 0,
             },
             {
               id: 3,
@@ -948,6 +1008,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-1",
               duration: 1500,
               lapInterval: 2,
+              growthFactor: 20,
             },
             {
               id: 4,
@@ -956,6 +1017,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-8",
               duration: 300,
               lapInterval: 4,
+              growthFactor: 10,
             },
             {
               id: 5,
@@ -964,6 +1026,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-5",
               duration: 900,
               lapInterval: 1,
+              growthFactor: 0,
             },
             {
               id: 6,
@@ -972,6 +1035,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-7",
               duration: 120,
               lapInterval: 1,
+              growthFactor: -10,
             },
             {
               id: 7,
@@ -980,6 +1044,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-4",
               duration: 30,
               lapInterval: 3,
+              growthFactor: 0,
             },
             {
               id: 8,
@@ -988,6 +1053,7 @@ document.addEventListener("DOMContentLoaded", () => {
               categoryId: "cat-9",
               duration: 1200,
               lapInterval: 5,
+              growthFactor: -5,
             },
           ];
           state.lapList = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -1027,6 +1093,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ? DOM.durationMinutesInput
           : field === "lapInterval"
           ? DOM.lapIntervalInput
+          : field === "growthFactor"
+          ? DOM.growthFactorInput
           : DOM.durationSecondsInput;
       const update = () => {
         let val = parseInt(input.value, 10) || 0;

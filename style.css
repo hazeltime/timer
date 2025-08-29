@@ -353,13 +353,15 @@ textarea::placeholder {
 }
 
 /* Duration & Interval Controls */
-.duration-wrapper {
+.duration-wrapper,
+.growth-factor-controls {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 .duration-inputs,
-.lap-interval-controls {
+.lap-interval-controls,
+.growth-factor-controls {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -401,6 +403,12 @@ textarea::placeholder {
   height: 44px;
   font-size: 1.5rem;
 }
+.stepper-btn[data-field="growthFactor"] {
+  width: auto;
+  min-width: 50px;
+  font-size: 0.875rem;
+  padding: 0 0.5rem;
+}
 .stepper-btn[data-step="1"] {
   background-color: var(--stepper-increment-bg);
   color: var(--stepper-increment-text);
@@ -408,6 +416,16 @@ textarea::placeholder {
 .stepper-btn[data-step="-1"] {
   background-color: var(--stepper-decrement-bg);
   color: var(--stepper-decrement-text);
+}
+.stepper-btn[data-step="5"] {
+  background-color: var(--accent-green);
+  color: white;
+  border-color: var(--accent-green);
+}
+.stepper-btn[data-step="-5"] {
+  background-color: var(--accent-red);
+  color: white;
+  border-color: var(--accent-red);
 }
 
 #add-task-btn,
@@ -758,7 +776,7 @@ textarea::placeholder {
   opacity: 0.9;
 }
 :root {
-  --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1.25fr;
+  --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1.25fr;
 }
 .task-list-header,
 .task-item {
@@ -833,7 +851,8 @@ textarea::placeholder {
 }
 .task-duration-col,
 .task-interval-col,
-.task-category-col {
+.task-category-col,
+.task-growth-col {
   font-weight: 500;
   justify-content: center;
 }
@@ -947,7 +966,7 @@ textarea::placeholder {
 
 @media (max-width: 1024px) {
   :root {
-    --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr;
+    --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr 1fr;
   }
   .task-interval-col {
     display: none;
@@ -977,7 +996,8 @@ textarea::placeholder {
   .task-id-col,
   .task-category-col,
   .task-duration-col,
-  .task-interval-col {
+  .task-interval-col,
+  .task-growth-col {
     display: none;
   }
 }
