@@ -1,4 +1,4 @@
-// script.js for Todo Task Timer (TTT) - Optimized Version
+// script.js for Todo Task Timer (TTT) - Refactored Version
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Constants ---
@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryGrid = document.getElementById("category-grid");
   const durationMinutesInput = document.getElementById("task-duration-minutes");
   const durationSecondsInput = document.getElementById("task-duration-seconds");
+  const lapIntervalInput = document.getElementById("lap-interval-input"); // NEW
   const addTaskBtn = document.getElementById("add-task-btn");
   const cancelEditBtn = document.getElementById("cancel-edit-btn");
   const taskListEl = document.getElementById("task-list");
@@ -75,13 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
   );
-  // Cache selector to avoid repeated DOM queries
   const lapStepperBtns = document.querySelectorAll(
     '.stepper-btn[data-field="laps"]'
   );
 
   // --- State Management ---
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  // Ensure all tasks have a lapInterval property on load
+  let tasks = (JSON.parse(localStorage.getItem("tasks")) || []).map((task) => ({
+    ...task,
+    lapInterval: task.lapInterval || 1,
+  }));
   let lapList = JSON.parse(localStorage.getItem("lapList")) || [];
   let lastId = JSON.parse(localStorage.getItem("lastId")) || 0;
   let sortState = { field: "id", order: "desc" };
@@ -93,18 +97,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Runner State
   let sessionInterval = null;
   let runnerState = "STOPPED"; // STOPPED, RUNNING, PAUSED
-  let currentLapTaskIndex = -1;
+  let currentVirtualTaskIndex = -1; // REPLACES currentLapTaskIndex
   let currentTaskTimeLeft = 0;
-  let currentLap = 0;
-  let totalLaps = 1;
   let confirmCallback = null;
-  let draggedItemId = null; // For drag and drop
+  let draggedItemId = null;
 
+  // NEW: Revamped sessionCache for interval-aware logic
   let sessionCache = {
     taskMap: new Map(),
-    singleLapDuration: 0,
-    totalSessionDuration: 0,
-    cumulativeLapDurations: [],
+    virtualSessionPlaylist: [], // A flat list of all tasks to run across all laps
+    lapDurations: [], // An array of total durations for each lap
+    cumulativeSessionDurations: [], // A running total of duration up to each task in the virtual playlist
   };
 
   // --- Core Functions ---
@@ -129,8 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Helper Functions ---
   const isSessionActive = () => runnerState !== "STOPPED";
-
-  // Helper to generate a task map, avoiding code duplication
   const getTaskMap = () => new Map(tasks.map((task) => [task.id, task]));
 
   // --- UI Rendering ---
@@ -154,6 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderTasks = () => {
     const sortedTasks = [...tasks].sort((a, b) => {
       const order = sortState.order === "asc" ? 1 : -1;
+      // Ensure lapInterval is a number for sorting
+      const lapIntervalA = a.lapInterval || 1;
+      const lapIntervalB = b.lapInterval || 1;
       switch (sortState.field) {
         case "title":
           return a.title.localeCompare(b.title) * order;
@@ -163,6 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const catA = categoryMap.get(a.categoryId)?.name || "";
           const catB = categoryMap.get(b.categoryId)?.name || "";
           return catA.localeCompare(catB) * order;
+        case "lapInterval": // NEW: Sort by lap interval
+          return (lapIntervalA - lapIntervalB) * order;
         default:
           return (a.id - b.id) * order;
       }
@@ -174,6 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .map((task) => {
               const category =
                 categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+              const intervalText =
+                task.lapInterval === 1
+                  ? "Always"
+                  : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
               return `
                     <div class="task-item" data-id="${task.id}">
                         <div class="task-id">#${task.id}</div>
@@ -189,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="task-duration">${formatTime(
                           task.duration
                         )}</div>
+                        <div class="task-lap-interval">${intervalText}</div>
                         <div class="actions">
                             <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
                             <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
@@ -202,16 +213,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderLapList = () => {
-    const taskMap = getTaskMap(); // Use the helper function
+    const taskMap = getTaskMap();
     const lapDuration = lapList.reduce(
       (sum, taskId) => sum + (taskMap.get(taskId)?.duration || 0),
       0
     );
     lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
-
     const sessionInactive = !isSessionActive();
     const draggable = sessionInactive ? 'draggable="true"' : "";
-
     lapListEl.innerHTML =
       lapList.length === 0
         ? '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>'
@@ -222,26 +231,20 @@ document.addEventListener("DOMContentLoaded", () => {
               const category =
                 categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
               const isRunning =
-                isSessionActive() && index === currentLapTaskIndex;
-
+                isSessionActive() &&
+                index ===
+                  sessionCache.virtualSessionPlaylist[currentVirtualTaskIndex]
+                    ?.originalIndex;
               const actionButtons = sessionInactive
-                ? `
-                <div class="lap-item-actions">
+                ? `<div class="lap-item-actions">
                     <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
                     <button class="move-btn" data-action="bottom" title="Move to Bottom"><i class="fas fa-angle-double-down"></i></button>
                     <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
-                </div>
-                `
-                : `
-                <div class="lap-item-actions">
-                    <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
-                </div>
-                `;
-
-              return `
-                    <div class="lap-list-item ${
-                      isRunning ? "running" : ""
-                    }" ${draggable} data-id="${taskId}">
+                </div>`
+                : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button></div>`;
+              return `<div class="lap-list-item ${
+                isRunning ? "running" : ""
+              }" ${draggable} data-id="${taskId}">
                         <span class="lap-category-icon" title="${
                           category.name
                         }">${category.icon}</span>
@@ -277,6 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = parseInt(durationMinutesInput.value, 10) || 0;
     const seconds = parseInt(durationSecondsInput.value, 10) || 0;
     const totalDuration = minutes * 60 + seconds;
+    const lapInterval =
+      Math.max(1, Math.min(99, parseInt(lapIntervalInput.value, 10))) || 1; // Clamp value
     if (totalDuration <= 0)
       return alert("Duration must be greater than 0 seconds.");
     if (editingTaskId !== null) {
@@ -286,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         task.description = taskDescriptionInput.value.trim();
         task.categoryId = selectedCategoryId;
         task.duration = totalDuration;
+        task.lapInterval = lapInterval;
       }
     } else {
       lastId++;
@@ -295,6 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: taskDescriptionInput.value.trim(),
         categoryId: selectedCategoryId,
         duration: totalDuration,
+        lapInterval: lapInterval,
       });
     }
     saveState();
@@ -314,6 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCategoryId = task.categoryId;
     durationMinutesInput.value = Math.floor(task.duration / 60);
     durationSecondsInput.value = task.duration % 60;
+    lapIntervalInput.value = task.lapInterval || 1;
     addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
     cancelEditBtn.style.display = "inline-block";
     renderCategoryButtons();
@@ -327,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCategoryId = "cat-0";
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
+    lapIntervalInput.value = 1;
     addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
     cancelEditBtn.style.display = "none";
     renderCategoryButtons();
@@ -348,7 +357,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const originalTask = tasks.find((task) => task.id === id);
     if (!originalTask) return;
     lastId++;
-    tasks.push({ ...originalTask, id: lastId });
+    const newTask = { ...originalTask, id: lastId };
+    if (!newTask.lapInterval) newTask.lapInterval = 1; // Ensure property exists
+    tasks.push(newTask);
     saveState();
     renderAll();
   };
@@ -364,8 +375,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const removeTaskFromLap = (id) => {
-    // This check is now redundant due to the guard clause in the event listener,
-    // but it provides a good layer of defense if called from elsewhere.
     if (isSessionActive())
       return alert("Please stop the lap session to modify the playlist.");
     lapList = lapList.filter((lapId) => lapId !== id);
@@ -406,11 +415,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   };
 
-  const loadTaskToRunner = (lapIndex) => {
-    currentLapTaskIndex = lapIndex;
-    const taskId = lapList[lapIndex];
+  const loadTaskToRunner = (virtualIndex) => {
+    currentVirtualTaskIndex = virtualIndex;
+    if (
+      virtualIndex < 0 ||
+      virtualIndex >= sessionCache.virtualSessionPlaylist.length
+    ) {
+      return stopSession(true); // End session if index is out of bounds
+    }
+
+    const { taskId } = sessionCache.virtualSessionPlaylist[virtualIndex];
     const task = sessionCache.taskMap.get(taskId);
     if (!task) return stopSession(true);
+
     const category =
       categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     runnerTaskCategory.textContent = `${category.icon} ${category.name}`;
@@ -421,53 +438,61 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const updateTimerDisplay = () => {
-    if (currentLapTaskIndex !== -1) {
-      const taskId = lapList[currentLapTaskIndex];
-      const task = sessionCache.taskMap.get(taskId);
-      if (task) {
-        const elapsed = task.duration - currentTaskTimeLeft;
-        const taskPercent =
-          task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
-        timeElapsedEl.textContent = formatTime(elapsed);
-        timeRemainingEl.textContent = `-${formatTime(currentTaskTimeLeft)}`;
-        taskProgressBar.style.width = `${taskPercent}%`;
-        taskPercentage.textContent = `${taskPercent}%`;
-      }
+    if (currentVirtualTaskIndex === -1) return;
+
+    const currentVirtualTask =
+      sessionCache.virtualSessionPlaylist[currentVirtualTaskIndex];
+    if (!currentVirtualTask) return;
+
+    const { taskId, lap, tasksInLap, taskIndexInLap } = currentVirtualTask;
+    const task = sessionCache.taskMap.get(taskId);
+    if (!task) return;
+
+    // Task Progress
+    const elapsed = task.duration - currentTaskTimeLeft;
+    const taskPercent =
+      task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
+    timeElapsedEl.textContent = formatTime(elapsed);
+    timeRemainingEl.textContent = `-${formatTime(currentTaskTimeLeft)}`;
+    taskProgressBar.style.width = `${taskPercent}%`;
+    taskPercentage.textContent = `${taskPercent}%`;
+
+    // Lap Progress
+    const currentLapDuration = sessionCache.lapDurations[lap];
+    let completedDurationInLap = 0;
+    for (let i = 0; i < taskIndexInLap; i++) {
+      completedDurationInLap += sessionCache.taskMap.get(
+        tasksInLap[i].taskId
+      ).duration;
     }
-    if (isSessionActive()) {
-      const {
-        singleLapDuration,
-        totalSessionDuration,
-        cumulativeLapDurations,
-        taskMap,
-      } = sessionCache;
-      const currentTask = taskMap.get(lapList[currentLapTaskIndex]);
-      const currentTaskElapsed = currentTask
-        ? currentTask.duration - currentTaskTimeLeft
+    const lapTimeElapsed = completedDurationInLap + elapsed;
+    const lapTimeRemaining = currentLapDuration - lapTimeElapsed;
+    const lapPercent =
+      currentLapDuration > 0
+        ? Math.floor((lapTimeElapsed / currentLapDuration) * 100)
         : 0;
-      const completedTasksDurationInLap =
-        cumulativeLapDurations[currentLapTaskIndex] || 0;
-      const lapTimeElapsed = completedTasksDurationInLap + currentTaskElapsed;
-      const lapTimeRemaining = singleLapDuration - lapTimeElapsed;
-      const lapPercent =
-        singleLapDuration > 0
-          ? Math.floor((lapTimeElapsed / singleLapDuration) * 100)
-          : 0;
-      lapProgressBar.style.width = `${lapPercent}%`;
-      lapPercentage.textContent = `${lapPercent}%`;
-      lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
-      lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
-      const sessionElapsed = currentLap * singleLapDuration + lapTimeElapsed;
-      const sessionRemaining = totalSessionDuration - sessionElapsed;
-      const sessionPercent =
-        totalSessionDuration > 0
-          ? Math.floor((sessionElapsed / totalSessionDuration) * 100)
-          : 0;
-      sessionProgressBar.style.width = `${sessionPercent}%`;
-      sessionPercentage.textContent = `${sessionPercent}%`;
-      sessionTimeElapsedEl.textContent = formatTime(sessionElapsed);
-      sessionTimeRemainingEl.textContent = `-${formatTime(sessionRemaining)}`;
-    }
+    lapProgressBar.style.width = `${lapPercent}%`;
+    lapPercentage.textContent = `${lapPercent}%`;
+    lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
+    lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
+    lapsProgressLabel.textContent = `Lap ${lap + 1} of ${
+      sessionCache.totalLaps
+    } (Task ${taskIndexInLap + 1} of ${tasksInLap.length})`;
+
+    // Session Progress
+    const totalSessionDuration = sessionCache.totalSessionDuration;
+    const completedSessionDuration =
+      sessionCache.cumulativeSessionDurations[currentVirtualTaskIndex - 1] || 0;
+    const sessionElapsed = completedSessionDuration + elapsed;
+    const sessionRemaining = totalSessionDuration - sessionElapsed;
+    const sessionPercent =
+      totalSessionDuration > 0
+        ? Math.floor((sessionElapsed / totalSessionDuration) * 100)
+        : 0;
+    sessionProgressBar.style.width = `${sessionPercent}%`;
+    sessionPercentage.textContent = `${sessionPercent}%`;
+    sessionTimeElapsedEl.textContent = formatTime(sessionElapsed);
+    sessionTimeRemainingEl.textContent = `-${formatTime(sessionRemaining)}`;
   };
 
   const playPauseSession = () => {
@@ -481,71 +506,121 @@ document.addEventListener("DOMContentLoaded", () => {
       if (runnerState === "STOPPED") {
         startSession();
       }
+      if (
+        currentVirtualTaskIndex >= sessionCache.virtualSessionPlaylist.length
+      ) {
+        return; // Don't start if session is already over
+      }
       runnerState = "RUNNING";
       playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
       startTimerInterval();
     }
   };
 
-  const updateLapLabel = () => {
-    lapsProgressLabel.textContent = `Lap ${currentLap + 1} of ${totalLaps}`;
-  };
-
   const handleTaskCompletion = () => {
-    const nextLapTaskIndex = currentLapTaskIndex + 1;
-    if (nextLapTaskIndex < lapList.length) {
-      loadTaskToRunner(nextLapTaskIndex);
-    } else {
-      currentLap++;
-      if (currentLap < totalLaps) {
-        updateLapLabel();
-        loadTaskToRunner(0);
-      } else {
-        stopSession(true);
-      }
-    }
+    loadTaskToRunner(currentVirtualTaskIndex + 1);
   };
 
   const skipToLap = (direction) => {
-    if (!isSessionActive()) return;
-    const newLap = currentLap + direction;
-    if (direction === 1 && newLap >= totalLaps) {
+    if (!isSessionActive() || sessionCache.virtualSessionPlaylist.length === 0)
+      return;
+
+    const currentLap =
+      sessionCache.virtualSessionPlaylist[currentVirtualTaskIndex].lap;
+    const targetLap = currentLap + direction;
+
+    if (targetLap >= sessionCache.totalLaps) {
       stopSession(true);
       return;
     }
-    if (newLap < 0) return;
-    const wasRunning = runnerState === "RUNNING";
-    if (wasRunning) stopTimerInterval();
-    currentLap = newLap;
-    updateLapLabel();
-    loadTaskToRunner(0);
-    if (wasRunning) startTimerInterval();
+    if (targetLap < 0) return;
+
+    let nextVirtualIndex = sessionCache.virtualSessionPlaylist.findIndex(
+      (task) => task.lap === targetLap
+    );
+
+    // If target lap is empty, find the next non-empty lap
+    while (
+      nextVirtualIndex === -1 &&
+      targetLap < sessionCache.totalLaps &&
+      targetLap >= 0
+    ) {
+      targetLap += direction;
+      nextVirtualIndex = sessionCache.virtualSessionPlaylist.findIndex(
+        (task) => task.lap === targetLap
+      );
+    }
+
+    if (nextVirtualIndex !== -1) {
+      const wasRunning = runnerState === "RUNNING";
+      if (wasRunning) stopTimerInterval();
+      loadTaskToRunner(nextVirtualIndex);
+      if (wasRunning) startTimerInterval();
+    } else if (direction > 0) {
+      // No more tasks found in forward direction
+      stopSession(true);
+    }
   };
 
   const startSession = () => {
-    totalLaps = parseInt(lapsInput.value, 10) || 1;
-    currentLap = 0;
-    const taskMap = getTaskMap(); // Use the helper function
+    const totalLaps = parseInt(lapsInput.value, 10) || 1;
+    const taskMap = getTaskMap();
+
+    // --- NEW: Build the virtual playlist and pre-calculate all durations ---
+    const virtualSessionPlaylist = [];
+    const lapDurations = Array(totalLaps).fill(0);
+    const tasksByLap = Array.from({ length: totalLaps }, () => []);
+
+    for (let lap = 0; lap < totalLaps; lap++) {
+      lapList.forEach((taskId, originalIndex) => {
+        const task = taskMap.get(taskId);
+        if (!task) return;
+        const interval = task.lapInterval || 1;
+        if (lap % interval === 0) {
+          tasksByLap[lap].push({ taskId, originalIndex });
+          lapDurations[lap] += task.duration;
+        }
+      });
+    }
+
     let cumulativeDuration = 0;
-    const cumulativeLapDurations = [];
-    lapList.forEach((taskId) => {
-      const task = taskMap.get(taskId);
-      cumulativeLapDurations.push(cumulativeDuration);
-      cumulativeDuration += task ? task.duration : 0;
+    const cumulativeSessionDurations = [];
+
+    tasksByLap.forEach((tasksInThisLap, lap) => {
+      tasksInThisLap.forEach((taskInfo, taskIndexInLap) => {
+        virtualSessionPlaylist.push({
+          ...taskInfo,
+          lap,
+          tasksInLap: tasksByLap[lap],
+          taskIndexInLap,
+        });
+        cumulativeSessionDurations.push(cumulativeDuration);
+        cumulativeDuration += taskMap.get(taskInfo.taskId).duration;
+      });
     });
+
     sessionCache = {
       taskMap,
-      singleLapDuration: cumulativeDuration,
-      totalSessionDuration: cumulativeDuration * totalLaps,
-      cumulativeLapDurations,
+      totalLaps,
+      virtualSessionPlaylist,
+      lapDurations,
+      cumulativeSessionDurations,
+      totalSessionDuration: cumulativeDuration,
     };
-    updateLapLabel();
+
+    if (virtualSessionPlaylist.length === 0) {
+      alert(
+        "No tasks are scheduled to run in this session with the current intervals."
+      );
+      return;
+    }
+
     lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
     lapsControls.style.display = "none";
     sessionControls.style.display = "flex";
     lapsInput.disabled = true;
-    lapStepperBtns.forEach((btn) => (btn.disabled = true)); // Use cached selector
+    lapStepperBtns.forEach((btn) => (btn.disabled = true));
   };
 
   const stopSession = (finished = false) => {
@@ -555,12 +630,14 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "flex";
     sessionControls.style.display = "none";
     lapsInput.disabled = false;
-    lapStepperBtns.forEach((btn) => (btn.disabled = false)); // Use cached selector
+    lapStepperBtns.forEach((btn) => (btn.disabled = false));
     if (finished) {
-      lapsProgressLabel.textContent = `Session Complete! (${totalLaps} laps)`;
+      lapsProgressLabel.textContent = `Session Complete! (${
+        sessionCache.totalLaps || 0
+      } laps)`;
       showConfirmationModal(
         "🎉 Congratulations! 🎉",
-        `Session Complete! You finished ${totalLaps} lap(s).`,
+        `Session Complete! You finished ${sessionCache.totalLaps || 0} lap(s).`,
         () => {
           lapsProgressContainer.style.display = "none";
           resetRunnerDisplay();
@@ -571,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lapsProgressContainer.style.display = "none";
       resetRunnerDisplay();
     }
-    currentLapTaskIndex = -1;
+    currentVirtualTaskIndex = -1;
     renderLapList();
   };
 
@@ -751,10 +828,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isSessionActive()) handleTaskCompletion();
     });
     prevTaskBtn.addEventListener("click", () => {
-      if (isSessionActive() && lapList.length > 0)
-        loadTaskToRunner(
-          (currentLapTaskIndex - 1 + lapList.length) % lapList.length
-        );
+      if (isSessionActive()) {
+        loadTaskToRunner(currentVirtualTaskIndex - 1);
+      }
     });
     stopLapsBtn.addEventListener("click", () => stopSession(false));
     nextLapBtn.addEventListener("click", () => skipToLap(1));
@@ -814,6 +890,7 @@ document.addEventListener("DOMContentLoaded", () => {
               description: "15 minutes of stretching and cardio.",
               categoryId: "cat-1",
               duration: 900,
+              lapInterval: 1,
             },
             {
               id: 2,
@@ -821,6 +898,7 @@ document.addEventListener("DOMContentLoaded", () => {
               description: "Daily sync with the development team.",
               categoryId: "cat-3",
               duration: 1500,
+              lapInterval: 1,
             },
             {
               id: 3,
@@ -828,6 +906,7 @@ document.addEventListener("DOMContentLoaded", () => {
               description: "Read one chapter of 'Atomic Habits'.",
               categoryId: "cat-7",
               duration: 1200,
+              lapInterval: 2,
             },
             {
               id: 4,
@@ -835,6 +914,7 @@ document.addEventListener("DOMContentLoaded", () => {
               description: "Check spending and update budget spreadsheet.",
               categoryId: "cat-8",
               duration: 600,
+              lapInterval: 1,
             },
           ];
           lapList = [1, 2, 3, 4];
@@ -873,12 +953,15 @@ document.addEventListener("DOMContentLoaded", () => {
           ? lapsInput
           : field === "minutes"
           ? durationMinutesInput
+          : field === "lapInterval"
+          ? lapIntervalInput
           : durationSecondsInput;
+
       const update = () => {
         let value = parseInt(input.value, 10) || 0;
-        let min = field === "laps" ? 1 : 0;
-        value = Math.max(min, value + parseInt(step));
-        if (field === "seconds" && value > 59) value = 59;
+        let min = parseInt(input.min, 10) || 0;
+        let max = parseInt(input.max, 10) || Infinity;
+        value = Math.max(min, Math.min(max, value + parseInt(step)));
         input.value = value;
       };
       btn.addEventListener("mousedown", () => {

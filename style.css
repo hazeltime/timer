@@ -121,7 +121,8 @@ h1 {
   font-size: 2rem;
 }
 h2,
-h3 {
+h3,
+h4 {
   margin-top: 0;
   font-weight: 600;
 }
@@ -131,6 +132,10 @@ h2 {
 }
 h3 {
   font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+h4 {
+  font-size: 1rem;
   margin-bottom: 1rem;
 }
 .header-controls {
@@ -273,18 +278,20 @@ textarea::placeholder {
   margin-bottom: 0.25rem;
 }
 
-/* Duration Controls */
+/* Duration & Interval Controls */
 .duration-wrapper {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-.duration-inputs {
+.duration-inputs,
+.lap-interval-controls {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
-.duration-inputs input {
+.duration-inputs input,
+.lap-interval-controls input {
   text-align: center;
   width: 60px;
   height: 42px;
@@ -293,6 +300,11 @@ textarea::placeholder {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: 0.75rem;
+}
+.field-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
 }
 .stepper-btn,
 .preset-btn {
@@ -357,7 +369,7 @@ textarea::placeholder {
   background-color: var(--text-secondary);
 }
 
-/* --- OPTIMIZATION: SHARED ACTION BUTTON STYLES --- */
+/* --- Shared Action Button Styles --- */
 .lap-item-actions button,
 .task-item .actions button {
   background: none;
@@ -451,9 +463,8 @@ textarea::placeholder {
   gap: 0.25rem;
 }
 .lap-item-actions button {
-  padding: 0.25rem; /* Specific padding */
+  padding: 0.25rem;
 }
-/* Removed duplicated hover transform */
 .lap-item-actions .remove-btn:hover {
   color: var(--accent-red);
 }
@@ -626,14 +637,24 @@ textarea::placeholder {
   color: white;
   border: none;
 }
-.task-list-header {
+.task-list-header,
+.task-item {
   display: grid;
-  grid-template-columns: 60px 3fr 1.5fr 1.5fr 1fr;
+  /* UPDATED: Added 1fr for the new interval column */
+  grid-template-columns: 40px 3fr 1.5fr 1fr 1fr 1fr;
   gap: 1rem;
+  align-items: center;
+}
+.task-list-header {
   padding: 0.75rem 1rem;
   font-weight: 600;
   border-bottom: 2px solid var(--border-color);
   color: var(--text-secondary);
+}
+.task-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
 }
 .sort-header {
   cursor: pointer;
@@ -647,15 +668,6 @@ textarea::placeholder {
   list-style-type: none;
   padding: 0;
   margin: 0;
-}
-.task-item {
-  display: grid;
-  grid-template-columns: 60px 3fr 1.5fr 1.5fr 1fr;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.2s;
 }
 .task-id {
   font-size: 0.9rem;
@@ -677,15 +689,19 @@ textarea::placeholder {
   color: white;
   white-space: nowrap;
 }
-.task-duration {
+.task-duration,
+.task-lap-interval {
   font-weight: 500;
 }
-.task-item .actions button {
-  padding: 0.5rem; /* Specific padding */
-  margin-left: 0.25rem; /* Specific margin */
-  z-index: 2; /* Specific z-index */
+.task-lap-interval .fa-redo-alt {
+  margin-right: 0.25rem;
+  color: var(--text-secondary);
 }
-/* Removed duplicated hover transform */
+.task-item .actions button {
+  padding: 0.5rem;
+  margin-left: 0.25rem;
+  z-index: 2;
+}
 .task-item .actions .add-to-lap-btn:hover {
   color: var(--accent-green);
 }
