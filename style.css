@@ -217,8 +217,9 @@ body.dark-theme .theme-btn .fa-moon {
   transition: grid-template-rows 0.3s ease-in-out;
 }
 .panel-content > div {
-  overflow: hidden;
+  overflow: visible; /* safer for buttons and category grid */
 }
+
 .panel.collapsed .panel-content {
   grid-template-rows: 0fr;
 }
@@ -283,10 +284,23 @@ textarea::placeholder {
 
 /* Category Grid */
 .category-grid {
+  width: 100%; /* force it to stay within form width */
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 0.5rem;
 }
+
+/*
+  * DEFINITIVE FIX for the category button cutoff issue.
+  * This rule overrides browser-default behaviors that cause the container
+  * to ignore parent padding, forcing it to align correctly.
+*/
+.category-group {
+  display: block;
+  min-width: 0; /* lets it respect parent width */
+}
+
 .category-btn {
   border: 2px solid transparent;
   color: var(--text-primary);
@@ -372,7 +386,6 @@ textarea::placeholder {
   transform: scale(0.95);
 }
 .preset-btn {
-  /* FIX: Reduced size of preset buttons */
   padding: 0.4rem 0.75rem;
   font-size: 0.875rem;
   height: 36px;
