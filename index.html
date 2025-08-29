@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo Task Timer (TTT)</title>
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-tasks"></i> Todo Task Timer</h1>
+        <button id="theme-toggle-btn" class="theme-btn" title="Toggle Theme">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </button>
+      </header>
+
+      <div class="main-layout">
+        <div class="left-column">
+          <div class="panel create-task-panel">
+            <h2>Create New Task</h2>
+            <div id="task-form" class="input-grid">
+              <div class="form-group">
+                <label for="task-input">Title</label>
+                <input
+                  type="text"
+                  id="task-input"
+                  placeholder="e.g., Finish project report"
+                />
+              </div>
+              <div class="form-group description-group">
+                <label for="task-description-input"
+                  >Description (Optional)</label
+                >
+                <textarea
+                  id="task-description-input"
+                  placeholder="e.g., Finalize introduction and conclusion."
+                ></textarea>
+              </div>
+              <div class="form-group category-group">
+                <label>Category</label>
+                <div id="category-grid" class="category-grid">
+                  <!-- Category buttons will be injected here -->
+                </div>
+              </div>
+              <div class="form-group duration-container-group">
+                <label>Duration</label>
+                <div class="duration-wrapper">
+                  <div class="duration-inputs">
+                    <button
+                      class="stepper-btn"
+                      data-field="minutes"
+                      data-step="1"
+                      aria-label="Increase minutes"
+                    >
+                      +
+                    </button>
+                    <input type="number" id="task-duration-minutes" min="0" />
+                    <button
+                      class="stepper-btn"
+                      data-field="minutes"
+                      data-step="-1"
+                      aria-label="Decrease minutes"
+                    >
+                      -
+                    </button>
+                    <span class="unit-label">m</span>
+                    <span class="separator">:</span>
+                    <button
+                      class="stepper-btn"
+                      data-field="seconds"
+                      data-step="1"
+                      aria-label="Increase seconds"
+                    >
+                      +
+                    </button>
+                    <input
+                      type="number"
+                      id="task-duration-seconds"
+                      min="0"
+                      max="59"
+                    />
+                    <button
+                      class="stepper-btn"
+                      data-field="seconds"
+                      data-step="-1"
+                      aria-label="Decrease seconds"
+                    >
+                      -
+                    </button>
+                    <span class="unit-label">s</span>
+                  </div>
+                  <div class="preset-durations">
+                    <button class="preset-btn" data-duration="30">30s</button>
+                    <button class="preset-btn" data-duration="120">2m</button>
+                    <button class="preset-btn" data-duration="300">5m</button>
+                    <button class="preset-btn" data-duration="600">10m</button>
+                    <button class="preset-btn" data-duration="1500">25m</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group add-btn-group">
+                <button id="add-task-btn">
+                  <i class="fas fa-plus"></i> Add Task
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel lap-list-panel">
+            <h2>Lap Playlist</h2>
+            <div id="lap-list" class="lap-list">
+              <!-- Lap list items will be injected here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="right-column">
+          <div class="panel task-runner-panel">
+            <h2>Task Runner</h2>
+            <div id="runner-content">
+              <div id="runner-task-info">
+                <span id="runner-task-category"></span>
+                <h3 id="runner-task-title">No task selected</h3>
+              </div>
+
+              <label class="progress-label">Task Progress</label>
+              <div class="progress-bar-container">
+                <div id="task-progress-bar"></div>
+              </div>
+              <div class="timer-display">
+                <span id="time-elapsed">00:00</span>
+                <span id="time-remaining">00:00</span>
+              </div>
+              <div class="runner-controls">
+                <button id="prev-task-btn" title="Previous Task">
+                  <i class="fas fa-backward-step"></i>
+                </button>
+                <button id="play-pause-btn" title="Play/Pause">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button id="next-task-btn" title="Next Task">
+                  <i class="fas fa-forward-step"></i>
+                </button>
+              </div>
+
+              <div class="laps-section">
+                <h4>Laps</h4>
+                <div class="laps-controls">
+                  <label for="laps-input">Runs:</label>
+                  <div class="laps-input-wrapper">
+                    <button
+                      class="stepper-btn"
+                      data-field="laps"
+                      data-step="-1"
+                      aria-label="Decrease laps"
+                    >
+                      -
+                    </button>
+                    <input type="number" id="laps-input" value="1" min="1" />
+                    <button
+                      class="stepper-btn"
+                      data-field="laps"
+                      data-step="1"
+                      aria-label="Increase laps"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button id="stop-laps-btn" style="display: none">
+                    Stop Session
+                  </button>
+                </div>
+                <div id="laps-progress-container" style="display: none">
+                  <label class="progress-label" id="laps-progress-label"
+                    >Lap Progress</label
+                  >
+                  <div class="progress-bar-container">
+                    <div id="lap-progress-bar"></div>
+                  </div>
+                  <label class="progress-label" id="session-progress-label"
+                    >Session Progress</label
+                  >
+                  <div class="progress-bar-container">
+                    <div id="session-progress-bar"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel task-repository">
+            <div class="repo-header">
+              <h2>Task Repository</h2>
+              <button id="delete-all-btn" class="delete-all">
+                <i class="fas fa-trash-alt"></i> Delete All
+              </button>
+            </div>
+            <div class="task-list-container">
+              <div class="task-list-header">
+                <div class="sort-header" id="sort-by-id-btn">
+                  # <i class="fas"></i>
+                </div>
+                <div class="sort-header" id="sort-by-title-btn">
+                  Task <i class="fas"></i>
+                </div>
+                <div class="sort-header" id="sort-by-category-btn">
+                  Category <i class="fas"></i>
+                </div>
+                <div class="sort-header" id="sort-by-duration-btn">
+                  Duration <i class="fas"></i>
+                </div>
+                <div>Actions</div>
+              </div>
+              <div id="task-list">
+                <!-- Tasks will be dynamically added here -->
+              </div>
+            </div>
+            <div class="task-list-footer">
+              <div id="task-summary">
+                <!-- Summary will be injected here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <h2 class="modal-title">Are you sure?</h2>
+        <p id="modal-text"></p>
+        <div class="modal-actions">
+          <button id="modal-cancel-btn">Cancel</button>
+          <button id="modal-confirm-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
