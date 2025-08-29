@@ -1,94 +1,70 @@
 /* --- THEME & COLOR PALETTE --- */
 :root {
-  /* Theme-agnostic variables (default to Light Theme) */
-  --bg-color: #f8fafc;
+  /* Light Theme */
+  --bg-color: #f3f4f6;
   --panel-bg: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-color: #e2e8f0;
-  --input-bg: #f1f5f9;
-  --input-border: #cbd5e1;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --hover-bg: #e2e8f0;
-  --button-secondary-bg: #f1f5f9;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
+  --input-bg: #f9fafb;
+  --input-border: #d1d5db;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --hover-bg: #f3f4f6;
+  --button-secondary-bg: #e5e7eb;
   --accent-blue: #3b82f6;
-  --accent-green: #22c55e;
+  --accent-green: #10b981;
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
-  --accent-orange: #f97316;
-  --accent-blue-focus-shadow: rgba(59, 130, 246, 0.25);
-  --add-task-btn-hover-bg: #16a34a;
-
-  /* Variables for duration controls (Light Theme Defaults) */
-  --preset-btn-bg: var(--button-secondary-bg);
-  --preset-btn-text: var(--text-primary);
-  --preset-btn-border: var(--border-color);
-  --preset-btn-hover-bg: var(--hover-bg);
-  --stepper-btn-text: var(--text-primary);
-  --stepper-increment-bg: var(--button-secondary-bg);
-  --stepper-increment-border: var(--border-color);
-  --stepper-increment-hover-bg: var(--hover-bg);
-  --stepper-decrement-bg: var(--button-secondary-bg);
-  --stepper-decrement-border: var(--border-color);
-  --stepper-decrement-hover-bg: var(--hover-bg);
-  --progress-container-bg: var(--hover-bg);
+  --accent-blue-focus-shadow: rgba(59, 130, 246, 0.2);
+  --progress-container-bg: #e5e7eb;
 }
 
 body.dark-theme {
   /* Dark Theme Overrides */
-  --bg-color: #0f172a;
-  --panel-bg: #1e293b;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --border-color: #334155;
-  --input-bg: #0f172a;
-  --input-border: #475569;
-  --shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
-  --hover-bg: #334155;
-  --button-secondary-bg: #334155;
+  --bg-color: #0b1120;
+  --panel-bg: #111827;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --input-bg: #1f2937;
+  --input-border: #4b5563;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2),
+    0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  --hover-bg: #374151;
+  --button-secondary-bg: #374151;
   --accent-blue: #60a5fa;
-  --accent-green: #4ade80;
+  --accent-green: #34d399;
   --accent-red: #f87171;
   --accent-purple: #a78bfa;
-  --accent-orange: #fb923c;
-  --accent-blue-focus-shadow: rgba(96, 165, 250, 0.25);
-  --add-task-btn-hover-bg: #34d399;
-
-  /* Override variables for duration controls (Dark Theme) */
-  --preset-btn-bg: #38bdf8;
-  --preset-btn-text: #ffffff;
-  --preset-btn-border: #38bdf8;
-  --preset-btn-hover-bg: #7dd3fc;
-  --stepper-btn-text: #ffffff;
-  --stepper-increment-bg: #22c55e;
-  --stepper-increment-border: #22c55e;
-  --stepper-increment-hover-bg: #4ade80;
-  --stepper-decrement-bg: #ef4444;
-  --stepper-decrement-border: #ef4444;
-  --stepper-decrement-hover-bg: #f87171;
-  --progress-container-bg: var(--input-bg);
+  --accent-blue-focus-shadow: rgba(96, 165, 250, 0.2);
+  --progress-container-bg: #374151;
 }
 
 /* --- BASE STYLES --- */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
-  padding: 2rem 1rem;
+  padding: 2rem;
   box-sizing: border-box;
   background-color: var(--bg-color);
   color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
-  max-width: 1600px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 .panel {
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem 2rem;
+  border-radius: 1rem; /* Softer corners */
+  padding: 1.5rem;
   transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
   background-color: var(--panel-bg);
   box-shadow: var(--shadow);
@@ -97,15 +73,15 @@ body {
 /* --- LAYOUT --- */
 .main-layout {
   display: grid;
-  grid-template-columns: minmax(400px, 1fr) 2fr;
-  gap: 2rem;
+  grid-template-columns: minmax(380px, 1fr) 2fr;
+  gap: 1.5rem; /* Tighter gap */
   align-items: start;
 }
 .left-column,
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem; /* Tighter gap */
 }
 
 /* --- HEADER & HEADINGS --- */
@@ -113,52 +89,58 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+h1 i {
+  margin-right: 0.75rem;
+  color: var(--accent-blue);
 }
 h2,
 h3,
 h4 {
-  margin-top: 0;
+  margin: 0;
   font-weight: 600;
 }
 h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0;
+  font-size: 1.25rem;
 }
 h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 1.125rem;
 }
 h4 {
   font-size: 1rem;
-  margin-bottom: 1rem;
 }
+
 .header-controls {
   display: flex;
   gap: 0.75rem;
 }
 .theme-btn {
-  background-color: var(--button-secondary-bg);
+  background-color: var(--panel-bg);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
+  color: var(--text-secondary);
+  border-radius: 0.75rem;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s, background-color 0.2s;
+  transition: all 0.2s ease;
 }
 .theme-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   background-color: var(--hover-bg);
+  color: var(--text-primary);
 }
 .theme-btn .fa-sun {
   display: none;
@@ -178,7 +160,7 @@ body.dark-theme .theme-btn .fa-moon {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 .panel.collapsed .panel-header {
   margin-bottom: 0;
@@ -188,8 +170,17 @@ body.dark-theme .theme-btn .fa-moon {
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1rem;
   padding: 0.5rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.collapse-btn:hover {
+  background-color: var(--hover-bg);
 }
 .collapse-btn i {
   transition: transform 0.3s ease;
@@ -198,7 +189,7 @@ body.dark-theme .theme-btn .fa-moon {
   transform: rotate(180deg);
 }
 .panel-content {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .panel.collapsed .panel-content {
   display: none;
@@ -208,12 +199,13 @@ body.dark-theme .theme-btn .fa-moon {
 .input-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 .form-group label,
 .form-group legend {
   margin-bottom: 0.5rem;
   font-weight: 500;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   display: block;
 }
@@ -225,14 +217,14 @@ fieldset.form-group {
 input,
 textarea {
   width: 100%;
-  padding: 0.75rem;
-  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
   font-size: 1rem;
   box-sizing: border-box;
   border: 1px solid var(--input-border);
   background-color: var(--input-bg);
   color: var(--text-primary);
-  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   font-family: inherit;
 }
 input:focus,
@@ -243,7 +235,7 @@ textarea:focus {
 }
 textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
 }
 input::placeholder,
 textarea::placeholder {
@@ -254,37 +246,50 @@ textarea::placeholder {
 /* Category Grid */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 0.75rem;
 }
 .category-btn {
-  border: 2px solid var(--input-border);
+  border: 2px solid transparent;
   color: var(--text-primary);
   background-color: var(--input-bg);
-  border-radius: 8px;
+  border-radius: 0.75rem;
   padding: 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   cursor: pointer;
   text-align: center;
-  transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
+}
+.category-btn:hover {
+  transform: translateY(-2px);
 }
 .category-btn.active {
-  border-width: 2px;
-  transform: scale(1.05);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-lg);
 }
 .category-btn .icon {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
 }
 
 /* --- REUSABLE STEPPER COMPONENT --- */
 .stepper-input {
   display: flex;
 }
+.stepper-input .stepper-btn {
+  background-color: var(--button-secondary-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--input-border);
+  position: relative;
+  z-index: 2;
+}
+.stepper-input .stepper-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
 .stepper-input .stepper-btn:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-radius: 0.75rem 0 0 0.75rem;
 }
 .stepper-input input {
   border-radius: 0;
@@ -294,8 +299,7 @@ textarea::placeholder {
   margin-right: -1px;
 }
 .stepper-input .stepper-btn:last-child {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-radius: 0 0.75rem 0.75rem 0;
 }
 
 /* Duration & Interval Controls */
@@ -315,23 +319,23 @@ textarea::placeholder {
 .laps-controls .stepper-input input {
   text-align: center;
   width: 60px;
-  height: 42px;
+  height: 44px;
 }
 .preset-durations {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 .field-description {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   margin-left: 0.5rem;
 }
 .stepper-btn,
 .preset-btn {
-  border-radius: 6px;
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
   font-weight: 600;
 }
 .stepper-btn:active,
@@ -340,56 +344,47 @@ textarea::placeholder {
 }
 .preset-btn {
   padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  height: 42px;
-  background-color: var(--preset-btn-bg);
-  color: var(--preset-btn-text);
-  border: 1px solid var(--preset-btn-border);
+  font-size: 0.875rem;
+  height: 44px;
+  background-color: var(--input-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--input-border);
 }
 .preset-btn:hover {
-  background-color: var(--preset-btn-hover-bg);
+  background-color: var(--hover-bg);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
 .stepper-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   font-size: 1.5rem;
-  color: var(--stepper-btn-text);
-  position: relative;
-  z-index: 2;
 }
-.stepper-btn[data-step="1"] {
-  background-color: var(--stepper-increment-bg);
-  border: 1px solid var(--stepper-increment-border);
-}
-.stepper-btn[data-step="1"]:hover {
-  background-color: var(--stepper-increment-hover-bg);
-}
-.stepper-btn[data-step="-1"] {
-  background-color: var(--stepper-decrement-bg);
-  border: 1px solid var(--stepper-decrement-border);
-}
-.stepper-btn[data-step="-1"]:hover {
-  background-color: var(--stepper-decrement-hover-bg);
-}
+
 #add-task-btn,
 #cancel-edit-btn {
-  padding: 0.85rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   color: white;
-  border-radius: 6px;
-  font-size: 1.1rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.2s ease;
 }
 #add-task-btn {
   background-color: var(--accent-green);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 #add-task-btn:hover {
   transform: translateY(-2px);
-  background-color: var(--add-task-btn-hover-bg);
+  box-shadow: var(--shadow-lg);
 }
 #cancel-edit-btn {
   background-color: var(--text-secondary);
+}
+#cancel-edit-btn:hover {
+  opacity: 0.9;
 }
 
 /* --- Shared Action Button Styles --- */
@@ -399,12 +394,19 @@ textarea::placeholder {
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 1.1rem;
-  transition: color 0.2s, transform 0.2s;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 .lap-item-actions button:hover,
 .task-item .actions button:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
+  background-color: var(--hover-bg);
 }
 
 /* --- LAP PLAYLIST --- */
@@ -420,34 +422,36 @@ textarea::placeholder {
 #lap-list-duration {
   font-weight: 500;
   color: var(--text-secondary);
+  background-color: var(--input-bg);
+  padding: 0.25rem 0.625rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
 }
 #clear-lap-list-btn {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: var(--text-secondary);
+  font-size: 1rem;
 }
 #clear-lap-list-btn:hover {
   color: var(--accent-red);
 }
 .lap-list {
-  max-height: 300px;
+  max-height: 280px;
   overflow-y: auto;
+  padding-right: 0.25rem;
 }
 .lap-list-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
   margin-bottom: 0.5rem;
   background-color: var(--input-bg);
   position: relative;
+  border: 1px solid var(--input-border);
 }
 .lap-list-item.running {
   outline: 2px solid var(--accent-blue);
-  background-color: color-mix(in srgb, var(--accent-blue) 15%, transparent);
+  background-color: color-mix(in srgb, var(--accent-blue) 10%, transparent);
 }
 .lap-list-item[draggable="true"] {
   cursor: grab;
@@ -459,7 +463,7 @@ textarea::placeholder {
   opacity: 0.4;
 }
 .lap-list-item .lap-category-icon {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 .lap-list-item .title {
   flex-grow: 1;
@@ -469,24 +473,22 @@ textarea::placeholder {
 .lap-list-item.drag-over-top::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 3px;
   background-color: var(--accent-blue);
+  border-radius: 3px;
 }
 .lap-list-item.drag-over-bottom::after {
-  bottom: -2px;
+  bottom: -4px;
 }
 .lap-list-item.drag-over-top::before {
-  top: -2px;
+  top: -4px;
 }
 .lap-item-actions {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-}
-.lap-item-actions button {
-  padding: 0.25rem;
+  gap: 0.125rem;
 }
 .lap-item-actions .remove-btn:hover {
   color: var(--accent-red);
@@ -498,31 +500,31 @@ textarea::placeholder {
 /* --- TASK RUNNER --- */
 .task-runner-panel {
   position: sticky;
-  top: 2rem;
+  top: 1.5rem;
 }
 #runner-task-info {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 #runner-task-category {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
 }
 #runner-task-title {
-  margin: 0.5rem 0;
-  font-size: 1.5rem;
+  margin: 0.25rem 0;
+  font-size: 1.875rem;
 }
 .progress-label {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   display: block;
 }
 .progress-bar-container {
   position: relative;
   width: 100%;
-  height: 10px;
-  border-radius: 5px;
+  height: 12px; /* Thicker progress bar */
+  border-radius: 6px;
   margin-bottom: 0.5rem;
   background-color: var(--progress-container-bg);
   overflow: hidden;
@@ -532,7 +534,7 @@ textarea::placeholder {
 #session-progress-bar {
   width: 0%;
   height: 100%;
-  border-radius: 5px;
+  border-radius: 6px;
   transition: width 0.5s linear;
   background-color: var(--accent-blue);
 }
@@ -541,41 +543,49 @@ textarea::placeholder {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: var(--text-primary);
-  mix-blend-mode: difference;
-  filter: invert(1) grayscale(1) contrast(100);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
 }
 .timer-display {
   display: flex;
   justify-content: space-between;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   margin-top: 0.5rem;
+  font-weight: 500;
 }
 .runner-controls {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 .runner-controls button {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   border: none;
   color: white;
   cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s ease;
+}
+.runner-controls button:hover {
+  transform: scale(1.05);
 }
 #play-pause-btn {
   background-color: var(--accent-blue);
 }
 #prev-task-btn,
 #next-task-btn {
-  background-color: var(--button-secondary-bg);
-  color: var(--text-primary);
+  background-color: var(--panel-bg);
+  color: var(--text-secondary);
   border: 1px solid var(--border-color);
+}
+#prev-task-btn:hover,
+#next-task-btn:hover {
+  color: var(--text-primary);
 }
 
 /* Laps Section */
@@ -587,31 +597,31 @@ textarea::placeholder {
 .laps-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 .session-controls {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
   gap: 0.5rem;
   margin-top: 1rem;
 }
 .session-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--border-color);
-  background-color: var(--button-secondary-bg);
-  color: var(--text-primary);
+  background-color: var(--panel-bg);
+  color: var(--text-secondary);
   cursor: pointer;
-  flex-grow: 1;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 .session-btn.stop {
   background-color: var(--accent-red);
   color: white;
   border: none;
-  flex-grow: 1.5;
 }
-.session-btn:hover:not(.stop) {
+.session-btn:hover {
+  color: var(--text-primary);
   background-color: var(--hover-bg);
 }
 #laps-progress-label {
@@ -628,32 +638,39 @@ textarea::placeholder {
 }
 .repo-btn,
 .delete-all {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  border: none;
 }
 .repo-btn {
   background-color: var(--button-secondary-bg);
+  color: var(--text-secondary);
+}
+.repo-btn:hover {
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
 }
 .delete-all {
   background-color: var(--accent-red);
   color: white;
-  border: none;
+}
+.delete-all:hover {
+  opacity: 0.9;
 }
 .task-list-header,
 .task-item {
   display: grid;
-  grid-template-columns: 40px 3fr 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 40px 4fr 2fr 1.5fr 1.5fr 1fr; /* Adjusted for better title spacing */
   gap: 1rem;
   align-items: center;
 }
 .task-list-header {
   padding: 0.75rem 1rem;
   font-weight: 600;
-  border-bottom: 2px solid var(--border-color);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
 }
 .task-item {
@@ -666,6 +683,9 @@ textarea::placeholder {
   user-select: none;
   transition: color 0.2s;
 }
+.sort-header:hover {
+  color: var(--text-primary);
+}
 .sort-header.active {
   color: var(--accent-blue);
 }
@@ -675,22 +695,24 @@ textarea::placeholder {
   margin: 0;
 }
 .task-id {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 .task-title {
-  font-weight: 500;
-  font-size: 1.1rem;
+  font-weight: 600;
+  font-size: 1rem;
 }
 .task-description {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
 .task-category-badge {
   padding: 0.25rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: white;
   white-space: nowrap;
 }
@@ -702,8 +724,12 @@ textarea::placeholder {
   margin-right: 0.25rem;
   color: var(--text-secondary);
 }
+.task-item .actions {
+  display: flex;
+  justify-content: flex-end;
+}
 .task-item .actions button {
-  padding: 0.5rem;
+  padding: 0;
   margin-left: 0.25rem;
   z-index: 2;
 }
@@ -722,9 +748,10 @@ textarea::placeholder {
 
 .task-list-footer {
   padding: 1rem;
-  border-top: 2px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   text-align: right;
   font-weight: 500;
+  font-size: 0.875rem;
   color: var(--text-secondary);
 }
 #task-summary span {
@@ -746,20 +773,21 @@ textarea::placeholder {
 }
 .modal-content {
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 1rem;
   width: 90%;
   max-width: 400px;
   text-align: center;
   border: 1px solid var(--border-color);
   background-color: var(--panel-bg);
+  box-shadow: var(--shadow-lg);
 }
 .modal-actions button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
   border: none;
   font-size: 1rem;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* --- RESPONSIVE DESIGN --- */
@@ -773,6 +801,9 @@ textarea::placeholder {
   }
 }
 @media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
   .task-list-header,
   .task-item {
     grid-template-columns: 1fr auto;
