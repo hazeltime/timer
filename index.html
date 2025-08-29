@@ -171,7 +171,7 @@
                       </button>
                     </div>
                     <span class="field-description"
-                      >(Task runs every Nth lap)</span
+                      >Skips (N-1) laps after each run</span
                     >
                   </div>
                 </fieldset>
@@ -308,7 +308,6 @@
                 <div
                   id="task-progress-bar"
                   role="progressbar"
-                  aria-labelledby="task-progress-label"
                   aria-valuenow="0"
                   aria-valuemin="0"
                   aria-valuemax="100"
@@ -323,14 +322,22 @@
                 <span id="time-remaining">0s</span>
               </div>
               <div class="runner-controls">
-                <button id="prev-task-btn" title="Previous Task">
-                  <i class="fas fa-backward-step"></i>
+                <button
+                  id="prev-task-btn"
+                  class="runner-btn"
+                  title="Previous Task"
+                >
+                  <i class="fas fa-backward-step"></i><span>Prev</span>
                 </button>
-                <button id="play-pause-btn" title="Play/Pause">
-                  <i class="fas fa-play"></i>
+                <button
+                  id="play-pause-btn"
+                  class="runner-btn play"
+                  title="Play/Pause"
+                >
+                  <i class="fas fa-play"></i><span>Play</span>
                 </button>
-                <button id="next-task-btn" title="Next Task">
-                  <i class="fas fa-forward-step"></i>
+                <button id="next-task-btn" class="runner-btn" title="Next Task">
+                  <span>Next</span><i class="fas fa-forward-step"></i>
                 </button>
               </div>
 
@@ -382,7 +389,12 @@
                   </button>
                 </div>
 
-                <div id="laps-progress-container" style="display: none">
+                <div
+                  class="runner-progress-details"
+                  id="laps-progress-container"
+                  style="display: none"
+                >
+                  <div class="divider"></div>
                   <h4 class="progress-label" id="laps-progress-label">
                     Lap Progress
                   </h4>
@@ -390,7 +402,6 @@
                     <div
                       id="lap-progress-bar"
                       role="progressbar"
-                      aria-labelledby="laps-progress-label"
                       aria-valuenow="0"
                       aria-valuemin="0"
                       aria-valuemax="100"
@@ -403,6 +414,7 @@
                     <span id="lap-time-elapsed">0s</span>
                     <span id="lap-time-remaining">0s</span>
                   </div>
+                  <div class="divider"></div>
                   <h4 class="progress-label" id="session-progress-label">
                     Session Progress
                   </h4>
@@ -410,7 +422,6 @@
                     <div
                       id="session-progress-bar"
                       role="progressbar"
-                      aria-labelledby="session-progress-label"
                       aria-valuenow="0"
                       aria-valuemin="0"
                       aria-valuemax="100"

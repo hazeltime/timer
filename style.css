@@ -19,6 +19,10 @@
   --accent-purple: #8b5cf6;
   --accent-blue-focus-shadow: rgba(59, 130, 246, 0.2);
   --progress-container-bg: #e5e7eb;
+  --stepper-increment-bg: #d1fae5;
+  --stepper-increment-text: #065f46;
+  --stepper-decrement-bg: #fee2e2;
+  --stepper-decrement-text: #991b1b;
 }
 
 body.dark-theme {
@@ -41,6 +45,10 @@ body.dark-theme {
   --accent-purple: #a78bfa;
   --accent-blue-focus-shadow: rgba(96, 165, 250, 0.2);
   --progress-container-bg: #374151;
+  --stepper-increment-bg: #10b981;
+  --stepper-increment-text: #ffffff;
+  --stepper-decrement-bg: #ef4444;
+  --stepper-decrement-text: #ffffff;
 }
 
 /* --- BASE STYLES --- */
@@ -63,7 +71,7 @@ body {
 }
 .panel {
   border: 1px solid var(--border-color);
-  border-radius: 1rem; /* Softer corners */
+  border-radius: 1rem;
   padding: 1.5rem;
   transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
   background-color: var(--panel-bg);
@@ -74,14 +82,14 @@ body {
 .main-layout {
   display: grid;
   grid-template-columns: minmax(380px, 1fr) 2fr;
-  gap: 1.5rem; /* Tighter gap */
+  gap: 1.5rem;
   align-items: start;
 }
 .left-column,
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Tighter gap */
+  gap: 1.5rem;
 }
 
 /* --- HEADER & HEADINGS --- */
@@ -189,10 +197,15 @@ body.dark-theme .theme-btn .fa-moon {
   transform: rotate(180deg);
 }
 .panel-content {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease-in-out;
+}
+.panel-content > div {
+  overflow: hidden;
 }
 .panel.collapsed .panel-content {
-  display: none;
+  grid-template-rows: 0fr;
 }
 
 /* --- INPUT FORM --- */
@@ -232,6 +245,14 @@ textarea:focus {
   outline: none;
   box-shadow: 0 0 0 3px var(--accent-blue-focus-shadow);
   border-color: var(--accent-blue);
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 textarea {
   resize: vertical;
@@ -278,8 +299,6 @@ textarea::placeholder {
   display: flex;
 }
 .stepper-input .stepper-btn {
-  background-color: var(--button-secondary-bg);
-  color: var(--text-secondary);
   border: 1px solid var(--input-border);
   position: relative;
   z-index: 2;
@@ -297,6 +316,7 @@ textarea::placeholder {
   z-index: 1;
   margin-left: -1px;
   margin-right: -1px;
+  width: 70px; /* Wider input */
 }
 .stepper-input .stepper-btn:last-child {
   border-radius: 0 0.75rem 0.75rem 0;
@@ -313,13 +333,6 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-.duration-inputs .stepper-input input,
-.lap-interval-controls .stepper-input input,
-.laps-controls .stepper-input input {
-  text-align: center;
-  width: 60px;
-  height: 44px;
 }
 .preset-durations {
   display: grid;
@@ -359,6 +372,15 @@ textarea::placeholder {
   width: 44px;
   height: 44px;
   font-size: 1.5rem;
+}
+
+.stepper-btn[data-step="1"] {
+  background-color: var(--stepper-increment-bg);
+  color: var(--stepper-increment-text);
+}
+.stepper-btn[data-step="-1"] {
+  background-color: var(--stepper-decrement-bg);
+  color: var(--stepper-decrement-text);
 }
 
 #add-task-btn,
@@ -436,7 +458,7 @@ textarea::placeholder {
 .lap-list {
   max-height: 280px;
   overflow-y: auto;
-  padding-right: 0.25rem;
+  padding-right: 0.5rem;
 }
 .lap-list-item {
   display: flex;
@@ -496,6 +518,21 @@ textarea::placeholder {
 .lap-item-actions .move-btn:hover {
   color: var(--accent-blue);
 }
+/* Custom Scrollbar */
+.lap-list::-webkit-scrollbar {
+  width: 8px;
+}
+.lap-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lap-list::-webkit-scrollbar-thumb {
+  background-color: var(--button-secondary-bg);
+  border-radius: 4px;
+  border: 2px solid var(--panel-bg);
+}
+.lap-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
 
 /* --- TASK RUNNER --- */
 .task-runner-panel {
@@ -523,7 +560,7 @@ textarea::placeholder {
 .progress-bar-container {
   position: relative;
   width: 100%;
-  height: 12px; /* Thicker progress bar */
+  height: 12px;
   border-radius: 6px;
   margin-bottom: 0.5rem;
   background-color: var(--progress-container-bg);
@@ -553,6 +590,7 @@ textarea::placeholder {
   font-size: 1.25rem;
   margin-top: 0.5rem;
   font-weight: 500;
+  font-variant-numeric: tabular-nums; /* Prevents layout shift */
 }
 .runner-controls {
   display: flex;
@@ -560,38 +598,40 @@ textarea::placeholder {
   gap: 1rem;
   margin-top: 1.5rem;
 }
-.runner-controls button {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  font-size: 1.75rem;
-  border: none;
-  color: white;
+.runner-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
   cursor: pointer;
-  box-shadow: var(--shadow-lg);
   transition: all 0.2s ease;
 }
-.runner-controls button:hover {
+.runner-btn.play {
+  background-color: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+  font-size: 1.25rem;
+  padding: 0.75rem 1.5rem;
+}
+.runner-btn.play:hover {
   transform: scale(1.05);
 }
-#play-pause-btn {
-  background-color: var(--accent-blue);
-}
-#prev-task-btn,
-#next-task-btn {
+.runner-btn:not(.play) {
   background-color: var(--panel-bg);
   color: var(--text-secondary);
-  border: 1px solid var(--border-color);
 }
-#prev-task-btn:hover,
-#next-task-btn:hover {
+.runner-btn:not(.play):hover {
   color: var(--text-primary);
+  background-color: var(--hover-bg);
 }
 
 /* Laps Section */
 .laps-section {
   margin-top: 2rem;
-  border-top: 1px solid var(--border-color);
   padding-top: 1.5rem;
 }
 .laps-controls {
@@ -604,6 +644,7 @@ textarea::placeholder {
   grid-template-columns: 1fr 1.5fr 1fr;
   gap: 0.5rem;
   margin-top: 1rem;
+  justify-content: center;
 }
 .session-btn {
   padding: 0.625rem 1rem;
@@ -626,6 +667,11 @@ textarea::placeholder {
 }
 #laps-progress-label {
   text-align: center;
+}
+.runner-progress-details .divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 1.5rem 0;
 }
 
 /* --- TASK REPOSITORY --- */
@@ -662,7 +708,7 @@ textarea::placeholder {
 .task-list-header,
 .task-item {
   display: grid;
-  grid-template-columns: 40px 4fr 2fr 1.5fr 1.5fr 1fr; /* Adjusted for better title spacing */
+  grid-template-columns: 40px 4fr 2fr 1.5fr 1.5fr 1.25fr;
   gap: 1rem;
   align-items: center;
 }
@@ -678,6 +724,17 @@ textarea::placeholder {
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
 }
+.task-list-header > div,
+.task-item > div {
+  border-right: 1px solid var(--border-color);
+  padding-right: 1rem;
+}
+.task-list-header > div:last-child,
+.task-item > div:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
 .sort-header {
   cursor: pointer;
   user-select: none;
@@ -699,6 +756,10 @@ textarea::placeholder {
   color: var(--text-secondary);
   font-weight: 500;
 }
+.task-details {
+  display: flex;
+  flex-direction: column;
+}
 .task-title {
   font-weight: 600;
   font-size: 1rem;
@@ -707,6 +768,10 @@ textarea::placeholder {
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
 }
 .task-category-badge {
   padding: 0.25rem 0.6rem;
@@ -717,8 +782,10 @@ textarea::placeholder {
   white-space: nowrap;
 }
 .task-duration,
-.task-lap-interval {
+.task-lap-interval,
+.task-category {
   font-weight: 500;
+  text-align: center;
 }
 .task-lap-interval .fa-redo-alt {
   margin-right: 0.25rem;
@@ -759,6 +826,16 @@ textarea::placeholder {
 }
 
 /* --- MODAL --- */
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -770,6 +847,9 @@ textarea::placeholder {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+.modal-overlay.show .modal-content {
+  animation: modal-fade-in 0.2s ease-out forwards;
 }
 .modal-content {
   padding: 2rem;
@@ -808,6 +888,11 @@ textarea::placeholder {
   .task-item {
     grid-template-columns: 1fr auto;
     gap: 0.5rem 1rem;
+  }
+  .task-list-header > div,
+  .task-item > div {
+    border-right: none;
+    padding-right: 0;
   }
   .task-list-header > div:not(:nth-child(2)):not(:last-child),
   .task-item > *:not(.task-details):not(.actions) {

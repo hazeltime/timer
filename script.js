@@ -54,11 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevTaskBtn = document.getElementById("prev-task-btn");
   const playPauseBtn = document.getElementById("play-pause-btn");
   const nextTaskBtn = document.getElementById("next-task-btn");
+  const playPauseBtnText = playPauseBtn.querySelector("span");
 
   // Laps DOM Elements
   const lapsControls = document.querySelector(".laps-controls");
   const sessionControls = document.getElementById("session-controls");
-  const lapsInput = document.getElementById("laps-input"); // Typo fixed from lps-input
+  const lapsInput = document.getElementById("laps-input");
   const stopLapsBtn = document.getElementById("stop-laps-btn");
   const prevLapBtn = document.getElementById("prev-lap-btn");
   const nextLapBtn = document.getElementById("next-lap-btn");
@@ -75,9 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeElapsedEl = document.getElementById("session-time-elapsed");
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
-  );
-  const lapStepperBtns = document.querySelectorAll(
-    '.stepper-btn[data-field="laps"]'
   );
 
   // --- State Management ---
@@ -205,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
                             <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
                             <button class="copy-btn" title="Duplicate"><i class="fas fa-copy"></i></button>
-                            <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                            <button class="delete-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>`;
             })
@@ -240,9 +238,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? `<div class="lap-item-actions">
                     <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
                     <button class="move-btn" data-action="bottom" title="Move to Bottom"><i class="fas fa-angle-double-down"></i></button>
-                    <button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button>
+                    <button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button>
                 </div>`
-                : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-times-circle"></i></button></div>`;
+                : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button></div>`;
               return `<div class="lap-list-item ${
                 isRunning ? "running" : ""
               }" ${draggable} data-id="${taskId}">
@@ -494,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (runnerState === "RUNNING") {
       stopTimerInterval();
       runnerState = "PAUSED";
-      playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+      playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     } else {
       if (lapList.length === 0)
         return alert("Add tasks to the Lap Playlist before starting.");
@@ -507,7 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       runnerState = "RUNNING";
-      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i><span>Pause</span>';
       startTimerInterval();
     }
   };
@@ -559,16 +557,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeLapMap = new Map();
     let activeLapCounter = 0;
 
+    // --- THIS IS THE FIX ---
+    // The logic is now: a task runs on Lap 1 (lap index 0).
+    // For subsequent laps, it runs if (lap_index) is a multiple of the interval.
     for (let lap = 0; lap < totalLaps; lap++) {
       lapStartCumulativeDurations[lap] = currentCumulativeDuration;
       lapList.forEach((taskId) => {
         const task = taskMap.get(taskId);
         if (!task) return;
         const interval = task.lapInterval || 1;
-
-        // --- THIS IS THE FIX ---
-        // The first lap (index 0) always runs all tasks.
-        // For subsequent laps, it runs if the zero-indexed lap number is a multiple of the interval.
         if (lap === 0 || (lap > 0 && lap % interval === 0)) {
           tasksByLap[lap].push({ taskId });
         }
@@ -634,18 +631,23 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "none";
     sessionControls.style.display = "flex";
     lapsInput.disabled = true;
-    lapStepperBtns.forEach((btn) => (btn.disabled = true));
+    document
+      .querySelectorAll('.stepper-btn[data-field="laps"]')
+      .forEach((btn) => (btn.disabled = true));
     return true;
   };
 
   const stopSession = (finished = false) => {
     stopTimerInterval();
     runnerState = "STOPPED";
-    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     lapsControls.style.display = "flex";
     sessionControls.style.display = "none";
     lapsInput.disabled = false;
-    lapStepperBtns.forEach((btn) => (btn.disabled = false));
+    document
+      .querySelectorAll('.stepper-btn[data-field="laps"]')
+      .forEach((btn) => (btn.disabled = false));
+
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${
         sessionCache.totalLaps || 0
@@ -703,6 +705,15 @@ document.addEventListener("DOMContentLoaded", () => {
       modalConfirmBtn.textContent = "Confirm";
     }
     confirmModal.style.display = "flex";
+    confirmModal.classList.add("show");
+  };
+
+  const hideConfirmationModal = () => {
+    confirmModal.classList.remove("show");
+    // Allow animation to finish before hiding
+    setTimeout(() => {
+      confirmModal.style.display = "none";
+    }, 200);
   };
 
   const isModificationAllowed = (alertText) => {
@@ -947,13 +958,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
     });
-    modalCancelBtn.addEventListener(
-      "click",
-      () => (confirmModal.style.display = "none")
-    );
+    modalCancelBtn.addEventListener("click", hideConfirmationModal);
     modalConfirmBtn.addEventListener("click", () => {
       if (confirmCallback) confirmCallback();
-      confirmModal.style.display = "none";
+      hideConfirmationModal();
     });
     document.querySelectorAll(".sort-header").forEach((header) => {
       header.addEventListener("click", () =>
@@ -998,7 +1006,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const collapseBtn = e.target.closest(".collapse-btn");
       if (!collapseBtn) return;
       const panel = collapseBtn.closest(".panel");
-      const isCollapsed = panel.classList.toggle("collapsed");
+      panel.classList.toggle("collapsed");
+      const isCollapsed = panel.classList.contains("collapsed");
       collapseBtn.setAttribute("aria-expanded", !isCollapsed);
       panelCollapseState[panel.id] = isCollapsed;
       localStorage.setItem(
