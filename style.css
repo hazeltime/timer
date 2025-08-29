@@ -357,6 +357,21 @@ textarea::placeholder {
   background-color: var(--text-secondary);
 }
 
+/* --- OPTIMIZATION: SHARED ACTION BUTTON STYLES --- */
+.lap-item-actions button,
+.task-item .actions button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: color 0.2s, transform 0.2s;
+}
+.lap-item-actions button:hover,
+.task-item .actions button:hover {
+  transform: scale(1.2);
+}
+
 /* --- LAP PLAYLIST --- */
 .lap-list-header {
   flex-grow: 1;
@@ -389,7 +404,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0.75rem; /* Adjusted padding */
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
   margin-bottom: 0.5rem;
   background-color: var(--input-bg);
@@ -415,7 +430,6 @@ textarea::placeholder {
   flex-grow: 1;
   font-weight: 500;
 }
-/* NEW: Drag and Drop visual indicator */
 .lap-list-item.drag-over-bottom::after,
 .lap-list-item.drag-over-top::before {
   content: "";
@@ -431,25 +445,15 @@ textarea::placeholder {
 .lap-list-item.drag-over-top::before {
   top: -2px;
 }
-
-/* NEW: Styles for playlist item actions */
 .lap-item-actions {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 .lap-item-actions button {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 0.25rem;
-  transition: color 0.2s, transform 0.2s;
+  padding: 0.25rem; /* Specific padding */
 }
-.lap-item-actions button:hover {
-  transform: scale(1.2);
-}
+/* Removed duplicated hover transform */
 .lap-item-actions .remove-btn:hover {
   color: var(--accent-red);
 }
@@ -677,20 +681,11 @@ textarea::placeholder {
   font-weight: 500;
 }
 .task-item .actions button {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  margin-left: 0.25rem;
-  transition: color 0.2s, transform 0.2s;
-  color: var(--text-secondary);
-  z-index: 2;
+  padding: 0.5rem; /* Specific padding */
+  margin-left: 0.25rem; /* Specific margin */
+  z-index: 2; /* Specific z-index */
 }
-.task-item .actions button:hover {
-  transform: scale(1.2);
-}
-/* NEW: Colored action buttons */
+/* Removed duplicated hover transform */
 .task-item .actions .add-to-lap-btn:hover {
   color: var(--accent-green);
 }

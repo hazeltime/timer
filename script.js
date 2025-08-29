@@ -1,4 +1,4 @@
-// script.js for Todo Task Timer (TTT) - Refactored Version
+// script.js for Todo Task Timer (TTT) - Optimized Version
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Constants ---
@@ -75,6 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
   );
+  // Cache selector to avoid repeated DOM queries
+  const lapStepperBtns = document.querySelectorAll(
+    '.stepper-btn[data-field="laps"]'
+  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -125,6 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Helper Functions ---
   const isSessionActive = () => runnerState !== "STOPPED";
+
+  // Helper to generate a task map, avoiding code duplication
+  const getTaskMap = () => new Map(tasks.map((task) => [task.id, task]));
 
   // --- UI Rendering ---
   const renderAll = () => {
@@ -195,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderLapList = () => {
-    const taskMap = new Map(tasks.map((task) => [task.id, task]));
+    const taskMap = getTaskMap(); // Use the helper function
     const lapDuration = lapList.reduce(
       (sum, taskId) => sum + (taskMap.get(taskId)?.duration || 0),
       0
@@ -357,6 +364,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const removeTaskFromLap = (id) => {
+    // This check is now redundant due to the guard clause in the event listener,
+    // but it provides a good layer of defense if called from elsewhere.
     if (isSessionActive())
       return alert("Please stop the lap session to modify the playlist.");
     lapList = lapList.filter((lapId) => lapId !== id);
@@ -516,7 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const startSession = () => {
     totalLaps = parseInt(lapsInput.value, 10) || 1;
     currentLap = 0;
-    const taskMap = new Map(tasks.map((task) => [task.id, task]));
+    const taskMap = getTaskMap(); // Use the helper function
     let cumulativeDuration = 0;
     const cumulativeLapDurations = [];
     lapList.forEach((taskId) => {
@@ -536,9 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "none";
     sessionControls.style.display = "flex";
     lapsInput.disabled = true;
-    document
-      .querySelectorAll('.stepper-btn[data-field="laps"]')
-      .forEach((btn) => (btn.disabled = true));
+    lapStepperBtns.forEach((btn) => (btn.disabled = true)); // Use cached selector
   };
 
   const stopSession = (finished = false) => {
@@ -548,9 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lapsControls.style.display = "flex";
     sessionControls.style.display = "none";
     lapsInput.disabled = false;
-    document
-      .querySelectorAll('.stepper-btn[data-field="laps"]')
-      .forEach((btn) => (btn.disabled = false));
+    lapStepperBtns.forEach((btn) => (btn.disabled = false)); // Use cached selector
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${totalLaps} laps)`;
       showConfirmationModal(
@@ -567,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resetRunnerDisplay();
     }
     currentLapTaskIndex = -1;
-    renderLapList(); // Re-render to enable draggable etc.
+    renderLapList();
   };
 
   // --- Event Listeners and Setup ---
@@ -629,11 +634,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (button.classList.contains("add-to-lap-btn")) addTaskToLap(id);
       if (button.classList.contains("edit-btn")) loadTaskIntoForm(id);
     });
-    // MODIFIED: Lap list listener handles more actions
+
     lapListEl.addEventListener("click", (e) => {
-      if (isSessionActive()) return; // Prevent all actions during session
       const button = e.target.closest("button");
-      if (!button) return;
+      if (!button || isSessionActive()) return;
+
       const lapItem = e.target.closest(".lap-list-item");
       const id = Number(lapItem.dataset.id);
 
@@ -644,25 +649,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentIndex = lapList.indexOf(id);
         if (currentIndex === -1) return;
 
-        lapList.splice(currentIndex, 1); // Remove item
+        lapList.splice(currentIndex, 1);
 
         if (action === "top") {
-          lapList.unshift(id); // Add to beginning
+          lapList.unshift(id);
         } else if (action === "bottom") {
-          lapList.push(id); // Add to end
+          lapList.push(id);
         }
         saveState();
         renderLapList();
       }
     });
 
-    // NEW: Drag and Drop Listeners
     lapListEl.addEventListener("dragstart", (e) => {
       if (isSessionActive()) return;
       const item = e.target.closest(".lap-list-item");
       if (!item) return;
       draggedItemId = Number(item.dataset.id);
-      // Timeout to allow DOM to update before adding class
       setTimeout(() => item.classList.add("dragging"), 0);
     });
 
@@ -686,7 +689,7 @@ document.addEventListener("DOMContentLoaded", () => {
         afterElement.classList.add("drag-over-top");
       } else {
         const lastChild = lapListEl.lastElementChild;
-        if (lastChild) {
+        if (lastChild && !lastChild.classList.contains("dragging")) {
           lastChild.classList.add("drag-over-bottom");
         }
       }
