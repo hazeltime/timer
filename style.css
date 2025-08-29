@@ -99,6 +99,10 @@ h1 {
 h2 {
   margin-top: 0;
 }
+.header-controls {
+  display: flex;
+  gap: 0.75rem;
+}
 .theme-btn {
   background-color: var(--button-secondary-bg-light);
   border: 1px solid;

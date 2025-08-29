@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalCancelBtn = document.getElementById("modal-cancel-btn");
   const modalConfirmBtn = document.getElementById("modal-confirm-btn");
   const taskSummaryEl = document.getElementById("task-summary");
+  const resetAppBtn = document.getElementById("reset-app-btn");
 
   // Runner DOM Elements
   const runnerTaskCategory = document.getElementById("runner-task-category");
@@ -608,6 +609,49 @@ document.addEventListener("DOMContentLoaded", () => {
       lapList = [];
       saveState();
       renderLapList();
+    });
+
+    resetAppBtn.addEventListener("click", () => {
+      showConfirmationModal(
+        "This will clear all data and load demo tasks. Are you sure?",
+        () => {
+          stopSession();
+          tasks = [
+            {
+              id: 1,
+              title: "Morning Exercise",
+              description: "15 minutes of stretching and cardio.",
+              categoryId: "cat-1",
+              duration: 900,
+            },
+            {
+              id: 2,
+              title: "Team Stand-up Meeting",
+              description: "Daily sync with the development team.",
+              categoryId: "cat-3",
+              duration: 1500,
+            },
+            {
+              id: 3,
+              title: "Read a Chapter",
+              description: "Read one chapter of 'Atomic Habits'.",
+              categoryId: "cat-7",
+              duration: 1200,
+            },
+            {
+              id: 4,
+              title: "Weekly Budget Review",
+              description: "Check spending and update budget spreadsheet.",
+              categoryId: "cat-8",
+              duration: 600,
+            },
+          ];
+          lapList = [1, 2, 3, 4];
+          lastId = 4;
+          saveState();
+          renderAll();
+        }
+      );
     });
 
     modalCancelBtn.addEventListener(

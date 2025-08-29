@@ -15,10 +15,19 @@
     <div class="container">
       <header>
         <h1><i class="fas fa-tasks"></i> Todo Task Timer</h1>
-        <button id="theme-toggle-btn" class="theme-btn" title="Toggle Theme">
-          <i class="fas fa-sun"></i>
-          <i class="fas fa-moon"></i>
-        </button>
+        <div class="header-controls">
+          <button
+            id="reset-app-btn"
+            class="theme-btn"
+            title="Reset and Load Demo"
+          >
+            <i class="fas fa-undo"></i>
+          </button>
+          <button id="theme-toggle-btn" class="theme-btn" title="Toggle Theme">
+            <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
       </header>
 
       <div class="main-layout">
@@ -201,6 +210,10 @@
                       >0%</span
                     >
                   </div>
+                  <div class="timer-display">
+                    <span id="lap-time-elapsed">00:00</span>
+                    <span id="lap-time-remaining">00:00</span>
+                  </div>
                   <label class="progress-label" id="session-progress-label"
                     >Session Progress</label
                   >
@@ -209,6 +222,10 @@
                     <span id="session-percentage" class="percentage-indicator"
                       >0%</span
                     >
+                  </div>
+                  <div class="timer-display">
+                    <span id="session-time-elapsed">00:00:00</span>
+                    <span id="session-time-remaining">00:00:00</span>
                   </div>
                 </div>
               </div>
