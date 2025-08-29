@@ -278,6 +278,26 @@ textarea::placeholder {
   margin-bottom: 0.25rem;
 }
 
+/* --- REUSABLE STEPPER COMPONENT --- */
+.stepper-input {
+  display: flex;
+}
+.stepper-input .stepper-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.stepper-input input {
+  border-radius: 0;
+  position: relative;
+  z-index: 1;
+  margin-left: -1px;
+  margin-right: -1px;
+}
+.stepper-input .stepper-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 /* Duration & Interval Controls */
 .duration-wrapper {
   display: flex;
@@ -290,8 +310,9 @@ textarea::placeholder {
   align-items: center;
   gap: 0.5rem;
 }
-.duration-inputs input,
-.lap-interval-controls input {
+.duration-inputs .stepper-input input,
+.lap-interval-controls .stepper-input input,
+.laps-controls .stepper-input input {
   text-align: center;
   width: 60px;
   height: 42px;
@@ -333,6 +354,8 @@ textarea::placeholder {
   height: 42px;
   font-size: 1.5rem;
   color: var(--stepper-btn-text);
+  position: relative;
+  z-index: 2;
 }
 .stepper-btn[data-step="1"] {
   background-color: var(--stepper-increment-bg);
@@ -566,23 +589,6 @@ textarea::placeholder {
   align-items: center;
   gap: 1rem;
 }
-.laps-input-wrapper {
-  display: flex;
-  align-items: center;
-}
-#laps-input {
-  width: 60px;
-  text-align: center;
-  border-radius: 0;
-}
-.laps-input-wrapper .stepper-btn:first-child {
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-}
-.laps-input-wrapper .stepper-btn:last-child {
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
 .session-controls {
   display: flex;
   gap: 0.5rem;
@@ -640,7 +646,6 @@ textarea::placeholder {
 .task-list-header,
 .task-item {
   display: grid;
-  /* UPDATED: Added 1fr for the new interval column */
   grid-template-columns: 40px 3fr 1.5fr 1fr 1fr 1fr;
   gap: 1rem;
   align-items: center;

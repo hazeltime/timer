@@ -1,4 +1,4 @@
-// script.js for Todo Task Timer (TTT) - Optimized & Fixed Version
+// script.js for Todo Task Timer (TTT) - Refactored & Fixed Version
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Constants ---
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Laps DOM Elements
   const lapsControls = document.querySelector(".laps-controls");
   const sessionControls = document.getElementById("session-controls");
-  const lapsInput = document.getElementById("laps-input");
+  const lapsInput = document.getElementById("laps-input"); // Typo fixed from lps-input
   const stopLapsBtn = document.getElementById("stop-laps-btn");
   const prevLapBtn = document.getElementById("prev-lap-btn");
   const nextLapBtn = document.getElementById("next-lap-btn");
@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
   );
-  // Cache selector to avoid repeated DOM queries
   const lapStepperBtns = document.querySelectorAll(
     '.stepper-btn[data-field="laps"]'
   );
@@ -108,8 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
     lapDurations: [],
     cumulativeSessionDurations: [],
     lapStartCumulativeDurations: [],
+    activeLapMap: new Map(),
+    totalActiveLaps: 0,
     totalLaps: 1,
-    totalSessionDuration: 0,
   };
 
   // --- Core Functions ---
@@ -446,7 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const task = sessionCache.taskMap.get(taskId);
     if (!task) return;
 
-    // Task Progress
     const elapsed = task.duration - currentTaskTimeLeft;
     const taskPercent =
       task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
@@ -455,7 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
     taskProgressBar.style.width = `${taskPercent}%`;
     taskPercentage.textContent = `${taskPercent}%`;
 
-    // Lap Progress
     const currentLapDuration = sessionCache.lapDurations[lap];
     const lapStartTime = sessionCache.lapStartCumulativeDurations[lap];
     const completedDurationInLap =
@@ -471,11 +469,12 @@ document.addEventListener("DOMContentLoaded", () => {
     lapPercentage.textContent = `${lapPercent}%`;
     lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
     lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
-    lapsProgressLabel.textContent = `Lap ${lap + 1} of ${
-      sessionCache.totalLaps
-    } (Task ${taskIndexInLap + 1} of ${tasksInLap.length})`;
 
-    // Session Progress
+    const activeLapNumber = sessionCache.activeLapMap.get(lap);
+    lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${
+      sessionCache.totalActiveLaps
+    } (Run ${lap + 1}) - Task ${taskIndexInLap + 1} of ${tasksInLap.length}`;
+
     const totalSessionDuration = sessionCache.totalSessionDuration;
     const sessionTimeElapsed =
       (sessionCache.cumulativeSessionDurations[currentVirtualTaskIndex] || 0) +
@@ -500,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (lapList.length === 0)
         return alert("Add tasks to the Lap Playlist before starting.");
       if (runnerState === "STOPPED") {
-        if (!startSession()) return; // Abort if startSession fails
+        if (!startSession()) return;
       }
       if (
         currentVirtualTaskIndex >= sessionCache.virtualSessionPlaylist.length
@@ -557,6 +556,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const lapStartCumulativeDurations = Array(totalLaps).fill(0);
     const tasksByLap = Array.from({ length: totalLaps }, () => []);
     let currentCumulativeDuration = 0;
+    const activeLapMap = new Map();
+    let activeLapCounter = 0;
 
     for (let lap = 0; lap < totalLaps; lap++) {
       lapStartCumulativeDurations[lap] = currentCumulativeDuration;
@@ -564,14 +565,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const task = taskMap.get(taskId);
         if (!task) return;
         const interval = task.lapInterval || 1;
-        // The lap number is 1-based (1, 2, 3...), while the loop is 0-based.
-        // This check correctly schedules tasks based on the user-facing lap number.
-        if ((lap + 1) % interval === 0) {
+
+        // --- THIS IS THE FIX ---
+        // The first lap (index 0) always runs all tasks.
+        // For subsequent laps, it runs if the zero-indexed lap number is a multiple of the interval.
+        if (lap === 0 || (lap > 0 && lap % interval === 0)) {
           tasksByLap[lap].push({ taskId });
-          lapDurations[lap] += task.duration;
-          currentCumulativeDuration += task.duration;
         }
       });
+
+      if (tasksByLap[lap].length > 0) {
+        activeLapCounter++;
+        activeLapMap.set(lap, activeLapCounter);
+        tasksByLap[lap].forEach((taskInfo) => {
+          const task = taskMap.get(taskInfo.taskId);
+          lapDurations[lap] += task.duration;
+          currentCumulativeDuration += task.duration;
+        });
+      }
     }
 
     const cumulativeSessionDurations = [];
@@ -595,6 +606,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lapStartCumulativeDurations,
       cumulativeSessionDurations,
       totalSessionDuration: currentCumulativeDuration,
+      activeLapMap,
+      totalActiveLaps: activeLapCounter,
     };
   };
 
@@ -607,7 +620,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(
         "No tasks are scheduled to run in this session with the current intervals."
       );
-      return false; // Indicate failure
+      return false;
     }
 
     sessionCache = {
@@ -622,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionControls.style.display = "flex";
     lapsInput.disabled = true;
     lapStepperBtns.forEach((btn) => (btn.disabled = true));
-    return true; // Indicate success
+    return true;
   };
 
   const stopSession = (finished = false) => {
@@ -636,10 +649,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${
         sessionCache.totalLaps || 0
-      } laps)`;
+      } runs)`;
       showConfirmationModal(
         "🎉 Congratulations! 🎉",
-        `Session Complete! You finished ${sessionCache.totalLaps || 0} lap(s).`,
+        `Session Complete! You finished ${sessionCache.totalLaps || 0} run(s).`,
         () => {
           lapsProgressContainer.style.display = "none";
           resetRunnerDisplay();
@@ -674,9 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const applyTheme = (theme) => {
-    // FIXED: Ensure only one theme class is applied at a time.
-    document.body.classList.remove("light-theme", "dark-theme");
-    document.body.classList.add(`${theme}-theme`);
+    document.body.className = `${theme}-theme`;
     localStorage.setItem("theme", theme);
   };
 
@@ -832,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isSessionActive()) handleTaskCompletion();
     });
     prevTaskBtn.addEventListener("click", () => {
-      if (isSessionActive()) {
+      if (isSessionActive() && currentVirtualTaskIndex > 0) {
         loadTaskToRunner(currentVirtualTaskIndex - 1);
       }
     });
@@ -846,14 +857,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     deleteAllBtn.addEventListener("click", () => {
       if (
-        !isModificationAllowed(
-          "Please stop the lap session to delete all tasks."
-        )
+        !isModificationAllowed("Please stop the session to delete all tasks.")
       )
         return;
       showConfirmationModal(
         "Delete All Tasks?",
-        "This will permanently delete all tasks from the repository.",
+        "This will permanently delete all tasks from the repository. Are you sure?",
         () => {
           tasks = [];
           lapList = [];
@@ -864,22 +873,24 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
     addAllBtn.addEventListener("click", () => {
-      if (
-        !isModificationAllowed("Please stop the lap session to add all tasks.")
-      )
+      if (!isModificationAllowed("Please stop the session to add all tasks."))
         return;
       tasks.forEach((task) => addTaskToLap(task.id));
     });
     clearLapListBtn.addEventListener("click", () => {
       if (
-        !isModificationAllowed(
-          "Please stop the lap session to clear the playlist."
-        )
+        !isModificationAllowed("Please stop the session to clear the playlist.")
       )
         return;
-      lapList = [];
-      saveState();
-      renderLapList();
+      showConfirmationModal(
+        "Clear Playlist?",
+        "This will remove all tasks from the current playlist. Are you sure?",
+        () => {
+          lapList = [];
+          saveState();
+          renderLapList();
+        }
+      );
     });
     resetAppBtn.addEventListener("click", () => {
       showConfirmationModal(
@@ -914,6 +925,14 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             {
               id: 4,
+              title: "Plan Next Week",
+              description: "Outline key priorities for the upcoming week.",
+              categoryId: "cat-9",
+              duration: 1800,
+              lapInterval: 3,
+            },
+            {
+              id: 5,
               title: "Weekly Budget Review",
               description: "Check spending and update budget spreadsheet.",
               categoryId: "cat-8",
@@ -921,8 +940,8 @@ document.addEventListener("DOMContentLoaded", () => {
               lapInterval: 1,
             },
           ];
-          lapList = [1, 2, 3, 4];
-          lastId = 4;
+          lapList = [1, 2, 3, 4, 5];
+          lastId = 5;
           saveState();
           renderAll();
         }

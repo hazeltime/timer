@@ -72,47 +72,55 @@
                   <legend>Duration</legend>
                   <div class="duration-wrapper">
                     <div class="duration-inputs">
-                      <button
-                        class="stepper-btn"
-                        data-field="minutes"
-                        data-step="1"
-                        aria-label="Increase minutes"
-                      >
-                        +
-                      </button>
-                      <input type="number" id="task-duration-minutes" min="0" />
-                      <button
-                        class="stepper-btn"
-                        data-field="minutes"
-                        data-step="-1"
-                        aria-label="Decrease minutes"
-                      >
-                        -
-                      </button>
+                      <div class="stepper-input">
+                        <button
+                          class="stepper-btn"
+                          data-field="minutes"
+                          data-step="-1"
+                          aria-label="Decrease minutes"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          id="task-duration-minutes"
+                          min="0"
+                        />
+                        <button
+                          class="stepper-btn"
+                          data-field="minutes"
+                          data-step="1"
+                          aria-label="Increase minutes"
+                        >
+                          +
+                        </button>
+                      </div>
                       <span class="unit-label">m</span>
                       <span class="separator">:</span>
-                      <button
-                        class="stepper-btn"
-                        data-field="seconds"
-                        data-step="1"
-                        aria-label="Increase seconds"
-                      >
-                        +
-                      </button>
-                      <input
-                        type="number"
-                        id="task-duration-seconds"
-                        min="0"
-                        max="59"
-                      />
-                      <button
-                        class="stepper-btn"
-                        data-field="seconds"
-                        data-step="-1"
-                        aria-label="Decrease seconds"
-                      >
-                        -
-                      </button>
+                      <div class="stepper-input">
+                        <button
+                          class="stepper-btn"
+                          data-field="seconds"
+                          data-step="-1"
+                          aria-label="Decrease seconds"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          id="task-duration-seconds"
+                          min="0"
+                          max="59"
+                        />
+                        <button
+                          class="stepper-btn"
+                          data-field="seconds"
+                          data-step="1"
+                          aria-label="Increase seconds"
+                        >
+                          +
+                        </button>
+                      </div>
                       <span class="unit-label">s</span>
                     </div>
                     <div class="preset-durations">
@@ -129,33 +137,35 @@
                   </div>
                 </fieldset>
 
+                <!-- REFACTORED: Lap Interval Fieldset -->
                 <fieldset class="form-group">
                   <legend>Lap Interval</legend>
                   <div class="lap-interval-controls">
-                    <button
-                      class="stepper-btn"
-                      data-field="lapInterval"
-                      data-step="-1"
-                      aria-label="Decrease Lap Interval"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      id="lap-interval-input"
-                      value="1"
-                      min="1"
-                      max="99"
-                      aria-label="Lap interval"
-                    />
-                    <button
-                      class="stepper-btn"
-                      data-field="lapInterval"
-                      data-step="1"
-                      aria-label="Increase Lap Interval"
-                    >
-                      +
-                    </button>
+                    <div class="stepper-input">
+                      <button
+                        class="stepper-btn"
+                        data-field="lapInterval"
+                        data-step="-1"
+                        aria-label="Decrease Lap Interval"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        id="lap-interval-input"
+                        value="1"
+                        min="1"
+                        max="99"
+                      />
+                      <button
+                        class="stepper-btn"
+                        data-field="lapInterval"
+                        data-step="1"
+                        aria-label="Increase Lap Interval"
+                      >
+                        +
+                      </button>
+                    </div>
                     <span class="field-description"
                       >(Task runs every Nth lap)</span
                     >
@@ -324,7 +334,8 @@
                 <h3>Laps</h3>
                 <div class="laps-controls">
                   <label for="laps-input">Runs:</label>
-                  <div class="laps-input-wrapper">
+                  <!-- REFACTORED: Laps Input -->
+                  <div class="stepper-input">
                     <button
                       class="stepper-btn"
                       data-field="laps"
