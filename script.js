@@ -1,4 +1,4 @@
-// script.js for Todo Task Timer (TTT)
+// script.js for Todo Task Timer (TTT) - Optimized Version
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Constants ---
@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "cat-8", name: "Finance", icon: "💰", color: "#84cc16" },
     { id: "cat-9", name: "Planning", icon: "📅", color: "#78716c" },
   ];
+  const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
 
   // --- DOM Elements ---
   const taskForm = document.getElementById("task-form");
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const addAllBtn = document.getElementById("add-all-btn");
   const clearLapListBtn = document.getElementById("clear-lap-list-btn");
   const confirmModal = document.getElementById("confirm-modal");
+  const modalTitle = document.getElementById("modal-title");
   const modalText = document.getElementById("modal-text");
   const modalCancelBtn = document.getElementById("modal-cancel-btn");
   const modalConfirmBtn = document.getElementById("modal-confirm-btn");
@@ -53,8 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextTaskBtn = document.getElementById("next-task-btn");
 
   // Laps DOM Elements
+  const lapsControls = document.querySelector(".laps-controls");
+  const sessionControls = document.getElementById("session-controls");
   const lapsInput = document.getElementById("laps-input");
   const stopLapsBtn = document.getElementById("stop-laps-btn");
+  const prevLapBtn = document.getElementById("prev-lap-btn");
+  const nextLapBtn = document.getElementById("next-lap-btn");
   const lapsProgressContainer = document.getElementById(
     "laps-progress-container"
   );
@@ -69,6 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const sessionTimeRemainingEl = document.getElementById(
     "session-time-remaining"
   );
+  // Cache selector to avoid repeated DOM queries
+  const lapStepperBtns = document.querySelectorAll(
+    '.stepper-btn[data-field="laps"]'
+  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -77,18 +87,24 @@ document.addEventListener("DOMContentLoaded", () => {
   let sortState = { field: "id", order: "desc" };
   let selectedCategoryId = "cat-0";
   let editingTaskId = null;
+  let panelCollapseState =
+    JSON.parse(localStorage.getItem("panelCollapseState")) || {};
 
   // Runner State
   let sessionInterval = null;
   let runnerState = "STOPPED"; // STOPPED, RUNNING, PAUSED
-
   let currentLapTaskIndex = -1;
   let currentTaskTimeLeft = 0;
-
   let currentLap = 0;
   let totalLaps = 1;
-  let totalSessionTime = 0;
   let confirmCallback = null;
+
+  let sessionCache = {
+    taskMap: new Map(),
+    singleLapDuration: 0,
+    totalSessionDuration: 0,
+    cumulativeLapDurations: [],
+  };
 
   // --- Core Functions ---
   const saveState = () => {
@@ -98,20 +114,25 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const formatTime = (totalSeconds) => {
+    if (totalSeconds < 0) totalSeconds = 0;
+    if (totalSeconds === 0) return "0s";
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0"
-      )}:${String(seconds).padStart(2, "0")}`;
-    }
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
+    const parts = [];
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (seconds > 0) parts.push(`${seconds}s`);
+    return parts.join(" ");
   };
+
+  // --- Helper Functions ---
+  const isSessionActive = () => runnerState !== "STOPPED";
+  const isTaskInActiveSession = (id) =>
+    isSessionActive() && lapList.includes(id);
+
+  // Helper to generate a task map, avoiding code duplication
+  const getTaskMap = () => new Map(tasks.map((task) => [task.id, task]));
 
   // --- UI Rendering ---
   const renderAll = () => {
@@ -140,24 +161,20 @@ document.addEventListener("DOMContentLoaded", () => {
         case "duration":
           return (a.duration - b.duration) * order;
         case "category":
-          const catA =
-            CATEGORIES.find((c) => c.id === a.categoryId)?.name || "";
-          const catB =
-            CATEGORIES.find((c) => c.id === b.categoryId)?.name || "";
+          const catA = categoryMap.get(a.categoryId)?.name || "";
+          const catB = categoryMap.get(b.categoryId)?.name || "";
           return catA.localeCompare(catB) * order;
         default:
           return (a.id - b.id) * order;
       }
     });
-
     taskListEl.innerHTML =
       sortedTasks.length === 0
         ? '<div class="task-item">No tasks yet. Add one above!</div>'
         : sortedTasks
             .map((task) => {
               const category =
-                CATEGORIES.find((c) => c.id === task.categoryId) ||
-                CATEGORIES[0];
+                categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
               return `
                     <div class="task-item" data-id="${task.id}">
                         <div class="task-id">#${task.id}</div>
@@ -186,26 +203,30 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderLapList = () => {
+    const taskMap = getTaskMap(); // Use the helper function
     const lapDuration = lapList.reduce(
-      (sum, taskId) =>
-        sum + (tasks.find((t) => t.id === taskId)?.duration || 0),
+      (sum, taskId) => sum + (taskMap.get(taskId)?.duration || 0),
       0
     );
     lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
-
     lapListEl.innerHTML =
       lapList.length === 0
         ? '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>'
         : lapList
             .map((taskId, index) => {
-              const task = tasks.find((t) => t.id === taskId);
-              if (!task) return ""; // Task might have been deleted
+              const task = taskMap.get(taskId);
+              if (!task) return "";
+              const category =
+                categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
               const isRunning =
-                runnerState !== "STOPPED" && index === currentLapTaskIndex;
+                isSessionActive() && index === currentLapTaskIndex;
               return `
                     <div class="lap-list-item ${
                       isRunning ? "running" : ""
                     }" data-id="${taskId}">
+                        <span class="lap-category-icon" title="${
+                          category.name
+                        }">${category.icon}</span>
                         <span class="title">${task.title}</span>
                         <span class="duration">${formatTime(
                           task.duration
@@ -235,15 +256,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const handleTaskFormSubmit = () => {
     const title = taskInput.value.trim();
     if (title === "") return alert("Task title cannot be empty.");
-
     const minutes = parseInt(durationMinutesInput.value, 10) || 0;
     const seconds = parseInt(durationSecondsInput.value, 10) || 0;
     const totalDuration = minutes * 60 + seconds;
     if (totalDuration <= 0)
       return alert("Duration must be greater than 0 seconds.");
-
     if (editingTaskId !== null) {
-      // Editing existing task
       const task = tasks.find((t) => t.id === editingTaskId);
       if (task) {
         task.title = title;
@@ -252,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
         task.duration = totalDuration;
       }
     } else {
-      // Adding new task
       lastId++;
       tasks.push({
         id: lastId,
@@ -262,18 +279,16 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: totalDuration,
       });
     }
-
     saveState();
     renderAll();
     resetTaskForm();
   };
 
   const loadTaskIntoForm = (id) => {
-    if (runnerState !== "STOPPED" && lapList.includes(id))
+    if (isTaskInActiveSession(id))
       return alert("Cannot edit a task that is part of an active lap session.");
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
-
     editingTaskId = id;
     formTitle.textContent = `Editing Task #${id}`;
     taskInput.value = task.title;
@@ -281,7 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCategoryId = task.categoryId;
     durationMinutesInput.value = Math.floor(task.duration / 60);
     durationSecondsInput.value = task.duration % 60;
-
     addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
     cancelEditBtn.style.display = "inline-block";
     renderCategoryButtons();
@@ -290,7 +304,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetTaskForm = () => {
     editingTaskId = null;
     formTitle.textContent = "Create New Task";
-    taskForm.reset();
+    taskInput.value = "";
+    taskDescriptionInput.value = "";
     selectedCategoryId = "cat-0";
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
@@ -301,13 +316,12 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const deleteTask = (id) => {
-    if (runnerState !== "STOPPED" && lapList.includes(id))
+    if (isTaskInActiveSession(id))
       return alert(
         "Cannot delete a task that is part of an active lap session."
       );
-
     tasks = tasks.filter((task) => task.id !== id);
-    lapList = lapList.filter((lapId) => lapId !== id); // Also remove from lap list if present
+    lapList = lapList.filter((lapId) => lapId !== id);
     saveState();
     renderAll();
   };
@@ -322,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const addTaskToLap = (id) => {
-    if (runnerState !== "STOPPED")
+    if (isSessionActive())
       return alert("Please stop the lap session to modify the playlist.");
     if (!lapList.includes(id)) {
       lapList.push(id);
@@ -332,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const removeTaskFromLap = (id) => {
-    if (runnerState !== "STOPPED")
+    if (isSessionActive())
       return alert("Please stop the lap session to modify the playlist.");
     lapList = lapList.filter((lapId) => lapId !== id);
     saveState();
@@ -344,32 +358,44 @@ document.addEventListener("DOMContentLoaded", () => {
     runnerTaskTitle.textContent = "No task selected";
     taskProgressBar.style.width = "0%";
     taskPercentage.textContent = "0%";
-    timeElapsedEl.textContent = "00:00";
-    timeRemainingEl.textContent = "00:00";
+    timeElapsedEl.textContent = "0s";
+    timeRemainingEl.textContent = "0s";
     lapProgressBar.style.width = "0%";
     lapPercentage.textContent = "0%";
-    lapTimeElapsedEl.textContent = "00:00";
-    lapTimeRemainingEl.textContent = "00:00";
+    lapTimeElapsedEl.textContent = "0s";
+    lapTimeRemainingEl.textContent = "0s";
     sessionProgressBar.style.width = "0%";
     sessionPercentage.textContent = "0%";
-    sessionTimeElapsedEl.textContent = "00:00:00";
-    sessionTimeRemainingEl.textContent = "00:00:00";
+    sessionTimeElapsedEl.textContent = "0s";
+    sessionTimeRemainingEl.textContent = "0s";
   };
 
   // --- Task Runner Logic ---
+  const stopTimerInterval = () => {
+    clearInterval(sessionInterval);
+    sessionInterval = null;
+  };
+  const startTimerInterval = () => {
+    if (sessionInterval) stopTimerInterval();
+    sessionInterval = setInterval(() => {
+      currentTaskTimeLeft--;
+      updateTimerDisplay();
+      if (currentTaskTimeLeft < 0) {
+        handleTaskCompletion();
+      }
+    }, 1000);
+  };
+
   const loadTaskToRunner = (lapIndex) => {
     currentLapTaskIndex = lapIndex;
     const taskId = lapList[lapIndex];
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return stopSession(true); // Stop if task not found
-
+    const task = sessionCache.taskMap.get(taskId);
+    if (!task) return stopSession(true);
     const category =
-      CATEGORIES.find((c) => c.id === task.categoryId) || CATEGORIES[0];
-
+      categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     runnerTaskCategory.textContent = `${category.icon} ${category.name}`;
     runnerTaskTitle.textContent = task.title;
     currentTaskTimeLeft = task.duration;
-
     updateTimerDisplay();
     renderLapList();
   };
@@ -377,56 +403,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateTimerDisplay = () => {
     if (currentLapTaskIndex !== -1) {
       const taskId = lapList[currentLapTaskIndex];
-      const task = tasks.find((t) => t.id === taskId);
+      const task = sessionCache.taskMap.get(taskId);
       if (task) {
         const elapsed = task.duration - currentTaskTimeLeft;
-        timeElapsedEl.textContent = formatTime(elapsed);
-        timeRemainingEl.textContent = `-${formatTime(currentTaskTimeLeft)}`;
         const taskPercent =
           task.duration > 0 ? Math.floor((elapsed / task.duration) * 100) : 0;
+        timeElapsedEl.textContent = formatTime(elapsed);
+        timeRemainingEl.textContent = `-${formatTime(currentTaskTimeLeft)}`;
         taskProgressBar.style.width = `${taskPercent}%`;
         taskPercentage.textContent = `${taskPercent}%`;
       }
     }
-
-    if (runnerState !== "STOPPED") {
-      const singleLapDuration = lapList.reduce(
-        (sum, taskId) =>
-          sum + (tasks.find((t) => t.id === taskId)?.duration || 0),
-        0
-      );
-
-      let completedTasksDurationInLap = 0;
-      for (let i = 0; i < currentLapTaskIndex; i++) {
-        completedTasksDurationInLap +=
-          tasks.find((t) => t.id === lapList[i])?.duration || 0;
-      }
-
-      const currentTask = tasks.find(
-        (t) => t.id === lapList[currentLapTaskIndex]
-      );
+    if (isSessionActive()) {
+      const {
+        singleLapDuration,
+        totalSessionDuration,
+        cumulativeLapDurations,
+        taskMap,
+      } = sessionCache;
+      const currentTask = taskMap.get(lapList[currentLapTaskIndex]);
       const currentTaskElapsed = currentTask
         ? currentTask.duration - currentTaskTimeLeft
         : 0;
+      const completedTasksDurationInLap =
+        cumulativeLapDurations[currentLapTaskIndex] || 0;
       const lapTimeElapsed = completedTasksDurationInLap + currentTaskElapsed;
       const lapTimeRemaining = singleLapDuration - lapTimeElapsed;
-
       const lapPercent =
         singleLapDuration > 0
           ? Math.floor((lapTimeElapsed / singleLapDuration) * 100)
           : 0;
       lapProgressBar.style.width = `${lapPercent}%`;
       lapPercentage.textContent = `${lapPercent}%`;
-
-      // FIX 1: Update lap and session timer text display
       lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
       lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
-
       const sessionElapsed = currentLap * singleLapDuration + lapTimeElapsed;
-      const sessionRemaining = totalSessionTime - sessionElapsed;
+      const sessionRemaining = totalSessionDuration - sessionElapsed;
       const sessionPercent =
-        totalSessionTime > 0
-          ? Math.floor((sessionElapsed / totalSessionTime) * 100)
+        totalSessionDuration > 0
+          ? Math.floor((sessionElapsed / totalSessionDuration) * 100)
           : 0;
       sessionProgressBar.style.width = `${sessionPercent}%`;
       sessionPercentage.textContent = `${sessionPercent}%`;
@@ -437,30 +452,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const playPauseSession = () => {
     if (runnerState === "RUNNING") {
-      clearInterval(sessionInterval);
+      stopTimerInterval();
       runnerState = "PAUSED";
       playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
     } else {
-      // PAUSED or STOPPED
       if (lapList.length === 0)
         return alert("Add tasks to the Lap Playlist before starting.");
-
       if (runnerState === "STOPPED") {
         startSession();
       }
-
       runnerState = "RUNNING";
       playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-
-      sessionInterval = setInterval(() => {
-        currentTaskTimeLeft--;
-        updateTimerDisplay();
-
-        if (currentTaskTimeLeft < 0) {
-          handleTaskCompletion();
-        }
-      }, 1000);
+      startTimerInterval();
     }
+  };
+
+  const updateLapLabel = () => {
+    lapsProgressLabel.textContent = `Lap ${currentLap + 1} of ${totalLaps}`;
   };
 
   const handleTaskCompletion = () => {
@@ -470,44 +478,72 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       currentLap++;
       if (currentLap < totalLaps) {
-        lapsProgressLabel.textContent = `Lap ${currentLap + 1} of ${totalLaps}`;
+        updateLapLabel();
         loadTaskToRunner(0);
       } else {
-        stopSession(true); // Finished
+        stopSession(true);
       }
     }
+  };
+
+  const skipToLap = (direction) => {
+    if (!isSessionActive()) return;
+    const newLap = currentLap + direction;
+
+    if (direction === 1 && newLap >= totalLaps) {
+      stopSession(true);
+      return;
+    }
+    if (newLap < 0) return;
+
+    const wasRunning = runnerState === "RUNNING";
+    if (wasRunning) stopTimerInterval();
+
+    currentLap = newLap;
+    updateLapLabel();
+    loadTaskToRunner(0);
+
+    if (wasRunning) startTimerInterval();
   };
 
   const startSession = () => {
     totalLaps = parseInt(lapsInput.value, 10) || 1;
     currentLap = 0;
-
-    const singleLapDuration = lapList.reduce((sum, taskId) => {
-      const task = tasks.find((t) => t.id === taskId);
-      return sum + (task ? task.duration : 0);
-    }, 0);
-    totalSessionTime = singleLapDuration * totalLaps;
-
-    lapsProgressLabel.textContent = `Lap ${currentLap + 1} of ${totalLaps}`;
+    const taskMap = getTaskMap(); // Use the helper function
+    let cumulativeDuration = 0;
+    const cumulativeLapDurations = [];
+    lapList.forEach((taskId) => {
+      const task = taskMap.get(taskId);
+      cumulativeLapDurations.push(cumulativeDuration);
+      cumulativeDuration += task ? task.duration : 0;
+    });
+    sessionCache = {
+      taskMap,
+      singleLapDuration: cumulativeDuration,
+      totalSessionDuration: cumulativeDuration * totalLaps,
+      cumulativeLapDurations,
+    };
+    updateLapLabel();
     lapsProgressContainer.style.display = "block";
-
     loadTaskToRunner(0);
-
-    stopLapsBtn.style.display = "inline-block";
+    lapsControls.style.display = "none";
+    sessionControls.style.display = "flex";
     lapsInput.disabled = true;
+    lapStepperBtns.forEach((btn) => (btn.disabled = true)); // Use cached selector
   };
 
   const stopSession = (finished = false) => {
-    clearInterval(sessionInterval);
+    stopTimerInterval();
     runnerState = "STOPPED";
-
     playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-    stopLapsBtn.style.display = "none";
+    lapsControls.style.display = "flex";
+    sessionControls.style.display = "none";
     lapsInput.disabled = false;
-
+    lapStepperBtns.forEach((btn) => (btn.disabled = false)); // Use cached selector
     if (finished) {
       lapsProgressLabel.textContent = `Session Complete! (${totalLaps} laps)`;
       showConfirmationModal(
+        "🎉 Congratulations! 🎉",
         `Session Complete! You finished ${totalLaps} lap(s).`,
         () => {
           lapsProgressContainer.style.display = "none";
@@ -516,13 +552,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "alert"
       );
     } else {
-      // FIX 3: Reset runner UI on manual stop
       lapsProgressContainer.style.display = "none";
       resetRunnerDisplay();
     }
-
     currentLapTaskIndex = -1;
-    renderLapList(); // Remove highlighting
+    renderLapList();
   };
 
   // --- Event Listeners and Setup ---
@@ -530,12 +564,10 @@ document.addEventListener("DOMContentLoaded", () => {
     sortState.order =
       sortState.field === field && sortState.order === "asc" ? "desc" : "asc";
     sortState.field = field;
-
     document.querySelectorAll(".sort-header").forEach((header) => {
       header.classList.remove("active");
       header.querySelector("i").className = "fas";
     });
-
     const activeHeader = document.getElementById(`sort-by-${field}-btn`);
     activeHeader.classList.add("active");
     activeHeader
@@ -543,7 +575,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .classList.add(
         sortState.order === "asc" ? "fa-arrow-up" : "fa-arrow-down"
       );
-
     renderTasks();
   };
 
@@ -552,7 +583,8 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", theme);
   };
 
-  const showConfirmationModal = (text, onConfirm, type = "confirm") => {
+  const showConfirmationModal = (title, text, onConfirm, type = "confirm") => {
+    modalTitle.textContent = title;
     modalText.textContent = text;
     confirmCallback = onConfirm;
     if (type === "alert") {
@@ -565,60 +597,66 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmModal.style.display = "flex";
   };
 
+  const isModificationAllowed = (alertText) => {
+    if (isSessionActive()) {
+      alert(alertText);
+      return false;
+    }
+    return true;
+  };
+
   const setupEventListeners = () => {
     addTaskBtn.addEventListener("click", handleTaskFormSubmit);
     cancelEditBtn.addEventListener("click", resetTaskForm);
-
     taskListEl.addEventListener("click", (e) => {
       const button = e.target.closest("button");
       if (!button) return;
       const taskItem = e.target.closest(".task-item");
       const id = Number(taskItem.dataset.id);
-
       if (button.classList.contains("delete-btn")) deleteTask(id);
       if (button.classList.contains("copy-btn")) duplicateTask(id);
       if (button.classList.contains("add-to-lap-btn")) addTaskToLap(id);
       if (button.classList.contains("edit-btn")) loadTaskIntoForm(id);
     });
-
     lapListEl.addEventListener("click", (e) => {
       const button = e.target.closest(".remove-btn");
       if (!button) return;
       const lapItem = e.target.closest(".lap-list-item");
-      const id = Number(lapItem.dataset.id);
-      removeTaskFromLap(id);
+      removeTaskFromLap(Number(lapItem.dataset.id));
     });
-
     categoryGrid.addEventListener("click", (e) => {
       const button = e.target.closest(".category-btn");
       if (!button) return;
       selectedCategoryId = button.dataset.id;
       renderCategoryButtons();
     });
-
     playPauseBtn.addEventListener("click", playPauseSession);
     nextTaskBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED") handleTaskCompletion();
+      if (isSessionActive()) handleTaskCompletion();
     });
     prevTaskBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED" && lapList.length > 0)
+      if (isSessionActive() && lapList.length > 0)
         loadTaskToRunner(
           (currentLapTaskIndex - 1 + lapList.length) % lapList.length
         );
     });
-
     stopLapsBtn.addEventListener("click", () => stopSession(false));
-
+    nextLapBtn.addEventListener("click", () => skipToLap(1));
+    prevLapBtn.addEventListener("click", () => skipToLap(-1));
     themeToggleBtn.addEventListener("click", () =>
       applyTheme(
         document.body.classList.contains("dark-theme") ? "light" : "dark"
       )
     );
-
     deleteAllBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED")
-        return alert("Please stop the lap session to delete all tasks.");
+      if (
+        !isModificationAllowed(
+          "Please stop the lap session to delete all tasks."
+        )
+      )
+        return;
       showConfirmationModal(
+        "Delete All Tasks?",
         "This will permanently delete all tasks from the repository.",
         () => {
           tasks = [];
@@ -629,23 +667,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
     });
-
     addAllBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED")
-        return alert("Please stop the lap session to add all tasks.");
+      if (
+        !isModificationAllowed("Please stop the lap session to add all tasks.")
+      )
+        return;
       tasks.forEach((task) => addTaskToLap(task.id));
     });
-
     clearLapListBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED")
-        return alert("Please stop the lap session to clear the playlist.");
+      if (
+        !isModificationAllowed(
+          "Please stop the lap session to clear the playlist."
+        )
+      )
+        return;
       lapList = [];
       saveState();
       renderLapList();
     });
-
     resetAppBtn.addEventListener("click", () => {
       showConfirmationModal(
+        "Reset Application?",
         "This will clear all data and load demo tasks. Are you sure?",
         () => {
           stopSession();
@@ -686,7 +728,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
     });
-
     modalCancelBtn.addEventListener(
       "click",
       () => (confirmModal.style.display = "none")
@@ -695,13 +736,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (confirmCallback) confirmCallback();
       confirmModal.style.display = "none";
     });
-
     document.querySelectorAll(".sort-header").forEach((header) => {
       header.addEventListener("click", () =>
         updateSort(header.id.split("-")[2])
       );
     });
-
     document.querySelectorAll(".preset-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const totalSeconds = parseInt(btn.dataset.duration, 10);
@@ -709,7 +748,6 @@ document.addEventListener("DOMContentLoaded", () => {
         durationSecondsInput.value = totalSeconds % 60;
       });
     });
-
     document.querySelectorAll(".stepper-btn").forEach((btn) => {
       let interval;
       const stopInterval = () => clearInterval(interval);
@@ -720,7 +758,6 @@ document.addEventListener("DOMContentLoaded", () => {
           : field === "minutes"
           ? durationMinutesInput
           : durationSecondsInput;
-
       const update = () => {
         let value = parseInt(input.value, 10) || 0;
         let min = field === "laps" ? 1 : 0;
@@ -735,15 +772,34 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("mouseup", stopInterval);
       btn.addEventListener("mouseleave", stopInterval);
     });
+    document.addEventListener("click", (e) => {
+      const collapseBtn = e.target.closest(".collapse-btn");
+      if (!collapseBtn) return;
+      const panel = collapseBtn.closest(".panel");
+      const isCollapsed = panel.classList.toggle("collapsed");
+      collapseBtn.setAttribute("aria-expanded", !isCollapsed);
+      panelCollapseState[panel.id] = isCollapsed;
+      localStorage.setItem(
+        "panelCollapseState",
+        JSON.stringify(panelCollapseState)
+      );
+    });
   };
 
   const init = () => {
     applyTheme(localStorage.getItem("theme") || "dark");
+    document.querySelectorAll(".panel").forEach((panel) => {
+      if (panelCollapseState[panel.id]) {
+        panel.classList.add("collapsed");
+        const btn = panel.querySelector(".collapse-btn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      }
+    });
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
     setupEventListeners();
     renderCategoryButtons();
-    renderLapList(); // FIX 2: Render the lap list on initial load
+    renderLapList();
     updateSort("id");
   };
 
