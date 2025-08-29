@@ -61,8 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const lapsProgressLabel = document.getElementById("laps-progress-label");
   const lapProgressBar = document.getElementById("lap-progress-bar");
   const lapPercentage = document.getElementById("lap-percentage");
+  const lapTimeElapsedEl = document.getElementById("lap-time-elapsed");
+  const lapTimeRemainingEl = document.getElementById("lap-time-remaining");
   const sessionProgressBar = document.getElementById("session-progress-bar");
   const sessionPercentage = document.getElementById("session-percentage");
+  const sessionTimeElapsedEl = document.getElementById("session-time-elapsed");
+  const sessionTimeRemainingEl = document.getElementById(
+    "session-time-remaining"
+  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -333,6 +339,23 @@ document.addEventListener("DOMContentLoaded", () => {
     renderLapList();
   };
 
+  const resetRunnerDisplay = () => {
+    runnerTaskCategory.textContent = "";
+    runnerTaskTitle.textContent = "No task selected";
+    taskProgressBar.style.width = "0%";
+    taskPercentage.textContent = "0%";
+    timeElapsedEl.textContent = "00:00";
+    timeRemainingEl.textContent = "00:00";
+    lapProgressBar.style.width = "0%";
+    lapPercentage.textContent = "0%";
+    lapTimeElapsedEl.textContent = "00:00";
+    lapTimeRemainingEl.textContent = "00:00";
+    sessionProgressBar.style.width = "0%";
+    sessionPercentage.textContent = "0%";
+    sessionTimeElapsedEl.textContent = "00:00:00";
+    sessionTimeRemainingEl.textContent = "00:00:00";
+  };
+
   // --- Task Runner Logic ---
   const loadTaskToRunner = (lapIndex) => {
     currentLapTaskIndex = lapIndex;
@@ -386,6 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? currentTask.duration - currentTaskTimeLeft
         : 0;
       const lapTimeElapsed = completedTasksDurationInLap + currentTaskElapsed;
+      const lapTimeRemaining = singleLapDuration - lapTimeElapsed;
 
       const lapPercent =
         singleLapDuration > 0
@@ -394,13 +418,20 @@ document.addEventListener("DOMContentLoaded", () => {
       lapProgressBar.style.width = `${lapPercent}%`;
       lapPercentage.textContent = `${lapPercent}%`;
 
+      // FIX 1: Update lap and session timer text display
+      lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
+      lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
+
       const sessionElapsed = currentLap * singleLapDuration + lapTimeElapsed;
+      const sessionRemaining = totalSessionTime - sessionElapsed;
       const sessionPercent =
         totalSessionTime > 0
           ? Math.floor((sessionElapsed / totalSessionTime) * 100)
           : 0;
       sessionProgressBar.style.width = `${sessionPercent}%`;
       sessionPercentage.textContent = `${sessionPercent}%`;
+      sessionTimeElapsedEl.textContent = formatTime(sessionElapsed);
+      sessionTimeRemainingEl.textContent = `-${formatTime(sessionRemaining)}`;
     }
   };
 
@@ -480,12 +511,14 @@ document.addEventListener("DOMContentLoaded", () => {
         `Session Complete! You finished ${totalLaps} lap(s).`,
         () => {
           lapsProgressContainer.style.display = "none";
-          loadTaskToRunner(0); // Reset to first task visually
+          resetRunnerDisplay();
         },
         "alert"
       );
     } else {
+      // FIX 3: Reset runner UI on manual stop
       lapsProgressContainer.style.display = "none";
+      resetRunnerDisplay();
     }
 
     currentLapTaskIndex = -1;
@@ -568,7 +601,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (runnerState !== "STOPPED") handleTaskCompletion();
     });
     prevTaskBtn.addEventListener("click", () => {
-      if (runnerState !== "STOPPED")
+      if (runnerState !== "STOPPED" && lapList.length > 0)
         loadTaskToRunner(
           (currentLapTaskIndex - 1 + lapList.length) % lapList.length
         );
@@ -709,8 +742,9 @@ document.addEventListener("DOMContentLoaded", () => {
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
     setupEventListeners();
-    renderCategoryButtons(); // Render categories on initial load
-    updateSort("id"); // This also calls renderTasks and renderLapList
+    renderCategoryButtons();
+    renderLapList(); // FIX 2: Render the lap list on initial load
+    updateSort("id");
   };
 
   init();
