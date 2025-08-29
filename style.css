@@ -292,7 +292,8 @@ body.light-theme .preset-btn:hover {
   transform: scale(0.95);
 }
 
-#add-task-btn {
+#add-task-btn,
+#cancel-edit-btn {
   padding: 0.85rem;
   border: none;
   color: white;
@@ -316,8 +317,43 @@ body.light-theme #add-task-btn:hover {
 body.dark-theme #add-task-btn:hover {
   background-color: #34d399;
 }
+#cancel-edit-btn {
+  background-color: var(--text-secondary-light);
+}
+body.dark-theme #cancel-edit-btn {
+  background-color: var(--text-secondary-dark);
+}
 
 /* --- LAP PLAYLIST --- */
+.lap-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+#lap-list-duration {
+  font-weight: 500;
+  color: var(--text-secondary-light);
+}
+body.dark-theme #lap-list-duration {
+  color: var(--text-secondary-dark);
+}
+#clear-lap-list-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-secondary-light);
+}
+body.dark-theme #clear-lap-list-btn {
+  color: var(--text-secondary-dark);
+}
+#clear-lap-list-btn:hover {
+  color: var(--accent-red-light);
+}
+body.dark-theme #clear-lap-list-btn:hover {
+  color: var(--accent-red-dark);
+}
 .lap-list {
   max-height: 300px;
   overflow-y: auto;
@@ -528,16 +564,31 @@ body.dark-theme #stop-laps-btn {
   align-items: center;
   margin-bottom: 1rem;
 }
+.repo-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+.repo-btn,
 .delete-all {
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s;
-  color: white;
 }
-body.light-theme .delete-all {
+.repo-btn {
+  background-color: var(--button-secondary-bg-light);
+  color: var(--text-primary-light);
+  border: 1px solid var(--border-light);
+}
+body.dark-theme .repo-btn {
+  background-color: var(--button-secondary-bg-dark);
+  color: var(--text-primary-dark);
+  border: 1px solid var(--border-dark);
+}
+.delete-all {
   background-color: var(--accent-red-light);
+  color: white;
 }
 body.dark-theme .delete-all {
   background-color: var(--accent-red-dark);

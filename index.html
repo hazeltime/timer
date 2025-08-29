@@ -24,7 +24,7 @@
       <div class="main-layout">
         <div class="left-column">
           <div class="panel create-task-panel">
-            <h2>Create New Task</h2>
+            <h2 id="form-title">Create New Task</h2>
             <div id="task-form" class="input-grid">
               <div class="form-group">
                 <label for="task-input">Title</label>
@@ -109,12 +109,23 @@
                 <button id="add-task-btn">
                   <i class="fas fa-plus"></i> Add Task
                 </button>
+                <button id="cancel-edit-btn" style="display: none">
+                  <i class="fas fa-times"></i> Cancel Edit
+                </button>
               </div>
             </div>
           </div>
 
           <div class="panel lap-list-panel">
-            <h2>Lap Playlist</h2>
+            <div class="lap-list-header">
+              <h2>Lap Playlist</h2>
+              <div class="lap-list-controls">
+                <span id="lap-list-duration">Total: 00:00</span>
+                <button id="clear-lap-list-btn" title="Clear Playlist">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
             <div id="lap-list" class="lap-list">
               <!-- Lap list items will be injected here -->
             </div>
@@ -190,10 +201,6 @@
                       >0%</span
                     >
                   </div>
-                  <div class="timer-display">
-                    <span id="lap-time-elapsed">00:00</span>
-                    <span id="lap-time-remaining">00:00</span>
-                  </div>
                   <label class="progress-label" id="session-progress-label"
                     >Session Progress</label
                   >
@@ -203,10 +210,6 @@
                       >0%</span
                     >
                   </div>
-                  <div class="timer-display">
-                    <span id="session-time-elapsed">00:00:00</span>
-                    <span id="session-time-remaining">00:00:00</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -215,9 +218,14 @@
           <div class="panel task-repository">
             <div class="repo-header">
               <h2>Task Repository</h2>
-              <button id="delete-all-btn" class="delete-all">
-                <i class="fas fa-trash-alt"></i> Delete All
-              </button>
+              <div class="repo-controls">
+                <button id="add-all-btn" class="repo-btn">
+                  <i class="fas fa-plus-square"></i> Add All
+                </button>
+                <button id="delete-all-btn" class="delete-all">
+                  <i class="fas fa-trash-alt"></i> Delete All
+                </button>
+              </div>
             </div>
             <div class="task-list-container">
               <div class="task-list-header">

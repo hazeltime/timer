@@ -17,14 +17,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- DOM Elements ---
   const taskForm = document.getElementById("task-form");
+  const formTitle = document.getElementById("form-title");
   const taskInput = document.getElementById("task-input");
+  const taskDescriptionInput = document.getElementById(
+    "task-description-input"
+  );
   const categoryGrid = document.getElementById("category-grid");
   const durationMinutesInput = document.getElementById("task-duration-minutes");
   const durationSecondsInput = document.getElementById("task-duration-seconds");
+  const addTaskBtn = document.getElementById("add-task-btn");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
   const taskListEl = document.getElementById("task-list");
   const lapListEl = document.getElementById("lap-list");
+  const lapListDurationEl = document.getElementById("lap-list-duration");
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
   const deleteAllBtn = document.getElementById("delete-all-btn");
+  const addAllBtn = document.getElementById("add-all-btn");
+  const clearLapListBtn = document.getElementById("clear-lap-list-btn");
   const confirmModal = document.getElementById("confirm-modal");
   const modalText = document.getElementById("modal-text");
   const modalCancelBtn = document.getElementById("modal-cancel-btn");
@@ -51,14 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const lapsProgressLabel = document.getElementById("laps-progress-label");
   const lapProgressBar = document.getElementById("lap-progress-bar");
   const lapPercentage = document.getElementById("lap-percentage");
-  const lapTimeElapsedEl = document.getElementById("lap-time-elapsed");
-  const lapTimeRemainingEl = document.getElementById("lap-time-remaining");
   const sessionProgressBar = document.getElementById("session-progress-bar");
   const sessionPercentage = document.getElementById("session-percentage");
-  const sessionTimeElapsedEl = document.getElementById("session-time-elapsed");
-  const sessionTimeRemainingEl = document.getElementById(
-    "session-time-remaining"
-  );
 
   // --- State Management ---
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -66,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastId = JSON.parse(localStorage.getItem("lastId")) || 0;
   let sortState = { field: "id", order: "desc" };
   let selectedCategoryId = "cat-0";
+  let editingTaskId = null;
 
   // Runner State
   let sessionInterval = null;
@@ -164,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         )}</div>
                         <div class="actions">
                             <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
+                            <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
                             <button class="copy-btn" title="Duplicate"><i class="fas fa-copy"></i></button>
                             <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
                         </div>
@@ -174,6 +179,13 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderLapList = () => {
+    const lapDuration = lapList.reduce(
+      (sum, taskId) =>
+        sum + (tasks.find((t) => t.id === taskId)?.duration || 0),
+      0
+    );
+    lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
+
     lapListEl.innerHTML =
       lapList.length === 0
         ? '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>'
@@ -213,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- Task & Lap List CRUD ---
-  const addTask = () => {
+  const handleTaskFormSubmit = () => {
     const title = taskInput.value.trim();
     if (title === "") return alert("Task title cannot be empty.");
 
@@ -223,25 +235,61 @@ document.addEventListener("DOMContentLoaded", () => {
     if (totalDuration <= 0)
       return alert("Duration must be greater than 0 seconds.");
 
-    lastId++;
-    tasks.push({
-      id: lastId,
-      title,
-      description: document
-        .getElementById("task-description-input")
-        .value.trim(),
-      categoryId: selectedCategoryId,
-      duration: totalDuration,
-    });
+    if (editingTaskId !== null) {
+      // Editing existing task
+      const task = tasks.find((t) => t.id === editingTaskId);
+      if (task) {
+        task.title = title;
+        task.description = taskDescriptionInput.value.trim();
+        task.categoryId = selectedCategoryId;
+        task.duration = totalDuration;
+      }
+    } else {
+      // Adding new task
+      lastId++;
+      tasks.push({
+        id: lastId,
+        title,
+        description: taskDescriptionInput.value.trim(),
+        categoryId: selectedCategoryId,
+        duration: totalDuration,
+      });
+    }
 
     saveState();
     renderAll();
+    resetTaskForm();
+  };
 
+  const loadTaskIntoForm = (id) => {
+    if (runnerState !== "STOPPED" && lapList.includes(id))
+      return alert("Cannot edit a task that is part of an active lap session.");
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    editingTaskId = id;
+    formTitle.textContent = `Editing Task #${id}`;
+    taskInput.value = task.title;
+    taskDescriptionInput.value = task.description;
+    selectedCategoryId = task.categoryId;
+    durationMinutesInput.value = Math.floor(task.duration / 60);
+    durationSecondsInput.value = task.duration % 60;
+
+    addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+    cancelEditBtn.style.display = "inline-block";
+    renderCategoryButtons();
+  };
+
+  const resetTaskForm = () => {
+    editingTaskId = null;
+    formTitle.textContent = "Create New Task";
     taskForm.reset();
     selectedCategoryId = "cat-0";
-    renderCategoryButtons();
     durationMinutesInput.value = 1;
     durationSecondsInput.value = 30;
+    addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
+    cancelEditBtn.style.display = "none";
+    renderCategoryButtons();
     taskInput.focus();
   };
 
@@ -337,7 +385,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ? currentTask.duration - currentTaskTimeLeft
         : 0;
       const lapTimeElapsed = completedTasksDurationInLap + currentTaskElapsed;
-      const lapTimeRemaining = singleLapDuration - lapTimeElapsed;
 
       const lapPercent =
         singleLapDuration > 0
@@ -345,19 +392,14 @@ document.addEventListener("DOMContentLoaded", () => {
           : 0;
       lapProgressBar.style.width = `${lapPercent}%`;
       lapPercentage.textContent = `${lapPercent}%`;
-      lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
-      lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
 
       const sessionElapsed = currentLap * singleLapDuration + lapTimeElapsed;
-      const sessionTimeLeft = totalSessionTime - sessionElapsed;
       const sessionPercent =
         totalSessionTime > 0
           ? Math.floor((sessionElapsed / totalSessionTime) * 100)
           : 0;
       sessionProgressBar.style.width = `${sessionPercent}%`;
       sessionPercentage.textContent = `${sessionPercent}%`;
-      sessionTimeElapsedEl.textContent = formatTime(sessionElapsed);
-      sessionTimeRemainingEl.textContent = `-${formatTime(sessionTimeLeft)}`;
     }
   };
 
@@ -490,7 +532,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const setupEventListeners = () => {
-    document.getElementById("add-task-btn").addEventListener("click", addTask);
+    addTaskBtn.addEventListener("click", handleTaskFormSubmit);
+    cancelEditBtn.addEventListener("click", resetTaskForm);
 
     taskListEl.addEventListener("click", (e) => {
       const button = e.target.closest("button");
@@ -501,6 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (button.classList.contains("delete-btn")) deleteTask(id);
       if (button.classList.contains("copy-btn")) duplicateTask(id);
       if (button.classList.contains("add-to-lap-btn")) addTaskToLap(id);
+      if (button.classList.contains("edit-btn")) loadTaskIntoForm(id);
     });
 
     lapListEl.addEventListener("click", (e) => {
@@ -550,6 +594,20 @@ document.addEventListener("DOMContentLoaded", () => {
           renderAll();
         }
       );
+    });
+
+    addAllBtn.addEventListener("click", () => {
+      if (runnerState !== "STOPPED")
+        return alert("Please stop the lap session to add all tasks.");
+      tasks.forEach((task) => addTaskToLap(task.id));
+    });
+
+    clearLapListBtn.addEventListener("click", () => {
+      if (runnerState !== "STOPPED")
+        return alert("Please stop the lap session to clear the playlist.");
+      lapList = [];
+      saveState();
+      renderLapList();
     });
 
     modalCancelBtn.addEventListener(
