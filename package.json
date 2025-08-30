@@ -4,7 +4,8 @@
   "description": "An advanced timer application designed for managing and executing task-based sessions. Built with vanilla HTML, CSS, and JavaScript, this tool helps you structure your work, breaks, and other activities into a configurable, multi-lap playlist.",
   "main": "constants.js",
   "scripts": {
-    "start": "http-server"
+    "start": "http-server",
+    "dev": "live-server"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/hazeltime/timer#readme",
   "devDependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
   }
 }
