@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ----------------------
   // DOM Elements
   // ----------------------
-  const DOM = {
+  const formDOM = {
     taskForm: $("#task-form"),
     formTitle: $("#form-title"),
     taskInput: $("#task-input"),
@@ -70,23 +70,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     maxOccurrencesInput: $("#max-occurrences-input"),
     addTaskBtn: $("#add-task-btn"),
     cancelEditBtn: $("#cancel-edit-btn"),
+  };
+
+  const repoDOM = {
     taskListEl: $("#task-list"),
-    lapListEl: $("#lap-list"),
-    lapListDurationEl: $("#lap-list-duration"),
-    themeToggleBtn: $("#theme-toggle-btn"),
-    settingsBtn: $("#settings-btn"),
     deleteAllBtn: $("#delete-all-btn"),
     addAllBtn: $("#add-all-btn"),
-    clearLapListBtn: $("#clear-lap-list-btn"),
-    confirmModal: $("#confirm-modal"),
-    modalTitle: $("#modal-title"),
-    modalText: $("#modal-text"),
-    modalCancelBtn: $("#modal-cancel-btn"),
-    modalConfirmBtn: $("#modal-confirm-btn"),
     taskSummaryEl: $("#task-summary"),
-    resetAppBtn: $("#reset-app-btn"),
-    globalCollapseBtn: $("#global-collapse-btn"),
-    globalExpandBtn: $("#global-expand-btn"),
+    noTasksMessage: $("#no-tasks-message"),
+  };
+
+  const playlistDOM = {
+    lapListEl: $("#lap-list"),
+    lapListDurationEl: $("#lap-list-duration"),
+    clearLapListBtn: $("#clear-lap-list-btn"),
+  };
+
+  const runnerDOM = {
     popoutRunnerBtn: $("#popout-runner-btn"),
     runnerTaskCategory: $("#runner-task-category"),
     runnerTaskTitle: $("#runner-task-title"),
@@ -122,8 +122,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionPercentage: $("#session-percentage"),
     sessionTimeElapsedEl: $("#session-time-elapsed"),
     sessionTimeRemainingEl: $("#session-time-remaining"),
-    noTasksMessage: $("#no-tasks-message"),
   };
+
+  const headerDOM = {
+    themeToggleBtn: $("#theme-toggle-btn"),
+    resetAppBtn: $("#reset-app-btn"),
+    globalCollapseBtn: $("#global-collapse-btn"),
+    globalExpandBtn: $("#global-expand-btn"),
+  };
+
+  const modalDOM = {
+    confirmModal: $("#confirm-modal"),
+    modalTitle: $("#modal-title"),
+    modalText: $("#modal-text"),
+    modalCancelBtn: $("#modal-cancel-btn"),
+    modalConfirmBtn: $("#modal-confirm-btn"),
+  };
+
+  const DOM = { ...formDOM, ...repoDOM, ...playlistDOM, ...runnerDOM, ...headerDOM, ...modalDOM };
 
   // ----------------------
   // Application State
@@ -189,9 +205,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const renderAll = () => {
     const sortedTasks = sortTasks(state.tasks);
-    UI.renderTasks(DOM, sortedTasks, state.sortState);
-    UI.renderLapList(DOM, state);
-    UI.renderCategoryButtons(DOM, state.selectedCategoryId);
+    UI.renderTasks(repoDOM, sortedTasks, state.sortState);
+    UI.renderLapList(playlistDOM, state, getTaskMap());
+    UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
   };
 
   const updateSort = (field) => {
@@ -202,7 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     state.sortState.field = field;
     UI.updateSortHeaders(state.sortState);
     const sortedTasks = sortTasks(state.tasks);
-    UI.renderTasks(DOM, sortedTasks, state.sortState);
+    UI.renderTasks(repoDOM, sortedTasks, state.sortState);
   };
 
   // ----------------------
@@ -212,31 +228,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   const resetTaskForm = () => {
     state.editingTaskId = null;
     state.selectedCategoryId = "cat-0";
-    UI.resetTaskFormUI(DOM);
-    UI.renderCategoryButtons(DOM, state.selectedCategoryId);
+    UI.resetTaskFormUI(formDOM);
+    UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
   };
 
   const handleTaskFormSubmit = () => {
-    const title = DOM.taskInput.value.trim();
+    const title = formDOM.taskInput.value.trim();
     if (!title) {
       alert("Task title cannot be empty.");
       return;
     }
-    const minutes = parseInt(DOM.durationMinutesInput.value, 10) || 0;
-    const seconds = parseInt(DOM.durationSecondsInput.value, 10) || 0;
+    const minutes = parseInt(formDOM.durationMinutesInput.value, 10) || 0;
+    const seconds = parseInt(formDOM.durationSecondsInput.value, 10) || 0;
     const totalDuration = minutes * 60 + seconds;
     const lapInterval = clamp(
-      parseInt(DOM.lapIntervalInput.value, 10) || 1,
+      parseInt(formDOM.lapIntervalInput.value, 10) || 1,
       1,
       99
     );
     const growthFactor = clamp(
-      parseInt(DOM.growthFactorInput.value, 10) || 0,
+      parseInt(formDOM.growthFactorInput.value, 10) || 0,
       -99,
       99
     );
     const maxOccurrences = clamp(
-      parseInt(DOM.maxOccurrencesInput.value, 10) || 0,
+      parseInt(formDOM.maxOccurrencesInput.value, 10) || 0,
       0,
       999
     );
@@ -248,7 +264,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const task = state.tasks.find((t) => t.id === state.editingTaskId);
       if (task) {
         task.title = title;
-        task.description = DOM.taskDescriptionInput.value.trim();
+        task.description = formDOM.taskDescriptionInput.value.trim();
         task.categoryId = state.selectedCategoryId;
         task.duration = totalDuration;
         task.lapInterval = lapInterval;
@@ -260,7 +276,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       state.tasks.push({
         id: state.lastId,
         title,
-        description: DOM.taskDescriptionInput.value.trim(),
+        description: formDOM.taskDescriptionInput.value.trim(),
         categoryId: state.selectedCategoryId,
         duration: totalDuration,
         lapInterval,
@@ -282,8 +298,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!task) return;
     state.editingTaskId = id;
     state.selectedCategoryId = task.categoryId;
-    UI.loadTaskIntoFormUI(DOM, task);
-    UI.renderCategoryButtons(DOM, state.selectedCategoryId);
+    UI.loadTaskIntoFormUI(formDOM, task);
+    UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
   };
 
   const deleteTask = (id) => {
@@ -318,7 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!state.lapList.includes(id)) {
       state.lapList.push(id);
       saveState();
-      UI.renderLapList(DOM, state);
+      UI.renderLapList(playlistDOM, state, getTaskMap());
     }
   };
 
@@ -329,7 +345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     state.lapList = state.lapList.filter((l) => l !== id);
     saveState();
-    UI.renderLapList(DOM, state);
+    UI.renderLapList(playlistDOM, state, getTaskMap());
   };
 
   // Runner logic is in runner.js
@@ -362,19 +378,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Event Listeners
   // ----------------------
   const setupEventListeners = () => {
-    DOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
-    DOM.cancelEditBtn.addEventListener("click", resetTaskForm);
-    DOM.globalCollapseBtn.addEventListener("click", () =>
+    formDOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
+    formDOM.cancelEditBtn.addEventListener("click", resetTaskForm);
+    headerDOM.globalCollapseBtn.addEventListener("click", () =>
       UI.toggleAllPanels(state, true)
     );
-    DOM.globalExpandBtn.addEventListener("click", () =>
+    headerDOM.globalExpandBtn.addEventListener("click", () =>
       UI.toggleAllPanels(state, false)
     );
-    DOM.popoutRunnerBtn.addEventListener("click", () =>
-      UI.toggleRunnerPopout(DOM, state)
+    runnerDOM.popoutRunnerBtn.addEventListener("click", () =>
+      UI.toggleRunnerPopout(runnerDOM, state)
     );
 
-    DOM.taskListEl.addEventListener("click", (e) => {
+    repoDOM.taskListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
       const item = e.target.closest(".task-item");
@@ -385,7 +401,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (btn.classList.contains("edit-btn")) loadTaskIntoForm(id);
     });
 
-    DOM.lapListEl.addEventListener("click", (e) => {
+    playlistDOM.lapListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn || isSessionActive()) return;
       const item = e.target.closest(".lap-list-item");
@@ -399,11 +415,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (action === "top") state.lapList.unshift(id);
         else if (action === "bottom") state.lapList.push(id);
         saveState();
-        UI.renderLapList(DOM, state);
+        UI.renderLapList(playlistDOM, state, getTaskMap());
       }
     });
 
-    DOM.lapListEl.addEventListener("dragstart", (e) => {
+    playlistDOM.lapListEl.addEventListener("dragstart", (e) => {
       if (isSessionActive()) return;
       const item = e.target.closest(".lap-list-item");
       if (!item) return;
@@ -411,35 +427,35 @@ document.addEventListener("DOMContentLoaded", async () => {
       setTimeout(() => item.classList.add("dragging"), 0);
     });
 
-    DOM.lapListEl.addEventListener("dragend", (e) => {
+    playlistDOM.lapListEl.addEventListener("dragend", (e) => {
       const item = e.target.closest(".lap-list-item");
       if (item) item.classList.remove("dragging");
       state.draggedItemId = null;
     });
 
-    DOM.lapListEl.addEventListener("dragover", (e) => {
+    playlistDOM.lapListEl.addEventListener("dragover", (e) => {
       if (isSessionActive()) return;
       e.preventDefault();
-      const after = getDragAfterElement(DOM.lapListEl, e.clientY);
+      const after = getDragAfterElement(playlistDOM.lapListEl, e.clientY);
       $$(".drag-over-top, .drag-over-bottom").forEach((el) =>
         el.classList.remove("drag-over-top", "drag-over-bottom")
       );
       if (after) after.classList.add("drag-over-top");
       else {
-        const last = DOM.lapListEl.lastElementChild;
+        const last = playlistDOM.lapListEl.lastElementChild;
         if (last && !last.classList.contains("dragging"))
           last.classList.add("drag-over-bottom");
       }
     });
 
-    DOM.lapListEl.addEventListener("drop", (e) => {
+    playlistDOM.lapListEl.addEventListener("drop", (e) => {
       if (isSessionActive()) return;
       e.preventDefault();
       $$(".drag-over-top, .drag-over-bottom").forEach((el) =>
         el.classList.remove("drag-over-top", "drag-over-bottom")
       );
       if (state.draggedItemId === null) return;
-      const after = getDragAfterElement(DOM.lapListEl, e.clientY);
+      const after = getDragAfterElement(playlistDOM.lapListEl, e.clientY);
       const oldIndex = state.lapList.indexOf(state.draggedItemId);
       if (oldIndex > -1) state.lapList.splice(oldIndex, 1);
       if (after) {
@@ -448,46 +464,46 @@ document.addEventListener("DOMContentLoaded", async () => {
         state.lapList.splice(newIndex, 0, state.draggedItemId);
       } else state.lapList.push(state.draggedItemId);
       saveState();
-      UI.renderLapList(DOM, state);
+      UI.renderLapList(playlistDOM, state, getTaskMap());
     });
 
-    DOM.categoryGrid.addEventListener("click", (e) => {
+    formDOM.categoryGrid.addEventListener("click", (e) => {
       const btn = e.target.closest(".category-btn");
       if (!btn) return;
       state.selectedCategoryId = btn.dataset.id;
-      UI.renderCategoryButtons(DOM, state.selectedCategoryId);
+      UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
     });
 
-    DOM.playPauseBtn.addEventListener("click", Runner.playPauseSession);
-    DOM.nextTaskBtn.addEventListener("click", Runner.nextTask);
-    DOM.prevTaskBtn.addEventListener("click", Runner.prevTask);
-    DOM.stopLapsBtn.addEventListener("click", () => Runner.stopSession(false));
-    DOM.restartLapsBtn.addEventListener("click", () => {
+    runnerDOM.playPauseBtn.addEventListener("click", Runner.playPauseSession);
+    runnerDOM.nextTaskBtn.addEventListener("click", Runner.nextTask);
+    runnerDOM.prevTaskBtn.addEventListener("click", Runner.prevTask);
+    runnerDOM.stopLapsBtn.addEventListener("click", () => Runner.stopSession(false));
+    runnerDOM.restartLapsBtn.addEventListener("click", () => {
       if (!isSessionActive()) return;
       UI.showConfirmationModal(
-        DOM,
+        modalDOM,
         state,
         "Restart Session?",
         "This will restart the current session from the beginning. Are you sure?",
         () => Runner.restartSession()
       );
     });
-    DOM.nextLapBtn.addEventListener("click", () => Runner.skipToLap(1));
-    DOM.prevLapBtn.addEventListener("click", () => Runner.skipToLap(-1));
+    runnerDOM.nextLapBtn.addEventListener("click", () => Runner.skipToLap(1));
+    runnerDOM.prevLapBtn.addEventListener("click", () => Runner.skipToLap(-1));
 
-    DOM.themeToggleBtn.addEventListener("click", () =>
+    headerDOM.themeToggleBtn.addEventListener("click", () =>
       UI.applyTheme(
         document.body.classList.contains("dark-theme") ? "light" : "dark"
       )
     );
 
-    DOM.deleteAllBtn.addEventListener("click", () => {
+    repoDOM.deleteAllBtn.addEventListener("click", () => {
       if (
         !isModificationAllowed("Please stop the session to delete all tasks.")
       )
         return;
       UI.showConfirmationModal(
-        DOM,
+        modalDOM,
         state,
         "Delete All Tasks?",
         "This will permanently delete all tasks from the repository. Are you sure?",
@@ -501,33 +517,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     });
 
-    DOM.addAllBtn.addEventListener("click", () => {
+    repoDOM.addAllBtn.addEventListener("click", () => {
       if (!isModificationAllowed("Please stop the session to add all tasks."))
         return;
       state.tasks.forEach((t) => addTaskToLap(t.id));
     });
 
-    DOM.clearLapListBtn.addEventListener("click", () => {
+    playlistDOM.clearLapListBtn.addEventListener("click", () => {
       if (
         !isModificationAllowed("Please stop the session to clear the playlist.")
       )
         return;
       UI.showConfirmationModal(
-        DOM,
+        modalDOM,
         state,
         "Clear Playlist?",
         "This will remove all tasks from the current playlist. Are you sure?",
         () => {
           state.lapList = [];
           saveState();
-          UI.renderLapList(DOM, state);
+          UI.renderLapList(playlistDOM, state, getTaskMap());
         }
       );
     });
 
-    DOM.resetAppBtn.addEventListener("click", () => {
+    headerDOM.resetAppBtn.addEventListener("click", () => {
       UI.showConfirmationModal(
-        DOM,
+        modalDOM,
         state,
         "Reset Application?",
         "This will clear all data and load demo tasks. Are you sure?",
@@ -546,12 +562,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     });
 
-    DOM.modalCancelBtn.addEventListener("click", () =>
-      UI.hideConfirmationModal(DOM)
+    modalDOM.modalCancelBtn.addEventListener("click", () =>
+      UI.hideConfirmationModal(modalDOM)
     );
-    DOM.modalConfirmBtn.addEventListener("click", () => {
+    modalDOM.modalConfirmBtn.addEventListener("click", () => {
       if (state.confirmCallback) state.confirmCallback();
-      UI.hideConfirmationModal(DOM);
+      UI.hideConfirmationModal(modalDOM);
     });
 
     $$(".sort-header").forEach((h) =>
@@ -563,8 +579,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     $$(".preset-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
         const totalSeconds = parseInt(btn.dataset.duration, 10);
-        DOM.durationMinutesInput.value = Math.floor(totalSeconds / 60);
-        DOM.durationSecondsInput.value = totalSeconds % 60;
+        formDOM.durationMinutesInput.value = Math.floor(totalSeconds / 60);
+        formDOM.durationSecondsInput.value = totalSeconds % 60;
       })
     );
 
@@ -574,16 +590,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const { field, step } = btn.dataset;
       const input =
         field === "laps"
-          ? DOM.lapsInput
+          ? runnerDOM.lapsInput
           : field === "minutes"
-          ? DOM.durationMinutesInput
+          ? formDOM.durationMinutesInput
           : field === "lapInterval"
-          ? DOM.lapIntervalInput
+          ? formDOM.lapIntervalInput
           : field === "growthFactor"
-          ? DOM.growthFactorInput
+          ? formDOM.growthFactorInput
           : field === "maxOccurrences"
-          ? DOM.maxOccurrencesInput
-          : DOM.durationSecondsInput;
+          ? formDOM.maxOccurrencesInput
+          : formDOM.durationSecondsInput;
       const update = () => {
         let val = parseInt(input.value, 10) || 0;
         const min = parseInt(input.min, 10) || 0;
@@ -600,7 +616,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.addEventListener("click", (e) => {
-      const collapseBtn = e.target.closest(".collapse-btn");
+      const collapseBtn = e.target.closest("collapse-btn");
       if (!collapseBtn) return;
       const panel = collapseBtn.closest(".panel, section");
       if (!panel) return;
@@ -633,8 +649,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    DOM.durationMinutesInput.value = 1;
-    DOM.durationSecondsInput.value = 30;
+    formDOM.durationMinutesInput.value = 1;
+    formDOM.durationSecondsInput.value = 30;
 
     setupEventListeners();
     renderAll();

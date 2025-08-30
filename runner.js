@@ -7,7 +7,7 @@ import {
 } from "./constants.js";
 
 let state = null;
-let dom = null;
+let runnerDOM = null;
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -37,7 +37,7 @@ const startTimerInterval = () => {
     if (state.sessionInterval) stopTimerInterval();
     state.sessionInterval = setInterval(() => {
         state.currentTaskTimeLeft--;
-        UI.updateTimerDisplay(dom, state);
+        UI.updateTimerDisplay(runnerDOM, state);
         if (state.currentTaskTimeLeft < 0) handleTaskCompletion();
     }, 1000);
 };
@@ -82,8 +82,8 @@ const loadTaskToRunner = (virtualIndex) => {
 
     const category =
         categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-    dom.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`;
-    dom.runnerTaskTitle.textContent = task.title;
+    runnerDOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`;
+    runnerDOM.runnerTaskTitle.textContent = task.title;
     state.currentTaskTimeLeft = calculatedDuration;
 
     const changeDelta = calculatedDuration - baseDuration;
@@ -92,31 +92,31 @@ const loadTaskToRunner = (virtualIndex) => {
     const sessionTotalTime =
         state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
 
-    dom.runnerDetails.baseDuration.textContent = UI.formatTime(baseDuration);
-    dom.runnerDetails.currentDuration.textContent =
+    runnerDOM.runnerDetails.baseDuration.textContent = UI.formatTime(baseDuration);
+    runnerDOM.runnerDetails.currentDuration.textContent =
         UI.formatTime(calculatedDuration);
-    dom.runnerDetails.occurrenceCount.textContent = `${occurrences} of ${totalOccurrences}`;
-    dom.runnerDetails.changePercentage.textContent = `${changePercentage}%`;
-    dom.runnerDetails.changeDelta.textContent = UI.formatTime(changeDelta);
-    dom.runnerDetails.sessionTotal.textContent =
+    runnerDOM.runnerDetails.occurrenceCount.textContent = `${occurrences} of ${totalOccurrences}`;
+    runnerDOM.runnerDetails.changePercentage.textContent = `${changePercentage}%`;
+    runnerDOM.runnerDetails.changeDelta.textContent = UI.formatTime(changeDelta);
+    runnerDOM.runnerDetails.sessionTotal.textContent =
         UI.formatTime(sessionTotalTime);
 
-    dom.runnerDetails.changePercentage.style.color =
+    runnerDOM.runnerDetails.changePercentage.style.color =
         changePercentage > 0
             ? "var(--accent-green)"
             : changePercentage < 0
                 ? "var(--accent-red)"
                 : "var(--text-secondary)";
-    dom.runnerDetails.changeDelta.style.color =
+    runnerDOM.runnerDetails.changeDelta.style.color =
         changeDelta > 0
             ? "var(--accent-green)"
             : changeDelta < 0
                 ? "var(--accent-red)"
                 : "var(--text-secondary)";
 
-    UI.updateTimerDisplay(dom, state);
-    UI.renderLapList(dom, state);
-    UI.scrollToRunningTask(dom);
+    UI.updateTimerDisplay(runnerDOM, state);
+    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
+    UI.scrollToRunningTask(runnerDOM);
 };
 
 const buildVirtualPlaylist = (taskMap, totalLaps) => {
@@ -216,7 +216,7 @@ const buildVirtualPlaylist = (taskMap, totalLaps) => {
 };
 
 const startSession = () => {
-    const totalLaps = parseInt(dom.lapsInput.value, 10) || 1;
+    const totalLaps = parseInt(runnerDOM.lapsInput.value, 10) || 1;
     const taskMap = new Map(state.tasks.map((t) => [t.id, t]));
     const playlistData = buildVirtualPlaylist(taskMap, totalLaps);
     if (playlistData.virtualSessionPlaylist.length === 0) {
@@ -232,11 +232,11 @@ const startSession = () => {
         completedTaskDurationsMap: new Map(),
         completedOccurrencesMap: new Map(), // Reset for new session
     };
-    dom.lapsProgressContainer.style.display = "block";
+    runnerDOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
-    dom.lapsControls.style.display = "none";
-    dom.lapsInput.disabled = true;
-    dom.lapsInput.parentElement.querySelectorAll('.stepper-btn').forEach((b) => (b.disabled = true));
+    runnerDOM.lapsControls.style.display = "none";
+    runnerDOM.lapsInput.disabled = true;
+    runnerDOM.lapsInput.parentElement.querySelectorAll('.stepper-btn').forEach((b) => (b.disabled = true));
     return true;
 };
 
@@ -244,7 +244,7 @@ export const playPauseSession = () => {
     if (state.runnerState === "RUNNING") {
         stopTimerInterval();
         state.runnerState = "PAUSED";
-        dom.playPauseBtn.innerHTML =
+        runnerDOM.playPauseBtn.innerHTML =
             '<i class="fas fa-play"></i><span>Play</span>';
         return;
     }
@@ -261,7 +261,7 @@ export const playPauseSession = () => {
     )
         return;
     state.runnerState = "RUNNING";
-    dom.playPauseBtn.innerHTML =
+    runnerDOM.playPauseBtn.innerHTML =
         '<i class="fas fa-pause"></i><span>Pause</span>';
     startTimerInterval();
 };
@@ -269,38 +269,38 @@ export const playPauseSession = () => {
 export const stopSession = (finished = false) => {
     stopTimerInterval();
     state.runnerState = "STOPPED";
-    dom.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
-    dom.lapsControls.style.display = "flex";
-    dom.lapsInput.disabled = false;
-    dom.lapsInput.parentElement.querySelectorAll('.stepper-btn').forEach((b) => (b.disabled = false));
+    runnerDOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
+    runnerDOM.lapsControls.style.display = "flex";
+    runnerDOM.lapsInput.disabled = false;
+    runnerDOM.lapsInput.parentElement.querySelectorAll('.stepper-btn').forEach((b) => (b.disabled = false));
 
     if (finished) {
-        dom.lapsProgressLabel.textContent = `Session Complete! (${state.sessionCache.totalLaps || 0
+        runnerDOM.lapsProgressLabel.textContent = `Session Complete! (${state.sessionCache.totalLaps || 0
             } laps)`;
         UI.showConfirmationModal(
-            dom,
+            runnerDOM,
             state,
             "🎉 Congratulations! 🎉",
             `Session Complete! You finished ${state.sessionCache.totalLaps || 0
             } lap(s).`,
             () => {
-                dom.lapsProgressContainer.style.display = "none";
-                UI.resetRunnerDisplay(dom);
+                runnerDOM.lapsProgressContainer.style.display = "none";
+                UI.resetRunnerDisplay(runnerDOM);
             },
             "alert"
         );
     } else {
-        dom.lapsProgressContainer.style.display = "none";
-        UI.resetRunnerDisplay(dom);
+        runnerDOM.lapsProgressContainer.style.display = "none";
+        UI.resetRunnerDisplay(runnerDOM);
     }
     state.currentVirtualTaskIndex = -1;
-    UI.renderLapList(dom, state);
+    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
 };
 
 export const restartSession = () => {
     stopTimerInterval();
     state.runnerState = "PAUSED";
-    dom.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
+    runnerDOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     state.sessionCache.completedTaskDurationsMap = new Map();
     state.sessionCache.completedOccurrencesMap = new Map(); // Reset on restart
     const playlistData = buildVirtualPlaylist(
@@ -365,7 +365,11 @@ export const prevTask = () => {
         loadTaskToRunner(state.currentVirtualTaskIndex - 1);
 }
 
+export function isSessionActive() {
+    return state.runnerState !== "STOPPED";
+}
+
 export const initRunner = (mainState, mainDom) => {
     state = mainState;
-    dom = mainDom;
+    runnerDOM = mainDom;
 };

@@ -21,8 +21,8 @@ export const formatTime = (totalSeconds) => {
 };
 
 // --- RENDER FUNCTIONS ---
-export const renderCategoryButtons = (DOM, selectedCategoryId) => {
-  DOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
+export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
+  formDOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
     const isActive = cat.id === selectedCategoryId;
     return `
       <button class="category-btn ${isActive ? "active" : ""}" data-id="${
@@ -36,20 +36,20 @@ export const renderCategoryButtons = (DOM, selectedCategoryId) => {
   }).join("");
 };
 
-export const renderTaskSummary = (DOM, tasks) => {
+export const renderTaskSummary = (repoDOM, tasks) => {
   const totalTasks = tasks.length;
   const totalDurationInSeconds = tasks.reduce((s, t) => s + t.duration, 0);
-  DOM.taskSummaryEl.innerHTML = `<span><strong>Total Tasks:</strong> ${totalTasks}</span><span><strong>Total Duration:</strong> ${formatTime(
+  repoDOM.taskSummaryEl.innerHTML = `<span><strong>Total Tasks:</strong> ${totalTasks}</span><span><strong>Total Duration:</strong> ${formatTime(
     totalDurationInSeconds
   )}</span>`;
 };
 
-export const renderTasks = (DOM, tasks, sortState) => {
-  DOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
+export const renderTasks = (repoDOM, tasks, sortState) => {
+  repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
   if (tasks.length === 0) {
-    DOM.taskListEl.innerHTML = "";
+    repoDOM.taskListEl.innerHTML = "";
   } else {
-    DOM.taskListEl.innerHTML = tasks
+    repoDOM.taskListEl.innerHTML = tasks
       .map((task) => {
         const category =
           categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
@@ -85,26 +85,25 @@ export const renderTasks = (DOM, tasks, sortState) => {
       })
       .join("");
   }
-  renderTaskSummary(DOM, tasks);
+  renderTaskSummary(repoDOM, tasks);
 };
 
-export const renderLapList = (DOM, state) => {
-  const taskMap = new Map(state.tasks.map((t) => [t.id, t]));
+export const renderLapList = (playlistDOM, state, taskMap) => {
   const lapDuration = state.lapList.reduce(
     (s, id) => s + (taskMap.get(id)?.duration || 0),
     0
   );
-  DOM.lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
+  playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
   const sessionInactive = state.runnerState === "STOPPED";
   const draggableAttr = sessionInactive ? 'draggable="true"' : "";
 
   if (state.lapList.length === 0) {
-    DOM.lapListEl.innerHTML =
+    playlistDOM.lapListEl.innerHTML =
       '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>';
     return;
   }
 
-  DOM.lapListEl.innerHTML = state.lapList
+  playlistDOM.lapListEl.innerHTML = state.lapList
     .map((id) => {
       const task = taskMap.get(id);
       if (!task) return "";
@@ -172,58 +171,58 @@ export const updateSortHeaders = (sortState) => {
 
 // --- UI STATE MODIFICATION ---
 
-export const resetTaskFormUI = (DOM) => {
-  DOM.formTitle.textContent = "Create New Task";
-  DOM.taskInput.value = "";
-  DOM.taskDescriptionInput.value = "";
-  DOM.durationMinutesInput.value = 1;
-  DOM.durationSecondsInput.value = 30;
-  DOM.lapIntervalInput.value = 1;
-  DOM.growthFactorInput.value = 0;
-  DOM.maxOccurrencesInput.value = 0;
-  DOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
-  DOM.cancelEditBtn.style.display = "none";
-  DOM.taskInput.focus();
+export const resetTaskFormUI = (formDOM) => {
+  formDOM.formTitle.textContent = "Create New Task";
+  formDOM.taskInput.value = "";
+  formDOM.taskDescriptionInput.value = "";
+  formDOM.durationMinutesInput.value = 1;
+  formDOM.durationSecondsInput.value = 30;
+  formDOM.lapIntervalInput.value = 1;
+  formDOM.growthFactorInput.value = 0;
+  formDOM.maxOccurrencesInput.value = 0;
+  formDOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
+  formDOM.cancelEditBtn.style.display = "none";
+  formDOM.taskInput.focus();
 };
 
-export const loadTaskIntoFormUI = (DOM, task) => {
-  DOM.formTitle.textContent = `Editing Task #${task.id}`;
-  DOM.taskInput.value = task.title;
-  DOM.taskDescriptionInput.value = task.description;
-  DOM.durationMinutesInput.value = Math.floor(task.duration / 60);
-  DOM.durationSecondsInput.value = task.duration % 60;
-  DOM.lapIntervalInput.value = task.lapInterval || 1;
-  DOM.growthFactorInput.value = task.growthFactor || 0;
-  DOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
-  DOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-  DOM.cancelEditBtn.style.display = "inline-block";
+export const loadTaskIntoFormUI = (formDOM, task) => {
+  formDOM.formTitle.textContent = `Editing Task #${task.id}`;
+  formDOM.taskInput.value = task.title;
+  formDOM.taskDescriptionInput.value = task.description;
+  formDOM.durationMinutesInput.value = Math.floor(task.duration / 60);
+  formDOM.durationSecondsInput.value = task.duration % 60;
+  formDOM.lapIntervalInput.value = task.lapInterval || 1;
+  formDOM.growthFactorInput.value = task.growthFactor || 0;
+  formDOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
+  formDOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+  formDOM.cancelEditBtn.style.display = "inline-block";
 };
 
-export const resetRunnerDisplay = (DOM) => {
-  DOM.runnerTaskCategory.textContent = "";
-  DOM.runnerTaskTitle.textContent = "No task selected";
-  DOM.taskProgressBar.style.width = "0%";
-  DOM.taskPercentage.textContent = "0%";
-  DOM.timeElapsedEl.textContent = "0s";
-  DOM.timeRemainingEl.textContent = "0s";
-  DOM.lapProgressBar.style.width = "0%";
-  DOM.lapPercentage.textContent = "0%";
-  DOM.lapTimeElapsedEl.textContent = "0s";
-  DOM.lapTimeRemainingEl.textContent = "0s";
-  DOM.sessionProgressBar.style.width = "0%";
-  DOM.sessionPercentage.textContent = "0%";
-  DOM.sessionTimeElapsedEl.textContent = "0s";
-  DOM.sessionTimeRemainingEl.textContent = "0s";
-  DOM.runnerDetails.baseDuration.textContent = "0s";
-  DOM.runnerDetails.currentDuration.textContent = "0s";
-  DOM.runnerDetails.occurrenceCount.textContent = "0";
-  DOM.runnerDetails.changePercentage.textContent = "0%";
-  DOM.runnerDetails.changeDelta.textContent = "0s";
-  DOM.runnerDetails.sessionTotal.textContent = "0s";
+export const resetRunnerDisplay = (runnerDOM) => {
+  runnerDOM.runnerTaskCategory.textContent = "";
+  runnerDOM.runnerTaskTitle.textContent = "No task selected";
+  runnerDOM.taskProgressBar.style.width = "0%";
+  runnerDOM.taskPercentage.textContent = "0%";
+  runnerDOM.timeElapsedEl.textContent = "0s";
+  runnerDOM.timeRemainingEl.textContent = "0s";
+  runnerDOM.lapProgressBar.style.width = "0%";
+  runnerDOM.lapPercentage.textContent = "0%";
+  runnerDOM.lapTimeElapsedEl.textContent = "0s";
+  runnerDOM.lapTimeRemainingEl.textContent = "0s";
+  runnerDOM.sessionProgressBar.style.width = "0%";
+  runnerDOM.sessionPercentage.textContent = "0%";
+  runnerDOM.sessionTimeElapsedEl.textContent = "0s";
+  runnerDOM.sessionTimeRemainingEl.textContent = "0s";
+  runnerDOM.runnerDetails.baseDuration.textContent = "0s";
+  runnerDOM.runnerDetails.currentDuration.textContent = "0s";
+  runnerDOM.runnerDetails.occurrenceCount.textContent = "0";
+  runnerDOM.runnerDetails.changePercentage.textContent = "0%";
+  runnerDOM.runnerDetails.changeDelta.textContent = "0s";
+  runnerDOM.runnerDetails.sessionTotal.textContent = "0s";
 };
 
-export const scrollToRunningTask = (DOM) => {
-  const container = DOM.lapListEl;
+export const scrollToRunningTask = (playlistDOM) => {
+  const container = playlistDOM.lapListEl;
   const runningTaskEl = container.querySelector(".lap-list-item.running");
   if (runningTaskEl && container) {
     const containerRect = container.getBoundingClientRect();
@@ -243,7 +242,7 @@ export const scrollToRunningTask = (DOM) => {
   }
 };
 
-export const updateTimerDisplay = (DOM, state) => {
+export const updateTimerDisplay = (runnerDOM, state) => {
   if (state.currentVirtualTaskIndex === -1) return;
 
   const currentVirtualTask =
@@ -260,11 +259,11 @@ export const updateTimerDisplay = (DOM, state) => {
   const sessionTotalTime =
     (state.sessionCache.completedTaskDurationsMap.get(taskId) || 0) + elapsed;
 
-  DOM.runnerDetails.sessionTotal.textContent = formatTime(sessionTotalTime);
-  DOM.timeElapsedEl.textContent = formatTime(elapsed);
-  DOM.timeRemainingEl.textContent = `-${formatTime(state.currentTaskTimeLeft)}`;
-  DOM.taskProgressBar.style.width = `${taskPercent}%`;
-  DOM.taskPercentage.textContent = `${taskPercent}%`;
+  runnerDOM.runnerDetails.sessionTotal.textContent = formatTime(sessionTotalTime);
+  runnerDOM.timeElapsedEl.textContent = formatTime(elapsed);
+  runnerDOM.timeRemainingEl.textContent = `-${formatTime(state.currentTaskTimeLeft)}`;
+  runnerDOM.taskProgressBar.style.width = `${taskPercent}%`;
+  runnerDOM.taskPercentage.textContent = `${taskPercent}%`;
 
   const currentLapDuration = state.sessionCache.lapDurations[lap];
   const lapStartTime = state.sessionCache.lapStartCumulativeDurations[lap];
@@ -279,12 +278,12 @@ export const updateTimerDisplay = (DOM, state) => {
       ? Math.floor((lapTimeElapsed / currentLapDuration) * 100)
       : 0;
 
-  DOM.lapProgressBar.style.width = `${lapPercent}%`;
-  DOM.lapPercentage.textContent = `${lapPercent}%`;
-  DOM.lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
-  DOM.lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
+  runnerDOM.lapProgressBar.style.width = `${lapPercent}%`;
+  runnerDOM.lapPercentage.textContent = `${lapPercent}%`;
+  runnerDOM.lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
+  runnerDOM.lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
   const activeLapNumber = state.sessionCache.activeLapMap.get(lap);
-  DOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${state.sessionCache.totalActiveLaps} - Task ${taskIndexInLap} of ${totalTasksInLap}`;
+  runnerDOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${state.sessionCache.totalActiveLaps} - Task ${taskIndexInLap} of ${totalTasksInLap}`;
 
   const totalSessionDuration = state.sessionCache.totalSessionDuration;
   const sessionTimeElapsed =
@@ -297,40 +296,40 @@ export const updateTimerDisplay = (DOM, state) => {
       ? Math.floor((sessionTimeElapsed / totalSessionDuration) * 100)
       : 0;
 
-  DOM.sessionProgressBar.style.width = `${sessionPercent}%`;
-  DOM.sessionPercentage.textContent = `${sessionPercent}%`;
-  DOM.sessionTimeElapsedEl.textContent = formatTime(sessionTimeElapsed);
-  DOM.sessionTimeRemainingEl.textContent = `-${formatTime(
+  runnerDOM.sessionProgressBar.style.width = `${sessionPercent}%`;
+  runnerDOM.sessionPercentage.textContent = `${sessionPercent}%`;
+  runnerDOM.sessionTimeElapsedEl.textContent = formatTime(sessionTimeElapsed);
+  runnerDOM.sessionTimeRemainingEl.textContent = `-${formatTime(
     sessionTimeRemaining
   )}`;
 };
 
 export const showConfirmationModal = (
-  DOM,
+  modalDOM,
   state,
   title,
   text,
   onConfirm,
   type = "confirm"
 ) => {
-  DOM.modalTitle.textContent = title;
-  DOM.modalText.textContent = text;
+  modalDOM.modalTitle.textContent = title;
+  modalDOM.modalText.textContent = text;
   state.confirmCallback = onConfirm;
   if (type === "alert") {
-    DOM.modalCancelBtn.style.display = "none";
-    DOM.modalConfirmBtn.textContent = "OK";
+    modalDOM.modalCancelBtn.style.display = "none";
+    modalDOM.modalConfirmBtn.textContent = "OK";
   } else {
-    DOM.modalCancelBtn.style.display = "inline-block";
-    DOM.modalConfirmBtn.textContent = "Confirm";
+    modalDOM.modalCancelBtn.style.display = "inline-block";
+    modalDOM.modalConfirmBtn.textContent = "Confirm";
   }
-  DOM.confirmModal.style.display = "flex";
-  DOM.confirmModal.classList.add("show");
+  modalDOM.confirmModal.style.display = "flex";
+  modalDOM.confirmModal.classList.add("show");
 };
 
-export const hideConfirmationModal = (DOM) => {
-  DOM.confirmModal.classList.remove("show");
+export const hideConfirmationModal = (modalDOM) => {
+  modalDOM.confirmModal.classList.remove("show");
   setTimeout(() => {
-    DOM.confirmModal.style.display = "none";
+    modalDOM.confirmModal.style.display = "none";
   }, 300);
 };
 
@@ -355,10 +354,10 @@ export const toggleAllPanels = (state, collapse) => {
   );
 };
 
-export const toggleRunnerPopout = (DOM, state) => {
+export const toggleRunnerPopout = (runnerDOM, state) => {
   const panel = $("#task-runner-panel");
   const body = document.body;
-  const icon = DOM.popoutRunnerBtn.querySelector("i");
+  const icon = runnerDOM.popoutRunnerBtn.querySelector("i");
   panel.classList.toggle("task-runner-popout");
   body.classList.toggle("runner-popped-out");
 
@@ -374,10 +373,10 @@ export const toggleRunnerPopout = (DOM, state) => {
       );
     }
     icon.className = "fas fa-compress-arrows-alt";
-    DOM.popoutRunnerBtn.title = "Exit Focus Mode";
+    runnerDOM.popoutRunnerBtn.title = "Exit Focus Mode";
   } else {
     icon.className = "fas fa-expand-arrows-alt";
-    DOM.popoutRunnerBtn.title = "Focus Mode";
+    runnerDOM.popoutRunnerBtn.title = "Focus Mode";
   }
 };
 
