@@ -2,7 +2,9 @@
 
 An advanced timer application designed for managing and executing task-based sessions. Built with vanilla HTML, CSS, and JavaScript, this tool helps you structure your work, breaks, and other activities into a configurable, multi-lap playlist.
 
-![TTT Screenshot](placeholder.png) ## ✨ Features
+![TTT Screenshot](placeholder.png) 
+
+## ✨ Features
 
 - **Task Repository**: Create, edit, duplicate, and delete tasks.
 - **Advanced Task Properties**:
@@ -33,12 +35,11 @@ To run this project locally, you will need to have Node.js and npm installed.
 1.  **Clone the repository:**
 
     ```sh
-    git clone <your-repository-url>
+    git clone https://github.com/berrat/timer.git
     cd timer
     ```
 
 2.  **Install dependencies:**
-    This project uses [Parcel](https://parceljs.org/) as a development server and bundler. The following command will install it based on the `package.json` file.
     ```sh
     npm install
     ```
@@ -48,5 +49,17 @@ To run this project locally, you will need to have Node.js and npm installed.
 Once the dependencies are installed, you can start the development server:
 
 ```sh
-npm run dev
+npm start
 ```
+
+This will start a local web server and you can access the application in your browser at `http://localhost:8080`.
+
+## ✍️ Author
+
+- **Behrouz Talebi**
+  - GitHub: [@berrat](https://github.com/berrat)
+  - Email: berrat2@gmail.com
+
+## 📄 License
+
+This project is free to use and contribute to. It is licensed under the MIT License.
