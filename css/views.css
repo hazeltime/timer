@@ -444,7 +444,7 @@ fieldset {
   border: 1px solid var(--border-color);
 }
 .lap-list {
-  max-height: 280px;
+  max-height: 390px;
   overflow-y: auto;
   padding: 4px;
 }
