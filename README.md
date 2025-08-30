@@ -46,13 +46,25 @@ To run this project locally, you will need to have Node.js and npm installed.
 
 ### Running the Application
 
-Once the dependencies are installed, you can start the development server:
+Once the dependencies are installed, you can start the application in one of two ways:
+
+**1. Standard Server**
+
+This command starts a simple local web server.
 
 ```sh
 npm start
 ```
 
-This will start a local web server and you can access the application in your browser at `http://localhost:8080`.
+**2. Development Server (with Live Reload)**
+
+This command starts a development server that will automatically reload the browser when you save changes to a file.
+
+```sh
+npm run dev
+```
+
+You can access the application in your browser at `http://localhost:8080` (for `npm start`) or `http://localhost:3000` (for `npm run dev`).
 
 ## ✍️ Author
 
