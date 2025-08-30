@@ -208,22 +208,22 @@
                           <label>Presets</label>
                           <div class="preset-durations">
                             <button class="preset-btn" data-duration="30">
-                              30s
+                              30 s
                             </button>
                             <button class="preset-btn" data-duration="120">
-                              2m
+                              2 m
                             </button>
                             <button class="preset-btn" data-duration="300">
-                              5m
+                              5 m
                             </button>
                             <button class="preset-btn" data-duration="600">
-                              10m
+                              10 m
                             </button>
                             <button class="preset-btn" data-duration="900">
-                              15m
+                              15 m
                             </button>
                             <button class="preset-btn" data-duration="1500">
-                              25m
+                              25 m
                             </button>
                           </div>
                         </div>
@@ -462,7 +462,6 @@
                 </div>
                 <div class="laps-section">
                   <div class="laps-section-header">
-                    <h3>Laps</h3>
                     <div class="laps-controls">
                       <label for="laps-input">Runs:</label>
                       <div class="stepper-input">
@@ -490,7 +489,14 @@
                         </button>
                       </div>
                     </div>
-                    <div id="session-controls" style="display: none">
+                  </div>
+
+                  <div
+                    class="runner-progress-details"
+                    id="laps-progress-container"
+                    style="display: none"
+                  >
+                    <div id="session-controls">
                       <button
                         id="prev-lap-btn"
                         class="session-btn"
@@ -509,17 +515,9 @@
                         Next Lap <i class="fas fa-angle-double-right"></i>
                       </button>
                     </div>
-                  </div>
-
-                  <div
-                    class="runner-progress-details"
-                    id="laps-progress-container"
-                    style="display: none"
-                  >
                     <div class="divider"></div>
-                    <h4 class="progress-section-label" id="laps-progress-label">
-                      Lap Progress
-                    </h4>
+                    <h4 class="progress-section-label">Laps</h4>
+                    <div id="laps-progress-label">Lap Progress</div>
                     <div class="progress-bar-container">
                       <div
                         id="lap-progress-bar"

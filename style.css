@@ -25,7 +25,6 @@
   --stepper-increment-text: #166534;
   --stepper-decrement-bg: #fee2e2;
   --stepper-decrement-text: #991b1b;
-  /* SOLUTION: New colors for Preset Buttons */
   --preset-btn-bg: #e0f2fe;
   --preset-btn-text: #075985;
   --preset-btn-border: #bae6fd;
@@ -57,7 +56,6 @@ body.dark-theme {
   --stepper-increment-text: #ffffff;
   --stepper-decrement-bg: #da3633;
   --stepper-decrement-text: #ffffff;
-  /* SOLUTION: New colors for Preset Buttons (Dark Theme) */
   --preset-btn-bg: #1e293b;
   --preset-btn-text: #93c5fd;
   --preset-btn-border: #384253;
@@ -226,16 +224,11 @@ body.dark-theme .theme-btn .fa-moon {
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
-.form-row-split {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  align-items: start;
-}
+.form-row-split,
 .form-row-split-advanced {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
   align-items: start;
 }
 .form-column {
@@ -353,7 +346,7 @@ textarea::placeholder {
   z-index: 1;
   margin-left: -1px;
   margin-right: -1px;
-  width: 70px;
+  width: 60px;
 }
 .stepper-input .stepper-btn:last-child {
   border-radius: 0 0.75rem 0.75rem 0;
@@ -363,6 +356,9 @@ textarea::placeholder {
   grid-template-columns: auto 1fr;
   gap: 1.5rem;
   align-items: flex-end;
+  background-color: var(--input-bg);
+  border-radius: 0.75rem;
+  padding: 1rem;
 }
 .duration-inputs-wrapper {
   display: flex;
@@ -375,7 +371,7 @@ textarea::placeholder {
 .duration-input-group label,
 .preset-group label {
   font-size: 0.8125rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -385,7 +381,6 @@ textarea::placeholder {
   grid-template-rows: 1fr 1fr;
   gap: 0.5rem;
 }
-/* SOLUTION: PRESET BUTTONS STYLING */
 .preset-btn {
   padding: 0.25rem;
   font-size: 0.875rem;
@@ -420,19 +415,15 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 60px;
+  height: var(--input-height);
+  font-size: 1.25rem;
 }
 .stepper-btn:active {
   transform: scale(0.95);
 }
-.stepper-btn {
-  width: var(--input-height);
-  height: var(--input-height);
-  font-size: 1.25rem;
-  border-radius: 0.75rem;
-}
 .stepper-btn[data-field="growthFactor"] {
-  width: auto;
-  min-width: 50px;
+  width: 60px;
   font-size: 0.875rem;
   padding: 0 0.5rem;
 }
@@ -526,13 +517,13 @@ textarea::placeholder {
   font-size: 0.875rem;
   border: 1px solid var(--border-color);
 }
-/* SOLUTION: LAP PLAYLIST CLIPPING FIX */
-.lap-list-wrapper {
-  padding: 0.1rem 0.5rem; /* Increased horizontal padding */
+#lap-list-content {
+  /* Padding is now handled by the .lap-list element */
 }
 .lap-list {
   max-height: 280px;
   overflow-y: auto;
+  padding: 4px; /* Fixes outline clipping issue */
 }
 .lap-list-item {
   display: flex;
@@ -548,7 +539,7 @@ textarea::placeholder {
 }
 .lap-list-item.running {
   outline: 2px solid var(--accent-blue);
-  outline-offset: 2px; /* Pushes outline out, so padding is needed */
+  outline-offset: 2px;
   background-color: color-mix(in srgb, var(--accent-blue) 10%, transparent);
   box-shadow: 0 0 10px var(--accent-blue-focus-shadow);
 }
@@ -625,7 +616,7 @@ textarea::placeholder {
   font-weight: 500;
   color: var(--text-secondary);
   background-color: var(--input-bg);
-  padding: 0.25rem 0.625rem;
+  padding: 0.3rem 0.875rem;
   border-radius: 99px;
   border: 1px solid var(--border-color);
   white-space: nowrap;
@@ -740,31 +731,25 @@ textarea::placeholder {
   border-color: var(--text-secondary);
 }
 .laps-section {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   padding-top: 1.5rem;
 }
-/* SOLUTION: LAPS TITLE ALIGNMENT FIX */
 .laps-section-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 1rem;
-}
-.laps-section-header h3 {
-  margin: 0;
-  color: var(--text-primary);
 }
 .laps-controls {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-/* The JS toggles between .laps-controls and #session-controls.
-   Since both are now inside the flexbox header, this works perfectly. */
 #session-controls {
-  display: flex; /* Changed from grid to flex for better alignment */
+  display: flex;
   gap: 0.5rem;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 .session-btn {
   padding: 0.625rem 1rem;
@@ -825,10 +810,13 @@ textarea::placeholder {
 .task-item {
   display: grid;
   grid-template-columns: var(--task-grid-columns);
-  gap: 1rem;
   align-items: center;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
+}
+.task-list-header,
+.task-item {
+  gap: 1.25rem;
 }
 .task-list-header {
   font-weight: 600;
@@ -908,6 +896,9 @@ textarea::placeholder {
   justify-content: flex-end;
   gap: 0.25rem;
 }
+.task-list-header .task-actions-col {
+  justify-content: center;
+}
 .task-actions-col button {
   padding: 0;
   z-index: 2;
@@ -955,7 +946,6 @@ textarea::placeholder {
   border-bottom: 1px solid var(--border-color);
   display: grid;
   grid-template-columns: var(--task-grid-columns);
-  gap: 1rem;
   align-items: center;
   padding: 0.75rem 1rem;
 }

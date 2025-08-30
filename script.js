@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
       activeLapMap: new Map(),
       totalActiveLaps: 0,
       totalLaps: 1,
-      taskOccurenceCounts: new Map(),
+      totalTaskOccurrencesMap: new Map(),
     },
   };
   const saveState = () => {
@@ -453,8 +453,13 @@ document.addEventListener("DOMContentLoaded", () => {
       virtualIndex >= state.sessionCache.virtualSessionPlaylist.length
     )
       return stopSession(true);
-    const { taskId, calculatedDuration, baseDuration, occurrences } =
-      state.sessionCache.virtualSessionPlaylist[virtualIndex];
+    const {
+      taskId,
+      calculatedDuration,
+      baseDuration,
+      occurrences,
+      totalOccurrences,
+    } = state.sessionCache.virtualSessionPlaylist[virtualIndex];
     const task = state.sessionCache.taskMap.get(taskId);
     if (!task) return stopSession(true);
     const category =
@@ -468,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.runnerDetails.baseDuration.textContent = formatTime(baseDuration);
     DOM.runnerDetails.currentDuration.textContent =
       formatTime(calculatedDuration);
-    DOM.runnerDetails.occurrenceCount.textContent = occurrences;
+    DOM.runnerDetails.occurrenceCount.textContent = `${occurrences} of ${totalOccurrences}`;
     DOM.runnerDetails.changePercentage.textContent = `${changePercentage}%`;
     DOM.runnerDetails.changeDelta.textContent = formatTime(changeDelta);
     DOM.runnerDetails.changePercentage.style.color =
@@ -522,9 +527,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
     DOM.lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
     const activeLapNumber = state.sessionCache.activeLapMap.get(lap);
-    DOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${
-      state.sessionCache.totalActiveLaps
-    } (Run ${lap + 1}) - Task ${taskIndexInLap} of ${totalTasksInLap}`;
+    DOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${state.sessionCache.totalActiveLaps} - Task ${taskIndexInLap} of ${totalTasksInLap}`;
     const totalSessionDuration = state.sessionCache.totalSessionDuration;
     const sessionTimeElapsed =
       (state.sessionCache.cumulativeSessionDurations[
@@ -613,7 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeLapMap = new Map();
     let activeLapCounter = 0;
     const lastRunLap = new Map();
-    const taskOccurenceCounts = new Map();
+    const totalTaskOccurrencesMap = new Map();
     for (let lap = 0; lap < totalLaps; lap++) {
       lapStartCumulativeDurations[lap] = currentCumulativeDuration;
       state.lapList.forEach((taskId) => {
@@ -622,8 +625,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const interval = task.lapInterval || 1;
         const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;
         if (lap === 0 || (lap > lastRun && (lap - lastRun) % interval === 0)) {
-          const occurrences = (taskOccurenceCounts.get(taskId) || 0) + 1;
-          taskOccurenceCounts.set(taskId, occurrences);
+          const occurrences = (totalTaskOccurrencesMap.get(taskId) || 0) + 1;
+          totalTaskOccurrencesMap.set(taskId, occurrences);
           const baseDuration = task.duration;
           let calculatedDuration = baseDuration;
           if (task.growthFactor !== 0) {
@@ -666,6 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
           lap,
           totalTasksInLap,
           taskIndexInLap: indexInLap + 1,
+          totalOccurrences: totalTaskOccurrencesMap.get(taskInfo.taskId) || 0,
         });
         cumulativeSessionDurations.push(currentCumulativeDuration);
         currentCumulativeDuration += taskInfo.calculatedDuration;
@@ -679,7 +683,7 @@ document.addEventListener("DOMContentLoaded", () => {
       totalSessionDuration: currentCumulativeDuration,
       activeLapMap,
       totalActiveLaps: activeLapCounter,
-      taskOccurenceCounts,
+      totalTaskOccurrencesMap,
     };
   };
   const startSession = () => {
@@ -696,7 +700,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
     DOM.lapsControls.style.display = "none";
-    DOM.sessionControls.style.display = "flex";
+    //DOM.sessionControls.style.display = "flex";
     DOM.lapsInput.disabled = true;
     $$('.stepper-btn[data-field="laps"]').forEach((b) => (b.disabled = true));
     return true;
@@ -706,7 +710,7 @@ document.addEventListener("DOMContentLoaded", () => {
     state.runnerState = "STOPPED";
     DOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     DOM.lapsControls.style.display = "flex";
-    DOM.sessionControls.style.display = "none";
+    //DOM.sessionControls.style.display = "none";
     DOM.lapsInput.disabled = false;
     $$('.stepper-btn[data-field="laps"]').forEach((b) => (b.disabled = false));
     if (finished) {
