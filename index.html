@@ -50,106 +50,30 @@
             <div id="create-task-content" class="panel-content">
               <div>
                 <div id="task-form" class="input-grid">
-                  <div class="form-group">
-                    <label for="task-input">Title</label>
-                    <input
-                      type="text"
-                      id="task-input"
-                      placeholder="e.g., Finish project report"
-                    />
-                  </div>
-
-                  <div class="form-group description-group">
-                    <label for="task-description-input"
-                      >Description (Optional)</label
-                    >
-                    <textarea
-                      id="task-description-input"
-                      placeholder="e.g., Finalize introduction and conclusion."
-                    ></textarea>
-                  </div>
-
-                  <div class="form-group category-group">
-                    <label>Category</label>
-                    <div id="category-grid" class="category-grid"></div>
-                  </div>
-
                   <div class="form-row-split">
-                    <div class="form-column">
-                      <fieldset class="form-group duration-container-group">
-                        <legend>Duration</legend>
-                        <div class="duration-wrapper">
-                          <div class="duration-inputs">
-                            <div class="stepper-input">
-                              <button
-                                class="stepper-btn"
-                                data-field="minutes"
-                                data-step="-1"
-                                aria-label="Decrease minutes"
-                              >
-                                -
-                              </button>
-                              <input
-                                type="number"
-                                id="task-duration-minutes"
-                                min="0"
-                              />
-                              <button
-                                class="stepper-btn"
-                                data-field="minutes"
-                                data-step="1"
-                                aria-label="Increase minutes"
-                              >
-                                +
-                              </button>
-                            </div>
-                            <span class="unit-label">m</span>
-                            <span class="separator">:</span>
-                            <div class="stepper-input">
-                              <button
-                                class="stepper-btn"
-                                data-field="seconds"
-                                data-step="-1"
-                                aria-label="Decrease seconds"
-                              >
-                                -
-                              </button>
-                              <input
-                                type="number"
-                                id="task-duration-seconds"
-                                min="0"
-                                max="59"
-                              />
-                              <button
-                                class="stepper-btn"
-                                data-field="seconds"
-                                data-step="1"
-                                aria-label="Increase seconds"
-                              >
-                                +
-                              </button>
-                            </div>
-                            <span class="unit-label">s</span>
-                          </div>
-                          <div class="preset-durations">
-                            <button class="preset-btn" data-duration="30">
-                              30s
-                            </button>
-                            <button class="preset-btn" data-duration="120">
-                              2m
-                            </button>
-                            <button class="preset-btn" data-duration="300">
-                              5m
-                            </button>
-                            <button class="preset-btn" data-duration="600">
-                              10m
-                            </button>
-                            <button class="preset-btn" data-duration="1500">
-                              25m
-                            </button>
-                          </div>
-                        </div>
-                      </fieldset>
+                    <div class="form-group">
+                      <label for="task-input">Title</label>
+                      <input
+                        type="text"
+                        id="task-input"
+                        placeholder="e.g., Finish project report"
+                      />
+                    </div>
+                    <div class="form-group description-group">
+                      <label for="task-description-input"
+                        >Description (Optional)</label
+                      >
+                      <textarea
+                        id="task-description-input"
+                        placeholder="e.g., Finalize introduction and conclusion."
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-row-split-advanced">
+                    <div class="form-group category-group">
+                      <label>Category</label>
+                      <div id="category-grid" class="category-grid"></div>
                     </div>
                     <div class="form-column">
                       <fieldset class="form-group">
@@ -219,6 +143,92 @@
                         </div>
                       </fieldset>
                     </div>
+                  </div>
+
+                  <div class="form-group duration-container-group">
+                    <fieldset>
+                      <legend>Duration</legend>
+                      <div class="duration-layout-grid">
+                        <div class="duration-inputs-wrapper">
+                          <div class="duration-input-group">
+                            <label for="task-duration-minutes">Minutes</label>
+                            <div class="stepper-input">
+                              <button
+                                class="stepper-btn"
+                                data-field="minutes"
+                                data-step="-1"
+                                aria-label="Decrease minutes"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                id="task-duration-minutes"
+                                min="0"
+                              />
+                              <button
+                                class="stepper-btn"
+                                data-field="minutes"
+                                data-step="1"
+                                aria-label="Increase minutes"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                          <div class="duration-input-group">
+                            <label for="task-duration-seconds">Seconds</label>
+                            <div class="stepper-input">
+                              <button
+                                class="stepper-btn"
+                                data-field="seconds"
+                                data-step="-1"
+                                aria-label="Decrease seconds"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                id="task-duration-seconds"
+                                min="0"
+                                max="59"
+                              />
+                              <button
+                                class="stepper-btn"
+                                data-field="seconds"
+                                data-step="1"
+                                aria-label="Increase seconds"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="preset-group">
+                          <label>Presets</label>
+                          <div class="preset-durations">
+                            <button class="preset-btn" data-duration="30">
+                              30s
+                            </button>
+                            <button class="preset-btn" data-duration="120">
+                              2m
+                            </button>
+                            <button class="preset-btn" data-duration="300">
+                              5m
+                            </button>
+                            <button class="preset-btn" data-duration="600">
+                              10m
+                            </button>
+                            <button class="preset-btn" data-duration="900">
+                              15m
+                            </button>
+                            <button class="preset-btn" data-duration="1500">
+                              25m
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
                   </div>
                   <div class="form-group add-btn-group">
                     <button id="add-task-btn">
@@ -341,7 +351,7 @@
               </button>
             </div>
             <div id="lap-list-content" class="panel-content">
-              <div>
+              <div class="lap-list-wrapper">
                 <div id="lap-list" class="lap-list"></div>
               </div>
             </div>
@@ -361,8 +371,8 @@
             <div id="task-runner-content" class="panel-content">
               <div>
                 <div id="runner-task-info">
-                  <span id="runner-task-category"></span>
                   <h3 id="runner-task-title">No task selected</h3>
+                  <span id="runner-task-category"></span>
                 </div>
                 <div class="runner-details-grid">
                   <div class="runner-detail">
@@ -380,11 +390,17 @@
                     >
                   </div>
                   <div class="runner-detail">
-                    <span class="runner-detail-label">Occurrence Count</span>
+                    <span class="runner-detail-label">Occurrence</span>
                     <span
                       id="runner-occurrence-count"
                       class="runner-detail-value"
                       >0</span
+                    >
+                  </div>
+                  <div class="runner-detail">
+                    <span class="runner-detail-label">Time Change</span>
+                    <span id="runner-change-delta" class="runner-detail-value"
+                      >0s</span
                     >
                   </div>
                   <div class="runner-detail">
@@ -395,16 +411,10 @@
                       >0%</span
                     >
                   </div>
-                  <div class="runner-detail runner-detail-full">
-                    <span class="runner-detail-label">Time Change</span>
-                    <span id="runner-change-delta" class="runner-detail-value"
-                      >0s</span
-                    >
-                  </div>
                 </div>
-                <label id="task-progress-label" class="progress-label"
-                  >Task Progress</label
-                >
+                <h4 id="task-progress-label" class="progress-section-label">
+                  Task
+                </h4>
                 <div class="progress-bar-container">
                   <div
                     id="task-progress-bar"
@@ -418,8 +428,14 @@
                   >
                 </div>
                 <div class="timer-display">
-                  <span id="time-elapsed">0s</span>
-                  <span id="time-remaining">0s</span>
+                  <div>
+                    <span class="timer-label">Elapsed</span
+                    ><span id="time-elapsed">0s</span>
+                  </div>
+                  <div>
+                    <span class="timer-label">Remaining</span
+                    ><span id="time-remaining">0s</span>
+                  </div>
                 </div>
                 <div class="runner-controls">
                   <button
@@ -445,59 +461,63 @@
                   </button>
                 </div>
                 <div class="laps-section">
-                  <h3>Laps</h3>
-                  <div class="laps-controls">
-                    <label for="laps-input">Runs:</label>
-                    <div class="stepper-input">
+                  <div class="laps-section-header">
+                    <h3>Laps</h3>
+                    <div class="laps-controls">
+                      <label for="laps-input">Runs:</label>
+                      <div class="stepper-input">
+                        <button
+                          class="stepper-btn"
+                          data-field="laps"
+                          data-step="-1"
+                          aria-label="Decrease laps"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          id="laps-input"
+                          value="1"
+                          min="1"
+                        />
+                        <button
+                          class="stepper-btn"
+                          data-field="laps"
+                          data-step="1"
+                          aria-label="Increase laps"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div id="session-controls" style="display: none">
                       <button
-                        class="stepper-btn"
-                        data-field="laps"
-                        data-step="-1"
-                        aria-label="Decrease laps"
+                        id="prev-lap-btn"
+                        class="session-btn"
+                        title="Previous Lap"
                       >
-                        -
+                        <i class="fas fa-angle-double-left"></i> Prev Lap
                       </button>
-                      <input type="number" id="laps-input" value="1" min="1" />
+                      <button id="stop-laps-btn" class="session-btn stop">
+                        Stop Session
+                      </button>
                       <button
-                        class="stepper-btn"
-                        data-field="laps"
-                        data-step="1"
-                        aria-label="Increase laps"
+                        id="next-lap-btn"
+                        class="session-btn"
+                        title="Next Lap"
                       >
-                        +
+                        Next Lap <i class="fas fa-angle-double-right"></i>
                       </button>
                     </div>
                   </div>
-                  <div
-                    id="session-controls"
-                    class="session-controls"
-                    style="display: none"
-                  >
-                    <button
-                      id="prev-lap-btn"
-                      class="session-btn"
-                      title="Previous Lap"
-                    >
-                      <i class="fas fa-angle-double-left"></i> Prev Lap
-                    </button>
-                    <button id="stop-laps-btn" class="session-btn stop">
-                      Stop Session
-                    </button>
-                    <button
-                      id="next-lap-btn"
-                      class="session-btn"
-                      title="Next Lap"
-                    >
-                      Next Lap <i class="fas fa-angle-double-right"></i>
-                    </button>
-                  </div>
+
                   <div
                     class="runner-progress-details"
                     id="laps-progress-container"
                     style="display: none"
                   >
                     <div class="divider"></div>
-                    <h4 class="progress-label" id="laps-progress-label">
+                    <h4 class="progress-section-label" id="laps-progress-label">
                       Lap Progress
                     </h4>
                     <div class="progress-bar-container">
@@ -513,12 +533,21 @@
                       >
                     </div>
                     <div class="timer-display">
-                      <span id="lap-time-elapsed">0s</span>
-                      <span id="lap-time-remaining">0s</span>
+                      <div>
+                        <span class="timer-label">Elapsed</span
+                        ><span id="lap-time-elapsed">0s</span>
+                      </div>
+                      <div>
+                        <span class="timer-label">Remaining</span
+                        ><span id="lap-time-remaining">0s</span>
+                      </div>
                     </div>
                     <div class="divider"></div>
-                    <h4 class="progress-label" id="session-progress-label">
-                      Session Progress
+                    <h4
+                      class="progress-section-label"
+                      id="session-progress-label"
+                    >
+                      Session
                     </h4>
                     <div class="progress-bar-container">
                       <div
@@ -533,8 +562,14 @@
                       >
                     </div>
                     <div class="timer-display">
-                      <span id="session-time-elapsed">0s</span>
-                      <span id="session-time-remaining">0s</span>
+                      <div>
+                        <span class="timer-label">Elapsed</span
+                        ><span id="session-time-elapsed">0s</span>
+                      </div>
+                      <div>
+                        <span class="timer-label">Remaining</span
+                        ><span id="session-time-remaining">0s</span>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,20 +1,21 @@
 /* style.css */
 /* --- THEME & COLOR PALETTE (V2 - ENHANCED CONTRAST) --- */
 :root {
-  --bg-color: #f3f4f6; /* Slightly cooler background */
+  --bg-color: #f3f4f6;
   --panel-bg: #ffffff;
   --text-primary: #111827;
   --text-secondary: #4b5563;
-  --border-color: #d1d5db; /* Stronger border for better definition */
+  --border-color: #d1d5db;
   --input-bg: #f9fafb;
   --input-border: #ced4da;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --hover-bg: #f9fafb;
-  --button-secondary-bg: #f3f4f6; /* Contrasting button bg */
+  --button-secondary-bg: #f3f4f6;
   --accent-blue: #3b82f6;
   --accent-green: #10b981;
+  --accent-green-dark: #047857;
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
   --accent-orange: #f59e0b;
@@ -24,11 +25,12 @@
   --stepper-increment-text: #166534;
   --stepper-decrement-bg: #fee2e2;
   --stepper-decrement-text: #991b1b;
-  --preset-btn-bg: #eef2ff; /* Softer preset bg */
-  --preset-btn-text: #4338ca;
-  --preset-btn-border: #c7d2fe;
+  /* SOLUTION: New colors for Preset Buttons */
+  --preset-btn-bg: #e0f2fe;
+  --preset-btn-text: #075985;
+  --preset-btn-border: #bae6fd;
   --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1.25fr;
-  --input-height: 42px; /* Consistent input height */
+  --input-height: 42px;
 }
 body.dark-theme {
   --bg-color: #0d1117;
@@ -42,9 +44,10 @@ body.dark-theme {
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
     0 4px 6px -2px rgba(0, 0, 0, 0.2);
   --hover-bg: #1f2937;
-  --button-secondary-bg: #21262d; /* Contrasting button bg */
+  --button-secondary-bg: #21262d;
   --accent-blue: #58a6ff;
   --accent-green: #56d364;
+  --accent-green-dark: #238636;
   --accent-red: #f87171;
   --accent-purple: #a78bfa;
   --accent-orange: #fbb_f24;
@@ -54,9 +57,10 @@ body.dark-theme {
   --stepper-increment-text: #ffffff;
   --stepper-decrement-bg: #da3633;
   --stepper-decrement-text: #ffffff;
-  --preset-btn-bg: #21262d; /* Same as secondary button */
-  --preset-btn-text: #c9d1d9;
-  --preset-btn-border: #30363d;
+  /* SOLUTION: New colors for Preset Buttons (Dark Theme) */
+  --preset-btn-bg: #1e293b;
+  --preset-btn-text: #93c5fd;
+  --preset-btn-border: #384253;
 }
 *,
 *::before,
@@ -74,7 +78,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* --- UPGRADE: Wider container for large screens --- */
 .container {
   max-width: 1600px;
   margin: 0 auto;
@@ -102,7 +105,7 @@ body {
 .panel-divider {
   height: 1px;
   background-color: var(--border-color);
-  margin: 1.5rem 0; /* Centered divider */
+  margin: 1.5rem 0;
   border: none;
 }
 header {
@@ -223,10 +226,15 @@ body.dark-theme .theme-btn .fa-moon {
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
-/* --- UPGRADE: Form layout grid --- */
 .form-row-split {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.form-row-split-advanced {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
   gap: 1.5rem;
   align-items: start;
 }
@@ -248,6 +256,10 @@ div.form-group {
   padding: 0;
   margin: 0;
   border: none;
+}
+.form-row-split .form-group textarea,
+.form-row-split .form-group input {
+  height: 100%;
 }
 input,
 textarea {
@@ -287,17 +299,16 @@ textarea::placeholder {
   color: var(--text-secondary);
   opacity: 0.7;
 }
-/* --- FIX: Category Button Clipping --- */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 0.75rem;
-  padding: 2px; /* Gives space for outline/transform */
-  margin: -2px; /* Compensates for padding to maintain alignment */
+  padding: 2px;
+  margin: -2px;
 }
 .category-btn {
   border: 1px solid var(--input-border);
-  outline: 2px solid transparent; /* Prepare for active state */
+  outline: 2px solid transparent;
   outline-offset: -2px;
   color: var(--text-primary);
   background-color: var(--input-bg);
@@ -347,31 +358,62 @@ textarea::placeholder {
 .stepper-input .stepper-btn:last-child {
   border-radius: 0 0.75rem 0.75rem 0;
 }
-.duration-wrapper,
-.growth-factor-controls {
+.duration-layout-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: flex-end;
+}
+.duration-inputs-wrapper {
   display: flex;
-  flex-direction: column;
   gap: 1rem;
 }
-.duration-inputs,
-.lap-interval-controls,
-.growth-factor-controls {
+.duration-input-group {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+}
+.duration-input-group label,
+.preset-group label {
+  font-size: 0.8125rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 .preset-durations {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5rem;
+}
+/* SOLUTION: PRESET BUTTONS STYLING */
+.preset-btn {
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  height: auto;
+  background-color: var(--preset-btn-bg);
+  color: var(--preset-btn-text);
+  border: 1px solid var(--preset-btn-border);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.preset-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: scale(1.05);
+}
+.lap-interval-controls,
+.growth-factor-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .field-description {
   color: var(--text-secondary);
   font-size: 0.875rem;
-  margin-left: 0.5rem;
 }
-.stepper-btn,
-.preset-btn {
+.stepper-btn {
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 600;
@@ -379,25 +421,9 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
 }
-.stepper-btn:active,
-.preset-btn:active {
+.stepper-btn:active {
   transform: scale(0.95);
 }
-/* --- UPGRADE: Consistent button sizing --- */
-.preset-btn {
-  padding: 0.625rem 0.75rem;
-  font-size: 1rem;
-  height: var(--input-height);
-  background-color: var(--preset-btn-bg);
-  color: var(--preset-btn-text);
-  border: 1px solid var(--preset-btn-border);
-  border-radius: 99px;
-}
-.preset-btn:hover {
-  filter: brightness(0.95);
-  border-color: var(--accent-blue);
-}
-/* --- UPGRADE: Resized stepper buttons for better alignment --- */
 .stepper-btn {
   width: var(--input-height);
   height: var(--input-height);
@@ -420,6 +446,9 @@ textarea::placeholder {
   background-color: var(--stepper-decrement-bg);
   color: var(--stepper-decrement-text);
 }
+.add-btn-group > #add-task-btn {
+  background-color: var(--accent-green-dark);
+}
 #add-task-btn,
 #cancel-edit-btn {
   padding: 0.75rem 1.5rem;
@@ -430,10 +459,6 @@ textarea::placeholder {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-#add-task-btn {
-  background-color: var(--accent-green);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 #add-task-btn:hover {
   transform: translateY(-2px);
@@ -501,10 +526,13 @@ textarea::placeholder {
   font-size: 0.875rem;
   border: 1px solid var(--border-color);
 }
+/* SOLUTION: LAP PLAYLIST CLIPPING FIX */
+.lap-list-wrapper {
+  padding: 0.1rem 0.5rem; /* Increased horizontal padding */
+}
 .lap-list {
   max-height: 280px;
   overflow-y: auto;
-  padding-right: 0.5rem;
 }
 .lap-list-item {
   display: flex;
@@ -516,10 +544,13 @@ textarea::placeholder {
   background-color: var(--input-bg);
   position: relative;
   border: 1px solid var(--input-border);
+  transition: all 0.2s ease;
 }
 .lap-list-item.running {
   outline: 2px solid var(--accent-blue);
+  outline-offset: 2px; /* Pushes outline out, so padding is needed */
   background-color: color-mix(in srgb, var(--accent-blue) 10%, transparent);
+  box-shadow: 0 0 10px var(--accent-blue-focus-shadow);
 }
 .lap-list-item[draggable="true"] {
   cursor: grab;
@@ -583,40 +614,83 @@ textarea::placeholder {
   top: 1.5rem;
 }
 #runner-task-info {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   margin-bottom: 1.5rem;
+  gap: 1rem;
 }
 #runner-task-category {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-#runner-task-title {
-  margin: 0.25rem 0;
-  font-size: 1.75rem;
-}
-.progress-label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
+  background-color: var(--input-bg);
+  padding: 0.25rem 0.625rem;
+  border-radius: 99px;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+#runner-task-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left;
+}
+.progress-section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+#laps-progress-label {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.timer-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.125rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.timer-display .timer-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-right: 0.5rem;
+  text-transform: uppercase;
 }
 .progress-bar-container {
   position: relative;
   width: 100%;
-  height: 16px;
-  border-radius: 8px;
+  height: 24px;
+  border-radius: 12px;
   margin-bottom: 0.5rem;
   background-color: var(--progress-container-bg);
   overflow: hidden;
+}
+.percentage-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 #task-progress-bar,
 #lap-progress-bar,
 #session-progress-bar {
   width: 0%;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: width 0.5s linear;
 }
 #task-progress-bar {
@@ -627,24 +701,6 @@ textarea::placeholder {
 }
 #session-progress-bar {
   background-color: var(--accent-purple);
-}
-.percentage-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-}
-.timer-display {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.25rem;
-  margin-top: 0.5rem;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
 }
 .runner-controls {
   display: flex;
@@ -687,16 +743,27 @@ textarea::placeholder {
   margin-top: 2rem;
   padding-top: 1.5rem;
 }
+/* SOLUTION: LAPS TITLE ALIGNMENT FIX */
+.laps-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.laps-section-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
 .laps-controls {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-.session-controls {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr;
+/* The JS toggles between .laps-controls and #session-controls.
+   Since both are now inside the flexbox header, this works perfectly. */
+#session-controls {
+  display: flex; /* Changed from grid to flex for better alignment */
   gap: 0.5rem;
-  margin-top: 1rem;
   justify-content: center;
 }
 .session-btn {
@@ -718,9 +785,6 @@ textarea::placeholder {
   color: var(--text-primary);
   background-color: var(--hover-bg);
 }
-#laps-progress-label {
-  text-align: center;
-}
 .runner-progress-details .divider {
   height: 1px;
   background-color: var(--border-color);
@@ -733,7 +797,6 @@ textarea::placeholder {
   display: flex;
   gap: 0.5rem;
 }
-/* --- FIX: Button Contrast --- */
 .repo-btn,
 .delete-all {
   padding: 0.625rem 1rem;
@@ -870,7 +933,6 @@ textarea::placeholder {
   padding: 0;
   margin: 0;
 }
-/* --- FIX: Task Repo Footer Stats Jumping --- */
 .task-list-footer {
   padding: 1rem;
   border-top: 1px solid var(--border-color);
@@ -886,7 +948,7 @@ textarea::placeholder {
 #task-summary {
   display: flex;
   gap: 1.5rem;
-  margin-left: auto; /* Anchors stats to the right */
+  margin-left: auto;
 }
 #task-list .task-item {
   transition: background-color 0.2s;
@@ -902,21 +964,27 @@ textarea::placeholder {
 }
 .runner-details-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1rem;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 0.75rem;
+}
+.runner-details-grid .runner-detail:nth-child(1),
+.runner-details-grid .runner-detail:nth-child(2),
+.runner-details-grid .runner-detail:nth-child(3) {
+  grid-column: span 2;
+}
+.runner-details-grid .runner-detail:nth-child(4),
+.runner-details-grid .runner-detail:nth-child(5) {
+  grid-column: span 3;
 }
 .runner-detail {
   display: flex;
   flex-direction: column;
   text-align: center;
-}
-.runner-detail-full {
-  grid-column: 1 / -1;
 }
 .runner-detail-label {
   font-size: 0.75rem;
@@ -997,9 +1065,12 @@ textarea::placeholder {
     margin: 1.5rem 0;
   }
 }
-/* --- UPGRADE: Breakpoint for form layout --- */
 @media (max-width: 1024px) {
-  .form-row-split {
+  .form-row-split,
+  .form-row-split-advanced {
+    grid-template-columns: 1fr;
+  }
+  .duration-layout-grid {
     grid-template-columns: 1fr;
   }
   :root {
