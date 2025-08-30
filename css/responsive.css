@@ -27,7 +27,8 @@
   :root {
     --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr 1fr;
   }
-  .task-interval-col {
+  .task-interval-col,
+  .task-limit-col {
     display: none;
   }
 }
@@ -62,6 +63,7 @@
   .task-category-col,
   .task-duration-col,
   .task-interval-col,
+  .task-limit-col,
   .task-growth-col {
     display: none;
   }

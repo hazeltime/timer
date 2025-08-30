@@ -29,7 +29,7 @@
   --preset-btn-bg: #e0f2fe;
   --preset-btn-text: #075985;
   --preset-btn-border: #bae6fd;
-  --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1.25fr;
+  --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1fr 1.25fr;
   --input-height: 42px;
 }
 
@@ -51,7 +51,7 @@ body.dark-theme {
   --accent-green-dark: #238636;
   --accent-red: #f87171;
   --accent-purple: #a78bfa;
-  --accent-orange: #fbb_f24;
+  --accent-orange: #fbbf24;
   --accent-blue-focus-shadow: rgba(88, 166, 255, 0.3);
   --progress-container-bg: #21262d;
   --stepper-increment-bg: #1f6feb;
@@ -113,12 +113,5 @@ h4 {
   height: 1px;
   background-color: var(--border-color);
   border: none;
-}
-
-.panel-divider {
-  margin: 1.5rem 0;
-}
-
-.runner-divider {
   margin: 1.5rem 0;
 }

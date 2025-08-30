@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     durationSecondsInput: $("#task-duration-seconds"),
     lapIntervalInput: $("#lap-interval-input"),
     growthFactorInput: $("#growth-factor-input"),
+    maxOccurrencesInput: $("#max-occurrences-input"),
     addTaskBtn: $("#add-task-btn"),
     cancelEditBtn: $("#cancel-edit-btn"),
     taskListEl: $("#task-list"),
@@ -129,6 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ...t,
       lapInterval: t.lapInterval || 1,
       growthFactor: t.growthFactor !== undefined ? t.growthFactor : 0,
+      maxOccurrences: t.maxOccurrences || 0,
     })),
     lapList: JSON.parse(localStorage.getItem("lapList")) || [],
     lastId: JSON.parse(localStorage.getItem("lastId")) || 0,
@@ -154,6 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       totalLaps: 1,
       totalTaskOccurrencesMap: new Map(),
       completedTaskDurationsMap: new Map(),
+      completedOccurrencesMap: new Map(),
     },
   };
 
@@ -189,6 +192,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           );
         case "lapInterval":
           return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
+        case "maxOccurrences":
+          return ((a.maxOccurrences || 0) - (b.maxOccurrences || 0)) * order;
         case "growthFactor":
           return ((a.growthFactor || 0) - (b.growthFactor || 0)) * order;
         default:
@@ -245,6 +250,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       -99,
       99
     );
+    const maxOccurrences = clamp(
+      parseInt(DOM.maxOccurrencesInput.value, 10) || 0,
+      0,
+      999
+    );
     if (totalDuration <= 0) {
       alert("Duration must be greater than 0 seconds.");
       return;
@@ -258,6 +268,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         task.duration = totalDuration;
         task.lapInterval = lapInterval;
         task.growthFactor = growthFactor;
+        task.maxOccurrences = maxOccurrences;
       }
     } else {
       state.lastId++;
@@ -269,6 +280,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         duration: totalDuration,
         lapInterval,
         growthFactor,
+        maxOccurrences,
       });
     }
     saveState();
@@ -307,6 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const copy = { ...original, id: state.lastId };
     if (!copy.lapInterval) copy.lapInterval = 1;
     if (copy.growthFactor === undefined) copy.growthFactor = 0;
+    if (copy.maxOccurrences === undefined) copy.maxOccurrences = 0;
     state.tasks.push(copy);
     saveState();
     renderAll();
@@ -417,11 +430,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           state.currentVirtualTaskIndex
         ];
       const { taskId, calculatedDuration } = lastTask;
+
+      // Update total duration for the task
       const currentTotal =
         state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
       state.sessionCache.completedTaskDurationsMap.set(
         taskId,
         currentTotal + calculatedDuration
+      );
+
+      // Update completed occurrences for the task
+      const completedCount =
+        state.sessionCache.completedOccurrencesMap.get(taskId) || 0;
+      state.sessionCache.completedOccurrencesMap.set(
+        taskId,
+        completedCount + 1
       );
     }
     loadTaskToRunner(state.currentVirtualTaskIndex + 1);
@@ -511,9 +534,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const task = taskMap.get(taskId);
         if (!task) return;
         const interval = task.lapInterval || 1;
+        const maxOccurrences = task.maxOccurrences || 0;
+        const occurrencesSoFar = totalTaskOccurrencesMap.get(taskId) || 0;
+
+        if (maxOccurrences > 0 && occurrencesSoFar >= maxOccurrences) {
+          return; // Skip if max occurrences reached
+        }
+
         const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;
         if (lap === 0 || (lap > lastRun && (lap - lastRun) % interval === 0)) {
-          const occurrences = (totalTaskOccurrencesMap.get(taskId) || 0) + 1;
+          const occurrences = occurrencesSoFar + 1;
           totalTaskOccurrencesMap.set(taskId, occurrences);
           const baseDuration = task.duration;
           let calculatedDuration = baseDuration;
@@ -552,12 +582,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       const totalTasksInLap = tasksInThisLap.length;
       if (totalTasksInLap === 0) return;
       tasksInThisLap.forEach((taskInfo, indexInLap) => {
+        const task = taskMap.get(taskInfo.taskId);
+        const maxOccurrences = task.maxOccurrences || 0;
+        const totalOccurrences =
+          maxOccurrences > 0
+            ? maxOccurrences
+            : totalTaskOccurrencesMap.get(taskInfo.taskId) || 0;
+
         virtualSessionPlaylist.push({
           ...taskInfo,
           lap,
           totalTasksInLap,
           taskIndexInLap: indexInLap + 1,
-          totalOccurrences: totalTaskOccurrencesMap.get(taskInfo.taskId) || 0,
+          totalOccurrences,
         });
         cumulativeSessionDurations.push(currentCumulativeDuration);
         currentCumulativeDuration += taskInfo.calculatedDuration;
@@ -582,7 +619,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const playlistData = buildVirtualPlaylist(taskMap, totalLaps);
     if (playlistData.virtualSessionPlaylist.length === 0) {
       alert(
-        "No tasks are scheduled to run in this session with the current intervals."
+        "No tasks are scheduled to run in this session with the current intervals and limits."
       );
       return false;
     }
@@ -590,7 +627,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       ...playlistData,
       taskMap,
       totalLaps,
-      completedTaskDurationsMap: new Map(), // Reset for new session
+      completedTaskDurationsMap: new Map(),
+      completedOccurrencesMap: new Map(), // Reset for new session
     };
     DOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
@@ -638,6 +676,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     state.runnerState = "PAUSED";
     DOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     state.sessionCache.completedTaskDurationsMap = new Map();
+    state.sessionCache.completedOccurrencesMap = new Map(); // Reset on restart
     const playlistData = buildVirtualPlaylist(
       state.sessionCache.taskMap,
       state.sessionCache.totalLaps
@@ -862,6 +901,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 99,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 2,
@@ -871,6 +911,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 2,
               growthFactor: 10,
+              maxOccurrences: 0,
             },
             {
               id: 3,
@@ -880,6 +921,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 99,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 4,
@@ -889,6 +931,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 3,
               growthFactor: 10,
+              maxOccurrences: 0,
             },
             {
               id: 5,
@@ -898,6 +941,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 99,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 6,
@@ -907,6 +951,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 2,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 7,
@@ -916,6 +961,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 4,
               growthFactor: 20,
+              maxOccurrences: 0,
             },
             {
               id: 8,
@@ -926,6 +972,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 180,
               lapInterval: 3,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 9,
@@ -935,6 +982,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 30,
               lapInterval: 1,
               growthFactor: 5,
+              maxOccurrences: 3,
             },
             {
               id: 10,
@@ -944,6 +992,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 300,
               lapInterval: 5,
               growthFactor: -20,
+              maxOccurrences: 0,
             },
             {
               id: 11,
@@ -953,6 +1002,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 3,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 12,
@@ -962,6 +1012,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 300,
               lapInterval: 5,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 13,
@@ -971,6 +1022,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 10,
               lapInterval: 4,
               growthFactor: 20,
+              maxOccurrences: 0,
             },
             {
               id: 14,
@@ -980,6 +1032,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 6,
               growthFactor: 5,
+              maxOccurrences: 0,
             },
             {
               id: 15,
@@ -989,6 +1042,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 5,
               growthFactor: 20,
+              maxOccurrences: 0,
             },
             {
               id: 16,
@@ -998,6 +1052,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 90,
               lapInterval: 4,
               growthFactor: 1,
+              maxOccurrences: 0,
             },
             {
               id: 17,
@@ -1007,6 +1062,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 3,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 18,
@@ -1016,6 +1072,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 10,
               lapInterval: 3,
               growthFactor: 10,
+              maxOccurrences: 0,
             },
             {
               id: 19,
@@ -1025,6 +1082,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 7,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 20,
@@ -1034,6 +1092,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 240,
               lapInterval: 5,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 21,
@@ -1043,6 +1102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 90,
               lapInterval: 4,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 22,
@@ -1052,6 +1112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 300,
               lapInterval: 8,
               growthFactor: -5,
+              maxOccurrences: 0,
             },
             {
               id: 23,
@@ -1061,6 +1122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 600,
               lapInterval: 10,
               growthFactor: -5,
+              maxOccurrences: 0,
             },
             {
               id: 24,
@@ -1070,6 +1132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 300,
               lapInterval: 9,
               growthFactor: -10,
+              maxOccurrences: 0,
             },
             {
               id: 25,
@@ -1079,6 +1142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 6,
               growthFactor: 10,
+              maxOccurrences: 0,
             },
             {
               id: 26,
@@ -1088,6 +1152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 60,
               lapInterval: 3,
               growthFactor: 20,
+              maxOccurrences: 0,
             },
             {
               id: 27,
@@ -1097,6 +1162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 6,
               growthFactor: -3,
+              maxOccurrences: 0,
             },
             {
               id: 28,
@@ -1106,6 +1172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 8,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 29,
@@ -1115,6 +1182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 10,
               growthFactor: 2,
+              maxOccurrences: 0,
             },
             {
               id: 30,
@@ -1124,6 +1192,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 240,
               lapInterval: 99,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 31,
@@ -1133,6 +1202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 4,
               growthFactor: -1,
+              maxOccurrences: 0,
             },
             {
               id: 32,
@@ -1142,6 +1212,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 900,
               lapInterval: 99,
               growthFactor: 0,
+              maxOccurrences: 0,
             },
             {
               id: 33,
@@ -1151,6 +1222,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 10,
               growthFactor: 1,
+              maxOccurrences: 0,
             },
             {
               id: 34,
@@ -1160,6 +1232,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               duration: 120,
               lapInterval: 1,
               growthFactor: 1,
+              maxOccurrences: 0,
             },
           ];
           state.lapList = [
@@ -1182,7 +1255,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     $$(".sort-header").forEach((h) =>
-      h.addEventListener("click", () => updateSort(h.id.split("-")[2]))
+      h.addEventListener("click", () =>
+        updateSort(h.id.replace("sort-by-", "").replace("-btn", ""))
+      )
     );
 
     $$(".preset-btn").forEach((btn) =>
@@ -1206,6 +1281,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           ? DOM.lapIntervalInput
           : field === "growthFactor"
           ? DOM.growthFactorInput
+          : field === "maxOccurrences"
+          ? DOM.maxOccurrencesInput
           : DOM.durationSecondsInput;
       const update = () => {
         let val = parseInt(input.value, 10) || 0;

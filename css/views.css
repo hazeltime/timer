@@ -21,11 +21,14 @@
   gap: 1.25rem;
 }
 
+/* IMPROVEMENT: Streamlined form labels */
 .form-group label,
-.form-group legend {
+.form-group legend,
+.duration-input-group label,
+.preset-group label {
   margin-bottom: 0.5rem;
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 0.875rem; /* Standardized size */
   color: var(--text-secondary);
   display: block;
 }
@@ -80,7 +83,8 @@ fieldset {
 .duration-layout-grid {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 1.5rem;
+  /* FIX: Adjusted gap for consistent alignment */
+  gap: 1rem;
   align-items: flex-end;
   background-color: var(--input-bg);
   border-radius: 0.75rem;
@@ -98,14 +102,6 @@ fieldset {
   flex-direction: column;
 }
 
-.duration-input-group label,
-.preset-group label {
-  font-size: 0.8125rem;
-  margin-bottom: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
 .preset-durations {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -114,7 +110,8 @@ fieldset {
 }
 
 .lap-interval-controls,
-.growth-factor-controls {
+.growth-factor-controls,
+.max-occurrences-controls {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -221,6 +218,7 @@ fieldset {
 }
 .task-duration-col,
 .task-interval-col,
+.task-limit-col,
 .task-category-col,
 .task-growth-col {
   font-weight: 500;
@@ -284,8 +282,6 @@ fieldset {
 
 /* --- Task Runner View --- */
 .task-runner-panel {
-  position: sticky;
-  top: 1.5rem;
   transition: all 0.3s ease-in-out;
 }
 #task-runner-panel.task-runner-popout {
@@ -329,14 +325,20 @@ fieldset {
   font-size: 1.5rem;
   text-align: left;
 }
-.progress-section-label {
-  font-size: 0.875rem;
+/* IMPROVEMENT: Streamlined runner/display labels */
+.progress-section-label,
+.runner-detail-label,
+.timer-display .timer-label {
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-  display: block;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.progress-section-label {
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .timer-display {
@@ -348,10 +350,7 @@ fieldset {
   font-variant-numeric: tabular-nums;
 }
 .timer-display .timer-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
   margin-right: 0.5rem;
-  text-transform: uppercase;
 }
 
 .runner-controls {
@@ -374,13 +373,6 @@ fieldset {
   display: flex;
   flex-direction: column;
   text-align: center;
-}
-.runner-detail-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 .runner-detail-value {
   font-size: 1.25rem;
@@ -417,7 +409,9 @@ fieldset {
 }
 .lap-navigation-controls {
   display: flex;
-  justify-content: space-between;
+  /* IMPROVEMENT: Centered lap controls */
+  justify-content: center;
+  gap: 1rem;
   margin-top: 1rem;
 }
 .stop-session-container {
@@ -471,6 +465,11 @@ fieldset {
   outline-offset: 2px;
   background-color: color-mix(in srgb, var(--accent-blue) 10%, transparent);
   box-shadow: 0 0 10px var(--accent-blue-focus-shadow);
+}
+.lap-list-item.maxed-out {
+  opacity: 0.5;
+  text-decoration: line-through;
+  background-color: color-mix(in srgb, var(--text-secondary) 10%, transparent);
 }
 .lap-list-item[draggable="true"] {
   cursor: grab;

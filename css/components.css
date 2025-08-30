@@ -171,16 +171,22 @@ body.dark-theme .theme-btn .fa-moon {
 .runner-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.75rem;
   padding: 0.625rem 1.25rem;
   border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   border: 1px solid var(--border-color);
+  background-color: var(--button-secondary-bg);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+.runner-btn:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
 .runner-btn.play {
   background-color: var(--accent-blue);
   color: white;
@@ -191,14 +197,10 @@ body.dark-theme .theme-btn .fa-moon {
 .runner-btn.play:hover {
   transform: scale(1.05);
 }
-.runner-btn:not(.play) {
-  background-color: var(--button-secondary-bg);
-  color: var(--text-secondary);
-}
-.runner-btn:not(.play):hover {
-  color: var(--text-primary);
-  background-color: var(--hover-bg);
-  border-color: var(--text-secondary);
+.runner-btn.stop {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
 }
 
 .repo-btn,
@@ -210,7 +212,6 @@ body.dark-theme .theme-btn .fa-moon {
   font-weight: 600;
   border: 1px solid var(--border-color);
 }
-
 .repo-btn {
   background-color: var(--button-secondary-bg);
   color: var(--text-primary);
@@ -225,32 +226,6 @@ body.dark-theme .theme-btn .fa-moon {
 }
 .delete-all:hover {
   opacity: 0.9;
-}
-
-.session-btn {
-  padding: 0.625rem 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--panel-bg);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.session-btn.stop {
-  background-color: var(--accent-red);
-  color: white;
-  border: none;
-}
-.session-btn.restart {
-  background-color: var(--button-secondary-bg);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-.session-btn:hover {
-  color: var(--text-primary);
-  background-color: var(--hover-bg);
 }
 
 .preset-btn {
@@ -282,7 +257,6 @@ body.dark-theme .theme-btn .fa-moon {
   height: var(--input-height);
   font-size: 1.25rem;
 }
-
 .stepper-btn:active {
   transform: scale(0.95);
 }
@@ -416,7 +390,8 @@ textarea::placeholder {
   width: 0%;
   height: 100%;
   border-radius: 12px;
-  transition: width 0.5s linear;
+  /* IMPROVEMENT: Smoother, more pleasing animation for progress bars */
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 #task-progress-bar {
   background-color: var(--accent-blue);

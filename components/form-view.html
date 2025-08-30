@@ -100,6 +100,39 @@
                 >
               </div>
             </fieldset>
+            <fieldset class="form-group">
+              <legend>Max Occurrences</legend>
+              <div class="max-occurrences-controls">
+                <div class="stepper-input">
+                  <button
+                    class="stepper-btn"
+                    data-field="maxOccurrences"
+                    data-step="-1"
+                    aria-label="Decrease max occurrences"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    id="max-occurrences-input"
+                    value="0"
+                    min="0"
+                    max="999"
+                  />
+                  <button
+                    class="stepper-btn"
+                    data-field="maxOccurrences"
+                    data-step="1"
+                    aria-label="Increase max occurrences"
+                  >
+                    +
+                  </button>
+                </div>
+                <span class="field-description"
+                  >Stops after N runs (0 for infinite)</span
+                >
+              </div>
+            </fieldset>
           </div>
         </div>
 

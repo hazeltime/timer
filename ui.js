@@ -58,6 +58,7 @@ export const renderTasks = (DOM, tasks, sortState) => {
             ? "Always"
             : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
         const growthText = `${task.growthFactor || 0}%`;
+        const limitText = task.maxOccurrences === 0 ? "∞" : task.maxOccurrences;
         return `
           <div class="task-item" data-id="${task.id}">
             <div class="task-cell task-id-col">#${task.id}</div>
@@ -72,6 +73,7 @@ export const renderTasks = (DOM, tasks, sortState) => {
               task.duration
             )}</div>
             <div class="task-cell task-interval-col">${intervalText}</div>
+            <div class="task-cell task-limit-col">${limitText}</div>
             <div class="task-cell task-growth-col">${growthText}</div>
             <div class="task-cell task-actions-col">
               <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
@@ -114,6 +116,18 @@ export const renderLapList = (DOM, state) => {
           state.sessionCache.virtualSessionPlaylist[
             state.currentVirtualTaskIndex
           ]?.taskId;
+      let extraClasses = isRunning ? "running" : "";
+      if (!sessionInactive) {
+        const totalOccurrences =
+          state.sessionCache.totalTaskOccurrencesMap.get(task.id) || 0;
+        if (
+          task.maxOccurrences > 0 &&
+          totalOccurrences >= task.maxOccurrences
+        ) {
+          extraClasses += " maxed-out";
+        }
+      }
+
       const actions = sessionInactive
         ? `<div class="lap-item-actions">
             <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
@@ -122,9 +136,9 @@ export const renderLapList = (DOM, state) => {
           </div>`
         : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button></div>`;
 
-      return `<div class="lap-list-item ${
-        isRunning ? "running" : ""
-      }" ${draggableAttr} data-id="${task.id}">
+      return `<div class="lap-list-item ${extraClasses}" ${draggableAttr} data-id="${
+        task.id
+      }">
             <span class="lap-category-icon" title="${category.name}">${
         category.icon
       }</span>
@@ -165,6 +179,7 @@ export const resetTaskFormUI = (DOM) => {
   DOM.durationSecondsInput.value = 30;
   DOM.lapIntervalInput.value = 1;
   DOM.growthFactorInput.value = 0;
+  DOM.maxOccurrencesInput.value = 0;
   DOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
   DOM.cancelEditBtn.style.display = "none";
   DOM.taskInput.focus();
@@ -178,6 +193,7 @@ export const loadTaskIntoFormUI = (DOM, task) => {
   DOM.durationSecondsInput.value = task.duration % 60;
   DOM.lapIntervalInput.value = task.lapInterval || 1;
   DOM.growthFactorInput.value = task.growthFactor || 0;
+  DOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
   DOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
   DOM.cancelEditBtn.style.display = "inline-block";
 };
