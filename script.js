@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const category =
           categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
         const isRunning =
-          isSessionActive() &&
+          state.currentVirtualTaskIndex > -1 &&
           task.id ===
             state.sessionCache.virtualSessionPlaylist[
               state.currentVirtualTaskIndex
@@ -425,6 +425,15 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.runnerDetails.changePercentage.textContent = "0%";
     DOM.runnerDetails.changeDelta.textContent = "0s";
   };
+  const scrollToRunningTask = () => {
+    const runningTaskEl = DOM.lapListEl.querySelector(".lap-list-item.running");
+    if (runningTaskEl) {
+      runningTaskEl.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
   const stopTimerInterval = () => {
     clearInterval(state.sessionInterval);
     state.sessionInterval = null;
@@ -476,6 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
         : "var(--text-secondary)";
     updateTimerDisplay();
     renderLapList();
+    scrollToRunningTask();
   };
   const updateTimerDisplay = () => {
     if (state.currentVirtualTaskIndex === -1) return;
