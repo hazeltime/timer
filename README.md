@@ -35,7 +35,7 @@ To run this project locally, you will need to have Node.js and npm installed.
 1.  **Clone the repository:**
 
     ```sh
-    git clone https://github.com/berrat/timer.git
+    git clone https://github.com/hazeltime/timer.git
     cd timer
     ```
 
