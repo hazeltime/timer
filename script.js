@@ -48,8 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
     modalConfirmBtn: $("#modal-confirm-btn"),
     taskSummaryEl: $("#task-summary"),
     resetAppBtn: $("#reset-app-btn"),
-    globalCollapseBtn: $("#global-collapse-btn"), // NEW
-    globalExpandBtn: $("#global-expand-btn"), // NEW
+    globalCollapseBtn: $("#global-collapse-btn"),
+    globalExpandBtn: $("#global-expand-btn"),
+    popoutRunnerBtn: $("#popout-runner-btn"), // NEW
     runnerTaskCategory: $("#runner-task-category"),
     runnerTaskTitle: $("#runner-task-title"),
     taskProgressBar: $("#task-progress-bar"),
@@ -428,13 +429,11 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.runnerDetails.changeDelta.textContent = "0s";
   };
   const scrollToRunningTask = () => {
-    // FIX: This function now scrolls the lap list container, not the window.
     const container = DOM.lapListEl;
     const runningTaskEl = container.querySelector(".lap-list-item.running");
     if (runningTaskEl && container) {
       const containerRect = container.getBoundingClientRect();
       const elementRect = runningTaskEl.getBoundingClientRect();
-      // Only scroll if the element is not already fully visible
       if (
         elementRect.top < containerRect.top ||
         elementRect.bottom > containerRect.bottom
@@ -479,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!task) return stopSession(true);
     const category =
       categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-    DOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`; // Use innerHTML to render icon and name
+    DOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`;
     DOM.runnerTaskTitle.textContent = task.title;
     state.currentTaskTimeLeft = calculatedDuration;
     const changeDelta = calculatedDuration - baseDuration;
@@ -791,7 +790,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ).element;
   };
   const toggleAllPanels = (collapse) => {
-    // NEW: Global panel controller
     const panels = $$(".panel[id]");
     panels.forEach((panel) => {
       const isCurrentlyCollapsed = panel.classList.contains("collapsed");
@@ -811,13 +809,39 @@ document.addEventListener("DOMContentLoaded", () => {
       JSON.stringify(state.panelCollapseState)
     );
   };
+  const toggleRunnerPopout = () => {
+    // NEW: Focus Mode controller
+    const panel = $("#task-runner-panel");
+    const body = document.body;
+    const icon = DOM.popoutRunnerBtn.querySelector("i");
+    panel.classList.toggle("task-runner-popout");
+    body.classList.toggle("runner-popped-out");
+    if (panel.classList.contains("task-runner-popout")) {
+      if (panel.classList.contains("collapsed")) {
+        panel.classList.remove("collapsed");
+        const collapseBtn = panel.querySelector(".collapse-btn");
+        if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "true");
+        state.panelCollapseState[panel.id] = false;
+        localStorage.setItem(
+          "panelCollapseState",
+          JSON.stringify(state.panelCollapseState)
+        );
+      }
+      icon.className = "fas fa-compress-arrows-alt";
+      DOM.popoutRunnerBtn.title = "Exit Focus Mode";
+    } else {
+      icon.className = "fas fa-expand-arrows-alt";
+      DOM.popoutRunnerBtn.title = "Focus Mode";
+    }
+  };
   const setupEventListeners = () => {
     DOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
     DOM.cancelEditBtn.addEventListener("click", resetTaskForm);
     DOM.globalCollapseBtn.addEventListener("click", () =>
       toggleAllPanels(true)
-    ); // NEW
-    DOM.globalExpandBtn.addEventListener("click", () => toggleAllPanels(false)); // NEW
+    );
+    DOM.globalExpandBtn.addEventListener("click", () => toggleAllPanels(false));
+    DOM.popoutRunnerBtn.addEventListener("click", toggleRunnerPopout); // NEW
     DOM.taskListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;

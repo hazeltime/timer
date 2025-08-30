@@ -346,13 +346,22 @@
           <section class="panel task-runner-panel" id="task-runner-panel">
             <div class="panel-header">
               <h2>Task Runner</h2>
-              <button
-                class="collapse-btn"
-                aria-expanded="true"
-                aria-controls="task-runner-content"
-              >
-                <i class="fas fa-chevron-up"></i>
-              </button>
+              <div class="panel-header-controls">
+                <button
+                  id="popout-runner-btn"
+                  class="panel-header-btn"
+                  title="Focus Mode"
+                >
+                  <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button
+                  class="collapse-btn"
+                  aria-expanded="true"
+                  aria-controls="task-runner-content"
+                >
+                  <i class="fas fa-chevron-up"></i>
+                </button>
+              </div>
             </div>
             <div id="task-runner-content" class="panel-content">
               <div>
