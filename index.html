@@ -22,6 +22,20 @@
         <h1><i class="fas fa-tasks"></i> Todo Task Timer</h1>
         <div class="header-controls">
           <button
+            id="global-collapse-btn"
+            class="theme-btn"
+            title="Collapse All Panels"
+          >
+            <i class="fas fa-chevron-up"></i>
+          </button>
+          <button
+            id="global-expand-btn"
+            class="theme-btn"
+            title="Expand All Panels"
+          >
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <button
             id="reset-app-btn"
             class="theme-btn"
             title="Reset and Load Demo"
@@ -329,34 +343,6 @@
           </section>
         </div>
         <div class="right-column">
-          <section class="panel" id="lap-list-panel">
-            <div class="panel-header lap-list-header">
-              <h2>Lap Playlist</h2>
-              <div class="lap-list-controls">
-                <span id="lap-list-duration">Total: 0s</span>
-                <button
-                  id="clear-lap-list-btn"
-                  title="Clear Playlist"
-                  class="btn-icon-danger"
-                >
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-              <button
-                class="collapse-btn"
-                aria-expanded="true"
-                aria-controls="lap-list-content"
-              >
-                <i class="fas fa-chevron-up"></i>
-              </button>
-            </div>
-            <div id="lap-list-content" class="panel-content">
-              <div class="lap-list-wrapper">
-                <div id="lap-list" class="lap-list"></div>
-              </div>
-            </div>
-          </section>
-          <hr class="panel-divider" />
           <section class="panel task-runner-panel" id="task-runner-panel">
             <div class="panel-header">
               <h2>Task Runner</h2>
@@ -460,10 +446,11 @@
                     <span>Next</span><i class="fas fa-forward-step"></i>
                   </button>
                 </div>
+                <hr class="runner-divider" />
                 <div class="laps-section">
                   <div class="laps-section-header">
                     <div class="laps-controls">
-                      <label for="laps-input">Runs:</label>
+                      <label for="laps-input">Laps:</label>
                       <div class="stepper-input">
                         <button
                           class="stepper-btn"
@@ -496,26 +483,6 @@
                     id="laps-progress-container"
                     style="display: none"
                   >
-                    <div id="session-controls">
-                      <button
-                        id="prev-lap-btn"
-                        class="session-btn"
-                        title="Previous Lap"
-                      >
-                        <i class="fas fa-angle-double-left"></i> Prev Lap
-                      </button>
-                      <button id="stop-laps-btn" class="session-btn stop">
-                        Stop Session
-                      </button>
-                      <button
-                        id="next-lap-btn"
-                        class="session-btn"
-                        title="Next Lap"
-                      >
-                        Next Lap <i class="fas fa-angle-double-right"></i>
-                      </button>
-                    </div>
-                    <div class="divider"></div>
                     <h4 class="progress-section-label">Laps</h4>
                     <div id="laps-progress-label">Lap Progress</div>
                     <div class="progress-bar-container">
@@ -539,6 +506,22 @@
                         <span class="timer-label">Remaining</span
                         ><span id="lap-time-remaining">0s</span>
                       </div>
+                    </div>
+                    <div class="lap-navigation-controls">
+                      <button
+                        id="prev-lap-btn"
+                        class="session-btn"
+                        title="Previous Lap"
+                      >
+                        <i class="fas fa-angle-double-left"></i> Prev Lap
+                      </button>
+                      <button
+                        id="next-lap-btn"
+                        class="session-btn"
+                        title="Next Lap"
+                      >
+                        Next Lap <i class="fas fa-angle-double-right"></i>
+                      </button>
                     </div>
                     <div class="divider"></div>
                     <h4
@@ -569,8 +552,41 @@
                         ><span id="session-time-remaining">0s</span>
                       </div>
                     </div>
+                    <div class="stop-session-container">
+                      <button id="stop-laps-btn" class="session-btn stop">
+                        Stop Session
+                      </button>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+          <hr class="panel-divider" />
+          <section class="panel" id="lap-list-panel">
+            <div class="panel-header lap-list-header">
+              <h2>Lap Playlist</h2>
+              <div class="lap-list-controls">
+                <span id="lap-list-duration">Total: 0s</span>
+                <button
+                  id="clear-lap-list-btn"
+                  title="Clear Playlist"
+                  class="btn-icon-danger"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+              <button
+                class="collapse-btn"
+                aria-expanded="true"
+                aria-controls="lap-list-content"
+              >
+                <i class="fas fa-chevron-up"></i>
+              </button>
+            </div>
+            <div id="lap-list-content" class="panel-content">
+              <div class="lap-list-wrapper">
+                <div id="lap-list" class="lap-list"></div>
               </div>
             </div>
           </section>

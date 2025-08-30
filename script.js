@@ -48,6 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     modalConfirmBtn: $("#modal-confirm-btn"),
     taskSummaryEl: $("#task-summary"),
     resetAppBtn: $("#reset-app-btn"),
+    globalCollapseBtn: $("#global-collapse-btn"), // NEW
+    globalExpandBtn: $("#global-expand-btn"), // NEW
     runnerTaskCategory: $("#runner-task-category"),
     runnerTaskTitle: $("#runner-task-title"),
     taskProgressBar: $("#task-progress-bar"),
@@ -426,12 +428,25 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.runnerDetails.changeDelta.textContent = "0s";
   };
   const scrollToRunningTask = () => {
-    const runningTaskEl = DOM.lapListEl.querySelector(".lap-list-item.running");
-    if (runningTaskEl) {
-      runningTaskEl.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    // FIX: This function now scrolls the lap list container, not the window.
+    const container = DOM.lapListEl;
+    const runningTaskEl = container.querySelector(".lap-list-item.running");
+    if (runningTaskEl && container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = runningTaskEl.getBoundingClientRect();
+      // Only scroll if the element is not already fully visible
+      if (
+        elementRect.top < containerRect.top ||
+        elementRect.bottom > containerRect.bottom
+      ) {
+        const offset = runningTaskEl.offsetTop - container.offsetTop;
+        const desiredScrollTop =
+          offset - container.clientHeight / 2 + runningTaskEl.clientHeight / 2;
+        container.scrollTo({
+          top: desiredScrollTop,
+          behavior: "smooth",
+        });
+      }
     }
   };
   const stopTimerInterval = () => {
@@ -464,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!task) return stopSession(true);
     const category =
       categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-    DOM.runnerTaskCategory.textContent = `${category.icon} ${category.name}`;
+    DOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`; // Use innerHTML to render icon and name
     DOM.runnerTaskTitle.textContent = task.title;
     state.currentTaskTimeLeft = calculatedDuration;
     const changeDelta = calculatedDuration - baseDuration;
@@ -700,7 +715,6 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
     DOM.lapsControls.style.display = "none";
-    //DOM.sessionControls.style.display = "flex";
     DOM.lapsInput.disabled = true;
     $$('.stepper-btn[data-field="laps"]').forEach((b) => (b.disabled = true));
     return true;
@@ -710,7 +724,6 @@ document.addEventListener("DOMContentLoaded", () => {
     state.runnerState = "STOPPED";
     DOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
     DOM.lapsControls.style.display = "flex";
-    //DOM.sessionControls.style.display = "none";
     DOM.lapsInput.disabled = false;
     $$('.stepper-btn[data-field="laps"]').forEach((b) => (b.disabled = false));
     if (finished) {
@@ -762,7 +775,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return true;
   };
-  function getDragAfterElement(container, y) {
+  const getDragAfterElement = (container, y) => {
     const draggableElements = [
       ...container.querySelectorAll(".lap-list-item:not(.dragging)"),
     ];
@@ -776,10 +789,35 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       { offset: Number.NEGATIVE_INFINITY }
     ).element;
-  }
+  };
+  const toggleAllPanels = (collapse) => {
+    // NEW: Global panel controller
+    const panels = $$(".panel[id]");
+    panels.forEach((panel) => {
+      const isCurrentlyCollapsed = panel.classList.contains("collapsed");
+      const collapseBtn = panel.querySelector(".collapse-btn");
+      if (collapse && !isCurrentlyCollapsed) {
+        panel.classList.add("collapsed");
+        if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "false");
+        state.panelCollapseState[panel.id] = true;
+      } else if (!collapse && isCurrentlyCollapsed) {
+        panel.classList.remove("collapsed");
+        if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "true");
+        state.panelCollapseState[panel.id] = false;
+      }
+    });
+    localStorage.setItem(
+      "panelCollapseState",
+      JSON.stringify(state.panelCollapseState)
+    );
+  };
   const setupEventListeners = () => {
     DOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
     DOM.cancelEditBtn.addEventListener("click", resetTaskForm);
+    DOM.globalCollapseBtn.addEventListener("click", () =>
+      toggleAllPanels(true)
+    ); // NEW
+    DOM.globalExpandBtn.addEventListener("click", () => toggleAllPanels(false)); // NEW
     DOM.taskListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
