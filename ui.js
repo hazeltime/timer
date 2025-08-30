@@ -384,3 +384,35 @@ export const applyTheme = (theme) => {
   document.body.className = `${theme}-theme`;
   localStorage.setItem("theme", theme);
 };
+
+export const initializeStepper = (stepperEl) => {
+  const input = stepperEl.querySelector("input");
+  const stepDownBtn = stepperEl.querySelector('[data-step*="-"]');
+  const stepUpBtn = stepperEl.querySelector('[data-step*=":not(-)"]');
+  let interval;
+
+  const stopInterval = () => clearInterval(interval);
+
+  const update = (step) => {
+    let val = parseInt(input.value, 10) || 0;
+    const min = parseInt(input.min, 10) || 0;
+    const max = parseInt(input.max, 10) || Infinity;
+    val = Math.max(min, Math.min(max, val + step));
+    input.value = val;
+  };
+
+  stepDownBtn.addEventListener("mousedown", () => {
+    update(parseInt(stepDownBtn.dataset.step, 10));
+    interval = setInterval(() => update(parseInt(stepDownBtn.dataset.step, 10)), 120);
+  });
+
+  stepUpBtn.addEventListener("mousedown", () => {
+    update(parseInt(stepUpBtn.dataset.step, 10));
+    interval = setInterval(() => update(parseInt(stepUpBtn.dataset.step, 10)), 120);
+  });
+
+  stepDownBtn.addEventListener("mouseup", stopInterval);
+  stepDownBtn.addEventListener("mouseleave", stopInterval);
+  stepUpBtn.addEventListener("mouseup", stopInterval);
+  stepUpBtn.addEventListener("mouseleave", stopInterval);
+};
