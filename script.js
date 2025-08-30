@@ -7,7 +7,49 @@ import {
 } from "./constants.js";
 import * as UI from "./ui.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+/**
+ * Fetches HTML for all components and injects them into the main document.
+ * This function must complete before the rest of the application logic runs.
+ */
+const loadHTMLComponents = async () => {
+  const components = [
+    { id: "#header-placeholder", url: "components/header.html" },
+    { id: "#form-view-placeholder", url: "components/form-view.html" },
+    {
+      id: "#repository-view-placeholder",
+      url: "components/repository-view.html",
+    },
+    { id: "#runner-view-placeholder", url: "components/runner-view.html" },
+    { id: "#playlist-view-placeholder", url: "components/playlist-view.html" },
+    { id: "#modal-placeholder", url: "components/modal.html" },
+  ];
+
+  try {
+    const responses = await Promise.all(
+      components.map((comp) => fetch(comp.url).then((res) => res.text()))
+    );
+
+    responses.forEach((html, index) => {
+      const { id } = components[index];
+      const placeholder = document.querySelector(id);
+      if (placeholder) {
+        placeholder.outerHTML = html;
+      } else {
+        console.error(`Placeholder with ID ${id} not found.`);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load HTML components:", error);
+    document.body.innerHTML =
+      "<p>Error loading application components. Please try again later.</p>";
+  }
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  // Load all HTML modules before initializing the application
+  await loadHTMLComponents();
+
+  // The rest of the application logic starts only after the await above is complete
   const { $$, $ } = UI;
 
   // ----------------------
