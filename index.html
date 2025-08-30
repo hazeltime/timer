@@ -14,7 +14,1029 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* --- THEME & COLOR PALETTE (V2 - ENHANCED CONTRAST) --- */
+      :root {
+        --bg-color: #f3f4f6; /* Slightly cooler background */
+        --panel-bg: #ffffff;
+        --text-primary: #111827;
+        --text-secondary: #4b5563;
+        --border-color: #d1d5db; /* Stronger border for better definition */
+        --input-bg: #f9fafb;
+        --input-border: #ced4da;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --hover-bg: #f9fafb;
+        --button-secondary-bg: #f3f4f6; /* Contrasting button bg */
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-red: #ef4444;
+        --accent-purple: #8b5cf6;
+        --accent-orange: #f59e0b;
+        --accent-blue-focus-shadow: rgba(59, 130, 246, 0.25);
+        --progress-container-bg: #e5e7eb;
+        --stepper-increment-bg: #dcfce7;
+        --stepper-increment-text: #166534;
+        --stepper-decrement-bg: #fee2e2;
+        --stepper-decrement-text: #991b1b;
+        --preset-btn-bg: #eef2ff; /* Softer preset bg */
+        --preset-btn-text: #4338ca;
+        --preset-btn-border: #c7d2fe;
+        --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1.25fr;
+      }
+      body.dark-theme {
+        --bg-color: #0d1117;
+        --panel-bg: #161b22;
+        --text-primary: #c9d1d9;
+        --text-secondary: #8b949e;
+        --border-color: #30363d;
+        --input-bg: #0d1117;
+        --input-border: #30363d;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+          0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        --hover-bg: #1f2937;
+        --button-secondary-bg: #21262d; /* Contrasting button bg */
+        --accent-blue: #58a6ff;
+        --accent-green: #56d364;
+        --accent-red: #f87171;
+        --accent-purple: #a78bfa;
+        --accent-orange: #fbb_f24;
+        --accent-blue-focus-shadow: rgba(88, 166, 255, 0.3);
+        --progress-container-bg: #21262d;
+        --stepper-increment-bg: #1f6feb;
+        --stepper-increment-text: #ffffff;
+        --stepper-decrement-bg: #da3633;
+        --stepper-decrement-text: #ffffff;
+        --preset-btn-bg: #21262d; /* Same as secondary button */
+        --preset-btn-text: #c9d1d9;
+        --preset-btn-border: #30363d;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        transition: background-color 0.3s, color 0.3s;
+        margin: 0;
+        padding: 2rem;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .container {
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+      .panel {
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+        background-color: var(--panel-bg);
+        box-shadow: var(--shadow);
+      }
+      .main-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      .left-column,
+      .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .panel-divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 1.5rem 0; /* Centered divider */
+        border: none;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+      h1 i {
+        margin-right: 0.75rem;
+        color: var(--accent-blue);
+      }
+      h2,
+      h3,
+      h4 {
+        margin: 0;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 1.25rem;
+      }
+      h3 {
+        font-size: 1.125rem;
+      }
+      h4 {
+        font-size: 1rem;
+      }
+      .header-controls {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .theme-btn {
+        background-color: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        border-radius: 0.75rem;
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        font-size: 1.25rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s ease;
+      }
+      .theme-btn:hover {
+        transform: scale(1.05);
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+      }
+      .theme-btn .fa-sun {
+        display: none;
+      }
+      .theme-btn .fa-moon {
+        display: block;
+      }
+      body.dark-theme .theme-btn .fa-sun {
+        display: block;
+      }
+      body.dark-theme .theme-btn .fa-moon {
+        display: none;
+      }
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+      .panel.collapsed .panel-header {
+        margin-bottom: 0;
+      }
+      .collapse-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .collapse-btn:hover {
+        background-color: var(--hover-bg);
+      }
+      .collapse-btn i {
+        transition: transform 0.3s ease;
+      }
+      .panel.collapsed .collapse-btn i {
+        transform: rotate(180deg);
+      }
+      .panel-content {
+        display: grid;
+        grid-template-rows: 1fr;
+        transition: grid-template-rows 0.3s ease-in-out;
+        overflow: hidden;
+      }
+      .panel-content > div {
+        min-height: 0;
+        overflow: visible;
+      }
+      .panel.collapsed .panel-content {
+        grid-template-rows: 0fr;
+      }
+      .input-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .form-group label,
+      .form-group legend {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        display: block;
+      }
+      fieldset.form-group,
+      div.form-group {
+        padding: 0;
+        margin: 0;
+        border: none;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        border: 1px solid var(--input-border);
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+      input:focus,
+      textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--accent-blue-focus-shadow);
+        border-color: var(--accent-blue);
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+        text-align: center;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+      /* --- FIX: Category Button Clipping --- */
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: 0.75rem;
+        padding: 2px; /* Gives space for outline/transform */
+        margin: -2px; /* Compensates for padding to maintain alignment */
+      }
+      .category-btn {
+        border: 1px solid var(--input-border);
+        outline: 2px solid transparent; /* Prepare for active state */
+        outline-offset: -2px;
+        color: var(--text-primary);
+        background-color: var(--input-bg);
+        border-radius: 0.75rem;
+        padding: 0.5rem;
+        font-size: 0.8125rem;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+      .category-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-blue);
+      }
+      .category-btn.active {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: transparent;
+      }
+      .category-btn .icon {
+        font-size: 1.125rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .stepper-input {
+        display: flex;
+      }
+      .stepper-input .stepper-btn {
+        border: 1px solid var(--input-border);
+        position: relative;
+        z-index: 2;
+      }
+      .stepper-input .stepper-btn:hover {
+        filter: brightness(0.95);
+      }
+      .stepper-input .stepper-btn:first-child {
+        border-radius: 0.75rem 0 0 0.75rem;
+      }
+      .stepper-input input {
+        border-radius: 0;
+        position: relative;
+        z-index: 1;
+        margin-left: -1px;
+        margin-right: -1px;
+        width: 70px;
+      }
+      .stepper-input .stepper-btn:last-child {
+        border-radius: 0 0.75rem 0.75rem 0;
+      }
+      .duration-wrapper,
+      .growth-factor-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .duration-inputs,
+      .lap-interval-controls,
+      .growth-factor-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .preset-durations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 0.75rem;
+      }
+      .field-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-left: 0.5rem;
+      }
+      .stepper-btn,
+      .preset-btn {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .stepper-btn:active,
+      .preset-btn:active {
+        transform: scale(0.95);
+      }
+      /* --- FIX: Button Contrast --- */
+      .preset-btn {
+        padding: 0.625rem 0.75rem;
+        font-size: 1rem;
+        height: 44px;
+        background-color: var(--preset-btn-bg);
+        color: var(--preset-btn-text);
+        border: 1px solid var(--preset-btn-border);
+        border-radius: 99px;
+      }
+      .preset-btn:hover {
+        filter: brightness(0.95);
+        border-color: var(--accent-blue);
+      }
+      .stepper-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.5rem;
+        border-radius: 0.75rem;
+      }
+      .stepper-btn[data-field="growthFactor"] {
+        width: auto;
+        min-width: 50px;
+        font-size: 0.875rem;
+        padding: 0 0.5rem;
+      }
+      .stepper-btn[data-step="1"],
+      .stepper-btn[data-step="5"] {
+        background-color: var(--stepper-increment-bg);
+        color: var(--stepper-increment-text);
+      }
+      .stepper-btn[data-step="-1"],
+      .stepper-btn[data-step="-5"] {
+        background-color: var(--stepper-decrement-bg);
+        color: var(--stepper-decrement-text);
+      }
+      #add-task-btn,
+      #cancel-edit-btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        color: white;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      #add-task-btn {
+        background-color: var(--accent-green);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      #add-task-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+      #cancel-edit-btn {
+        background-color: var(--text-secondary);
+      }
+      #cancel-edit-btn:hover {
+        opacity: 0.9;
+      }
+      .lap-item-actions button,
+      .task-actions-col button {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .lap-item-actions button:hover,
+      .task-actions-col button:hover {
+        transform: scale(1.1);
+        background-color: var(--hover-bg);
+      }
+      .btn-icon-danger {
+        background-color: var(--accent-red);
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+      }
+      .btn-icon-danger:hover {
+        opacity: 0.9;
+        transform: scale(1.1);
+      }
+      .lap-list-header > h2 {
+        min-width: 0;
+        margin-right: auto;
+      }
+      .lap-list-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      #lap-list-duration {
+        font-weight: 500;
+        color: var(--text-secondary);
+        background-color: var(--input-bg);
+        padding: 0.25rem 0.625rem;
+        border-radius: 99px;
+        font-size: 0.875rem;
+        border: 1px solid var(--border-color);
+      }
+      .lap-list {
+        max-height: 280px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+      .lap-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.75rem;
+        margin-bottom: 0.5rem;
+        background-color: var(--input-bg);
+        position: relative;
+        border: 1px solid var(--input-border);
+      }
+      .lap-list-item.running {
+        outline: 2px solid var(--accent-blue);
+        background-color: color-mix(
+          in srgb,
+          var(--accent-blue) 10%,
+          transparent
+        );
+      }
+      .lap-list-item[draggable="true"] {
+        cursor: grab;
+      }
+      .lap-list-item[draggable="true"]:active {
+        cursor: grabbing;
+      }
+      .lap-list-item.dragging {
+        opacity: 0.4;
+      }
+      .lap-list-item .lap-category-icon {
+        font-size: 1.25rem;
+      }
+      .lap-list-item .title {
+        flex-grow: 1;
+        font-weight: 500;
+      }
+      .lap-list-item.drag-over-bottom::after,
+      .lap-list-item.drag-over-top::before {
+        content: "";
+        position: absolute;
+        left: 0.5rem;
+        right: 0.5rem;
+        height: 3px;
+        background-color: var(--accent-blue);
+        border-radius: 3px;
+      }
+      .lap-list-item.drag-over-bottom::after {
+        bottom: -4px;
+      }
+      .lap-list-item.drag-over-top::before {
+        top: -4px;
+      }
+      .lap-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.125rem;
+      }
+      .lap-item-actions .remove-btn:hover {
+        color: var(--accent-red);
+      }
+      .lap-item-actions .move-btn:hover {
+        color: var(--accent-blue);
+      }
+      .lap-list::-webkit-scrollbar {
+        width: 8px;
+      }
+      .lap-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .lap-list::-webkit-scrollbar-thumb {
+        background-color: var(--border-color);
+        border-radius: 4px;
+        border: 2px solid var(--panel-bg);
+      }
+      .lap-list::-webkit-scrollbar-thumb:hover {
+        background-color: var(--text-secondary);
+      }
+      .task-runner-panel {
+        position: sticky;
+        top: 1.5rem;
+      }
+      #runner-task-info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      #runner-task-category {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      #runner-task-title {
+        margin: 0.25rem 0;
+        font-size: 1.75rem;
+      }
+      .progress-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .progress-bar-container {
+        position: relative;
+        width: 100%;
+        height: 16px;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background-color: var(--progress-container-bg);
+        overflow: hidden;
+      }
+      #task-progress-bar,
+      #lap-progress-bar,
+      #session-progress-bar {
+        width: 0%;
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.5s linear;
+      }
+      #task-progress-bar {
+        background-color: var(--accent-blue);
+      }
+      #lap-progress-bar {
+        background-color: var(--accent-green);
+      }
+      #session-progress-bar {
+        background-color: var(--accent-purple);
+      }
+      .percentage-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+      }
+      .timer-display {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.25rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+      .runner-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .runner-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .runner-btn.play {
+        background-color: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+        font-size: 1.125rem;
+        padding: 0.75rem 1.5rem;
+      }
+      .runner-btn.play:hover {
+        transform: scale(1.05);
+      }
+      .runner-btn:not(.play) {
+        background-color: var(--button-secondary-bg);
+        color: var(--text-secondary);
+      }
+      .runner-btn:not(.play):hover {
+        color: var(--text-primary);
+        background-color: var(--hover-bg);
+        border-color: var(--text-secondary);
+      }
+      .laps-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+      }
+      .laps-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .session-controls {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        justify-content: center;
+      }
+      .session-btn {
+        padding: 0.625rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--panel-bg);
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .session-btn.stop {
+        background-color: var(--accent-red);
+        color: white;
+        border: none;
+      }
+      .session-btn:hover {
+        color: var(--text-primary);
+        background-color: var(--hover-bg);
+      }
+      #laps-progress-label {
+        text-align: center;
+      }
+      .runner-progress-details .divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 1.5rem 0;
+      }
+      .repo-header {
+        flex-grow: 1;
+      }
+      .repo-controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+      /* --- FIX: Button Contrast --- */
+      .repo-btn,
+      .delete-all {
+        padding: 0.625rem 1rem;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+        border: 1px solid var(--border-color);
+      }
+      .repo-btn {
+        background-color: var(--button-secondary-bg);
+        color: var(--text-primary);
+      }
+      .repo-btn:hover {
+        border-color: var(--text-secondary);
+      }
+      .delete-all {
+        background-color: var(--accent-red);
+        color: white;
+        border-color: var(--accent-red);
+      }
+      .delete-all:hover {
+        opacity: 0.9;
+      }
+      .task-list-header,
+      .task-item {
+        display: grid;
+        grid-template-columns: var(--task-grid-columns);
+        gap: 1rem;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .task-list-header {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+      .task-item {
+        transition: background-color 0.2s;
+      }
+      .task-item:hover {
+        background-color: var(--hover-bg);
+      }
+      .task-cell {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+      .sort-header {
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s;
+      }
+      .sort-header:hover {
+        color: var(--text-primary);
+      }
+      .sort-header.active {
+        color: var(--accent-blue);
+      }
+      #task-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .task-id-col {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+      .task-title-col {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+      }
+      .task-title {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .task-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
+      .task-category-badge {
+        padding: 0.25rem 0.6rem;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
+        white-space: nowrap;
+      }
+      .task-duration-col,
+      .task-interval-col,
+      .task-category-col,
+      .task-growth-col {
+        font-weight: 500;
+        justify-content: center;
+      }
+      .task-interval-col .fa-redo-alt {
+        margin-right: 0.25rem;
+        color: var(--text-secondary);
+      }
+      .task-actions-col {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.25rem;
+      }
+      .task-actions-col button {
+        padding: 0;
+        z-index: 2;
+      }
+      .task-actions-col .add-to-lap-btn:hover {
+        color: var(--accent-green);
+      }
+      .task-actions-col .edit-btn:hover {
+        color: var(--accent-blue);
+      }
+      .task-actions-col .copy-btn:hover {
+        color: var(--accent-purple);
+      }
+      .task-actions-col .delete-btn:hover {
+        color: var(--accent-red);
+      }
+      .task-list-container {
+        position: relative;
+        min-height: 80px;
+      }
+      #task-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      /* --- FIX: Task Repo Footer Stats Jumping --- */
+      .task-list-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+      }
+      #no-tasks-message {
+        font-weight: 500;
+      }
+      #task-summary {
+        display: flex;
+        gap: 1.5rem;
+        margin-left: auto; /* Anchors stats to the right */
+      }
+      #task-list .task-item {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid var(--border-color);
+        display: grid;
+        grid-template-columns: var(--task-grid-columns);
+        gap: 1rem;
+        align-items: center;
+        padding: 0.75rem 1rem;
+      }
+      #task-list .task-item:first-child {
+        border-top: 1px solid var(--border-color);
+      }
+      .runner-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: 0.75rem;
+      }
+      .runner-detail {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+      }
+      .runner-detail-full {
+        grid-column: 1 / -1;
+      }
+      .runner-detail-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .runner-detail-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+        color: var(--text-primary);
+      }
+      @keyframes modal-fade-in {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(17, 24, 39, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+      }
+      .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-overlay.show .modal-content {
+        animation: modal-fade-in 0.2s ease-out forwards;
+      }
+      .modal-content {
+        padding: 2rem;
+        border-radius: 1rem;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        background-color: var(--panel-bg);
+        box-shadow: var(--shadow-lg);
+      }
+      .modal-actions button {
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.75rem;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      @media (max-width: 1200px) {
+        .main-layout {
+          grid-template-columns: 1fr;
+        }
+        .task-runner-panel {
+          position: static;
+        }
+        .left-column > .panel,
+        .right-column > .panel {
+          padding: 1rem;
+        }
+        .panel-divider {
+          margin: 1.5rem 0;
+        }
+      }
+      @media (max-width: 1024px) {
+        :root {
+          --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr 1fr;
+        }
+        .task-interval-col {
+          display: none;
+        }
+      }
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+        :root {
+          --task-grid-columns: 1fr auto;
+        }
+        .task-list-header {
+          display: none;
+        }
+        .task-item {
+          align-items: center;
+          padding: 1rem 0.5rem;
+        }
+        .task-title-col {
+          grid-column: 1;
+        }
+        .task-actions-col {
+          grid-column: 2;
+        }
+        .task-id-col,
+        .task-category-col,
+        .task-duration-col,
+        .task-interval-col,
+        .task-growth-col {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -34,17 +1056,20 @@
           </button>
         </div>
       </header>
-
       <main class="main-layout">
         <div class="left-column">
-          <div class="panel" id="create-task-panel">
+          <section class="panel" id="create-task-panel">
             <div class="panel-header">
               <h2 id="form-title">Create New Task</h2>
-              <button class="collapse-btn" aria-expanded="true">
-                <i class="fas fa-chevron-down"></i>
+              <button
+                class="collapse-btn"
+                aria-expanded="true"
+                aria-controls="create-task-content"
+              >
+                <i class="fas fa-chevron-up"></i>
               </button>
             </div>
-            <div class="panel-content">
+            <div id="create-task-content" class="panel-content">
               <div>
                 <div id="task-form" class="input-grid">
                   <div class="form-group">
@@ -64,12 +1089,10 @@
                       placeholder="e.g., Finalize introduction and conclusion."
                     ></textarea>
                   </div>
-
                   <div class="form-group category-group">
                     <label>Category</label>
                     <div id="category-grid" class="category-grid"></div>
                   </div>
-
                   <fieldset class="form-group duration-container-group">
                     <legend>Duration</legend>
                     <div class="duration-wrapper">
@@ -144,7 +1167,6 @@
                       </div>
                     </div>
                   </fieldset>
-
                   <fieldset class="form-group">
                     <legend>Lap Interval</legend>
                     <div class="lap-interval-controls">
@@ -178,7 +1200,6 @@
                       >
                     </div>
                   </fieldset>
-
                   <fieldset class="form-group">
                     <legend>Duration Growth/Decay</legend>
                     <div class="growth-factor-controls">
@@ -212,7 +1233,6 @@
                       >
                     </div>
                   </fieldset>
-
                   <div class="form-group add-btn-group">
                     <button id="add-task-btn">
                       <i class="fas fa-plus"></i> Add Task
@@ -224,91 +1244,95 @@
                 </div>
               </div>
             </div>
-
-            <div class="panel-divider"></div>
-
-            <div class="panel" id="task-repository-panel">
-              <div class="panel-header repo-header">
-                <h2>Task Repository</h2>
-                <div class="repo-controls">
-                  <button id="add-all-btn" class="repo-btn">
-                    <i class="fas fa-plus-square"></i> Add All
-                  </button>
-                  <button id="delete-all-btn" class="delete-all">
-                    <i class="fas fa-trash-alt"></i> Delete All
-                  </button>
-                </div>
-                <button class="collapse-btn" aria-expanded="true">
-                  <i class="fas fa-chevron-down"></i>
+          </section>
+          <hr class="panel-divider" />
+          <section class="panel" id="task-repository-panel">
+            <div class="panel-header repo-header">
+              <h2>Task Repository</h2>
+              <div class="repo-controls">
+                <button id="add-all-btn" class="repo-btn">
+                  <i class="fas fa-plus-square"></i> Add All
+                </button>
+                <button id="delete-all-btn" class="delete-all">
+                  <i class="fas fa-trash-alt"></i> Delete All
                 </button>
               </div>
-              <div class="panel-content">
-                <div>
-                  <div class="task-list-container">
-                    <div class="task-list-header">
-                      <div
-                        class="task-cell task-id-col sort-header"
-                        id="sort-by-id-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        # <i class="fas"></i>
-                      </div>
-                      <div
-                        class="task-cell task-title-col sort-header"
-                        id="sort-by-title-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        Task <i class="fas"></i>
-                      </div>
-                      <div
-                        class="task-cell task-category-col sort-header"
-                        id="sort-by-category-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        Category <i class="fas"></i>
-                      </div>
-                      <div
-                        class="task-cell task-duration-col sort-header"
-                        id="sort-by-duration-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        Duration <i class="fas"></i>
-                      </div>
-                      <div
-                        class="task-cell task-interval-col sort-header"
-                        id="sort-by-lapInterval-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        Interval <i class="fas"></i>
-                      </div>
-                      <div
-                        class="task-cell task-growth-col sort-header"
-                        id="sort-by-growthFactor-btn"
-                        role="button"
-                        tabindex="0"
-                      >
-                        Growth <i class="fas"></i>
-                      </div>
-                      <div class="task-cell task-actions-col">Actions</div>
+              <button
+                class="collapse-btn"
+                aria-expanded="true"
+                aria-controls="task-repository-content"
+              >
+                <i class="fas fa-chevron-up"></i>
+              </button>
+            </div>
+            <div id="task-repository-content" class="panel-content">
+              <div>
+                <div class="task-list-container">
+                  <div class="task-list-header">
+                    <div
+                      class="task-cell task-id-col sort-header"
+                      id="sort-by-id-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      # <i class="fas"></i>
                     </div>
-                    <div id="task-list"></div>
+                    <div
+                      class="task-cell task-title-col sort-header"
+                      id="sort-by-title-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      Task <i class="fas"></i>
+                    </div>
+                    <div
+                      class="task-cell task-category-col sort-header"
+                      id="sort-by-category-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      Category <i class="fas"></i>
+                    </div>
+                    <div
+                      class="task-cell task-duration-col sort-header"
+                      id="sort-by-duration-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      Duration <i class="fas"></i>
+                    </div>
+                    <div
+                      class="task-cell task-interval-col sort-header"
+                      id="sort-by-lapInterval-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      Interval <i class="fas"></i>
+                    </div>
+                    <div
+                      class="task-cell task-growth-col sort-header"
+                      id="sort-by-growthFactor-btn"
+                      role="button"
+                      tabindex="0"
+                    >
+                      Growth <i class="fas"></i>
+                    </div>
+                    <div class="task-cell task-actions-col">Actions</div>
                   </div>
-                  <footer class="task-list-footer">
-                    <div id="task-summary"></div>
-                  </footer>
+                  <div id="task-list"></div>
                 </div>
+                <footer class="task-list-footer">
+                  <div id="no-tasks-message" style="display: none">
+                    No tasks yet. Add one above!
+                  </div>
+                  <div id="task-summary"></div>
+                </footer>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-
         <div class="right-column">
-          <div class="panel" id="lap-list-panel">
+          <section class="panel" id="lap-list-panel">
             <div class="panel-header lap-list-header">
               <h2>Lap Playlist</h2>
               <div class="lap-list-controls">
@@ -321,33 +1345,76 @@
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
-              <button class="collapse-btn" aria-expanded="true">
-                <i class="fas fa-chevron-down"></i>
+              <button
+                class="collapse-btn"
+                aria-expanded="true"
+                aria-controls="lap-list-content"
+              >
+                <i class="fas fa-chevron-up"></i>
               </button>
             </div>
-            <div class="panel-content">
+            <div id="lap-list-content" class="panel-content">
               <div>
                 <div id="lap-list" class="lap-list"></div>
               </div>
             </div>
-          </div>
-
-          <div class="panel-divider"></div>
-
-          <div class="panel task-runner-panel" id="task-runner-panel">
+          </section>
+          <hr class="panel-divider" />
+          <section class="panel task-runner-panel" id="task-runner-panel">
             <div class="panel-header">
               <h2>Task Runner</h2>
-              <button class="collapse-btn" aria-expanded="true">
-                <i class="fas fa-chevron-down"></i>
+              <button
+                class="collapse-btn"
+                aria-expanded="true"
+                aria-controls="task-runner-content"
+              >
+                <i class="fas fa-chevron-up"></i>
               </button>
             </div>
-            <div class="panel-content">
+            <div id="task-runner-content" class="panel-content">
               <div>
                 <div id="runner-task-info">
                   <span id="runner-task-category"></span>
                   <h3 id="runner-task-title">No task selected</h3>
                 </div>
-
+                <div class="runner-details-grid">
+                  <div class="runner-detail">
+                    <span class="runner-detail-label">Base Duration</span>
+                    <span id="runner-base-duration" class="runner-detail-value"
+                      >0s</span
+                    >
+                  </div>
+                  <div class="runner-detail">
+                    <span class="runner-detail-label">Current Duration</span>
+                    <span
+                      id="runner-current-duration"
+                      class="runner-detail-value"
+                      >0s</span
+                    >
+                  </div>
+                  <div class="runner-detail">
+                    <span class="runner-detail-label">Occurrence Count</span>
+                    <span
+                      id="runner-occurrence-count"
+                      class="runner-detail-value"
+                      >0</span
+                    >
+                  </div>
+                  <div class="runner-detail">
+                    <span class="runner-detail-label">Total Change %</span>
+                    <span
+                      id="runner-change-percentage"
+                      class="runner-detail-value"
+                      >0%</span
+                    >
+                  </div>
+                  <div class="runner-detail runner-detail-full">
+                    <span class="runner-detail-label">Time Change</span>
+                    <span id="runner-change-delta" class="runner-detail-value"
+                      >0s</span
+                    >
+                  </div>
+                </div>
                 <label id="task-progress-label" class="progress-label"
                   >Task Progress</label
                 >
@@ -363,7 +1430,6 @@
                     >0%</span
                   >
                 </div>
-
                 <div class="timer-display">
                   <span id="time-elapsed">0s</span>
                   <span id="time-remaining">0s</span>
@@ -391,7 +1457,6 @@
                     <span>Next</span><i class="fas fa-forward-step"></i>
                   </button>
                 </div>
-
                 <div class="laps-section">
                   <h3>Laps</h3>
                   <div class="laps-controls">
@@ -439,7 +1504,6 @@
                       Next Lap <i class="fas fa-angle-double-right"></i>
                     </button>
                   </div>
-
                   <div
                     class="runner-progress-details"
                     id="laps-progress-container"
@@ -489,11 +1553,10 @@
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
     </div>
-
     <div
       id="confirm-modal"
       class="modal-overlay"
@@ -511,7 +1574,1380 @@
         </div>
       </div>
     </div>
-
-    <script src="script.js" defer></script>
+    <script>
+      // script.js - Refactored Todo Task Timer (TTT)
+      // Combines best features from both versions and fixes bugs
+      document.addEventListener("DOMContentLoaded", () => {
+        // ----------------------
+        // Constants & Maps
+        // ----------------------
+        const CATEGORIES = [
+          { id: "cat-0", name: "None", icon: "⚫", color: "#78716c" },
+          { id: "cat-1", name: "Body", icon: "💪", color: "#ef4444" },
+          { id: "cat-2", name: "Mind", icon: "🧠", color: "#8b5cf6" },
+          { id: "cat-3", name: "Work", icon: "💼", color: "#3b82f6" },
+          { id: "cat-4", name: "Personal", icon: "🏠", color: "#22c55e" },
+          { id: "cat-5", name: "Relations", icon: "❤️", color: "#ec4899" },
+          { id: "cat-6", name: "Social", icon: "🎉", color: "#f97316" },
+          { id: "cat-7", name: "Education", icon: "📚", color: "#0ea5e9" },
+          { id: "cat-8", name: "Finance", icon: "💰", color: "#84cc16" },
+          { id: "cat-9", name: "Planning", icon: "📅", color: "#78716c" },
+        ];
+        const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
+        const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
+        const MIN_DURATION_SECONDS = 1;
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+        const DOM = {
+          taskForm: $("#task-form"),
+          formTitle: $("#form-title"),
+          taskInput: $("#task-input"),
+          taskDescriptionInput: $("#task-description-input"),
+          categoryGrid: $("#category-grid"),
+          durationMinutesInput: $("#task-duration-minutes"),
+          durationSecondsInput: $("#task-duration-seconds"),
+          lapIntervalInput: $("#lap-interval-input"),
+          growthFactorInput: $("#growth-factor-input"),
+          addTaskBtn: $("#add-task-btn"),
+          cancelEditBtn: $("#cancel-edit-btn"),
+          taskListEl: $("#task-list"),
+          lapListEl: $("#lap-list"),
+          lapListDurationEl: $("#lap-list-duration"),
+          themeToggleBtn: $("#theme-toggle-btn"),
+          deleteAllBtn: $("#delete-all-btn"),
+          addAllBtn: $("#add-all-btn"),
+          clearLapListBtn: $("#clear-lap-list-btn"),
+          confirmModal: $("#confirm-modal"),
+          modalTitle: $("#modal-title"),
+          modalText: $("#modal-text"),
+          modalCancelBtn: $("#modal-cancel-btn"),
+          modalConfirmBtn: $("#modal-confirm-btn"),
+          taskSummaryEl: $("#task-summary"),
+          resetAppBtn: $("#reset-app-btn"),
+          runnerTaskCategory: $("#runner-task-category"),
+          runnerTaskTitle: $("#runner-task-title"),
+          taskProgressBar: $("#task-progress-bar"),
+          taskPercentage: $("#task-percentage"),
+          timeElapsedEl: $("#time-elapsed"),
+          timeRemainingEl: $("#time-remaining"),
+          prevTaskBtn: $("#prev-task-btn"),
+          playPauseBtn: $("#play-pause-btn"),
+          nextTaskBtn: $("#next-task-btn"),
+          runnerDetails: {
+            baseDuration: $("#runner-base-duration"),
+            currentDuration: $("#runner-current-duration"),
+            occurrenceCount: $("#runner-occurrence-count"),
+            changePercentage: $("#runner-change-percentage"),
+            changeDelta: $("#runner-change-delta"),
+          },
+          lapsControls: $(".laps-controls"),
+          sessionControls: $("#session-controls"),
+          lapsInput: $("#laps-input"),
+          stopLapsBtn: $("#stop-laps-btn"),
+          prevLapBtn: $("#prev-lap-btn"),
+          nextLapBtn: $("#next-lap-btn"),
+          lapsProgressContainer: $("#laps-progress-container"),
+          lapsProgressLabel: $("#laps-progress-label"),
+          lapProgressBar: $("#lap-progress-bar"),
+          lapPercentage: $("#lap-percentage"),
+          lapTimeElapsedEl: $("#lap-time-elapsed"),
+          lapTimeRemainingEl: $("#lap-time-remaining"),
+          sessionProgressBar: $("#session-progress-bar"),
+          sessionPercentage: $("#session-percentage"),
+          sessionTimeElapsedEl: $("#session-time-elapsed"),
+          sessionTimeRemainingEl: $("#session-time-remaining"),
+          noTasksMessage: $("#no-tasks-message"),
+        };
+        const state = {
+          tasks: (JSON.parse(localStorage.getItem("tasks")) || []).map((t) => ({
+            ...t,
+            lapInterval: t.lapInterval || 1,
+            growthFactor: t.growthFactor !== undefined ? t.growthFactor : 0,
+          })),
+          lapList: JSON.parse(localStorage.getItem("lapList")) || [],
+          lastId: JSON.parse(localStorage.getItem("lastId")) || 0,
+          sortState: { field: "id", order: "desc" },
+          selectedCategoryId: "cat-0",
+          editingTaskId: null,
+          panelCollapseState:
+            JSON.parse(localStorage.getItem("panelCollapseState")) || {},
+          sessionInterval: null,
+          runnerState: "STOPPED",
+          currentVirtualTaskIndex: -1,
+          currentTaskTimeLeft: 0,
+          confirmCallback: null,
+          draggedItemId: null,
+          sessionCache: {
+            taskMap: new Map(),
+            virtualSessionPlaylist: [],
+            lapDurations: [],
+            cumulativeSessionDurations: [],
+            lapStartCumulativeDurations: [],
+            activeLapMap: new Map(),
+            totalActiveLaps: 0,
+            totalLaps: 1,
+            taskOccurenceCounts: new Map(),
+          },
+        };
+        const saveState = () => {
+          localStorage.setItem("tasks", JSON.stringify(state.tasks));
+          localStorage.setItem("lapList", JSON.stringify(state.lapList));
+          localStorage.setItem("lastId", JSON.stringify(state.lastId));
+        };
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const formatTime = (totalSeconds) => {
+          if (totalSeconds === 0) return "0s";
+          const isNegative = totalSeconds < 0;
+          const absSeconds = Math.abs(totalSeconds);
+          const hours = Math.floor(absSeconds / 3600);
+          const minutes = Math.floor((absSeconds % 3600) / 60);
+          const seconds = absSeconds % 60;
+          const parts = [];
+          if (hours > 0) parts.push(`${hours}h`);
+          if (minutes > 0) parts.push(`${minutes}m`);
+          if (seconds > 0 || (hours === 0 && minutes === 0))
+            parts.push(`${seconds}s`);
+          const formatted = parts.join(" ");
+          return isNegative ? `-${formatted}` : formatted;
+        };
+        const isSessionActive = () => state.runnerState !== "STOPPED";
+        const getTaskMap = () => new Map(state.tasks.map((t) => [t.id, t]));
+        const renderCategoryButtons = () => {
+          DOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
+            const isActive = cat.id === state.selectedCategoryId;
+            return `
+            <button class="category-btn ${isActive ? "active" : ""}" data-id="${
+              cat.id
+            }" style="outline-color: ${isActive ? cat.color : "transparent"};">
+              <span class="icon">${cat.icon}</span><span class="name">${
+              cat.name
+            }</span>
+            </button>
+          `;
+          }).join("");
+        };
+        const renderTaskSummary = () => {
+          const totalTasks = state.tasks.length;
+          const totalDurationInSeconds = state.tasks.reduce(
+            (s, t) => s + t.duration,
+            0
+          );
+          DOM.taskSummaryEl.innerHTML = `<span><strong>Total Tasks:</strong> ${totalTasks}</span><span><strong>Total Duration:</strong> ${formatTime(
+            totalDurationInSeconds
+          )}</span>`;
+        };
+        const sortTasks = (list) => {
+          const order = state.sortState.order === "asc" ? 1 : -1;
+          return [...list].sort((a, b) => {
+            switch (state.sortState.field) {
+              case "title":
+                return a.title.localeCompare(b.title) * order;
+              case "duration":
+                return (a.duration - b.duration) * order;
+              case "category":
+                return (
+                  (categoryMap.get(a.categoryId)?.name || "").localeCompare(
+                    categoryMap.get(b.categoryId)?.name || ""
+                  ) * order
+                );
+              case "lapInterval":
+                return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
+              case "growthFactor":
+                return ((a.growthFactor || 0) - (b.growthFactor || 0)) * order;
+              default:
+                return (a.id - b.id) * order;
+            }
+          });
+        };
+        const renderTasks = () => {
+          const sorted = sortTasks(state.tasks);
+          DOM.noTasksMessage.style.display =
+            sorted.length === 0 ? "block" : "none";
+          if (sorted.length === 0) {
+            DOM.taskListEl.innerHTML = "";
+          } else {
+            DOM.taskListEl.innerHTML = sorted
+              .map((task) => {
+                const category =
+                  categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+                const intervalText =
+                  task.lapInterval === 1
+                    ? "Always"
+                    : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
+                const growthText = `${task.growthFactor || 0}%`;
+                return `
+                <div class="task-item" data-id="${task.id}">
+                  <div class="task-cell task-id-col">#${task.id}</div>
+                  <div class="task-cell task-title-col">
+                    <span class="task-title">${task.title}</span>
+                    <span class="task-description">${
+                      task.description || ""
+                    }</span>
+                  </div>
+                  <div class="task-cell task-category-col"><span class="task-category-badge" style="background-color: ${
+                    category.color
+                  };">${category.icon} ${category.name}</span></div>
+                  <div class="task-cell task-duration-col">${formatTime(
+                    task.duration
+                  )}</div>
+                  <div class="task-cell task-interval-col">${intervalText}</div>
+                  <div class="task-cell task-growth-col">${growthText}</div>
+                  <div class="task-cell task-actions-col">
+                    <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
+                    <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
+                    <button class="copy-btn" title="Duplicate"><i class="fas fa-copy"></i></button>
+                    <button class="delete-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                  </div>
+                </div>`;
+              })
+              .join("");
+          }
+          renderTaskSummary();
+        };
+        const renderLapList = () => {
+          const taskMap = getTaskMap();
+          const lapDuration = state.lapList.reduce(
+            (s, id) => s + (taskMap.get(id)?.duration || 0),
+            0
+          );
+          DOM.lapListDurationEl.textContent = `Total: ${formatTime(
+            lapDuration
+          )}`;
+          const sessionInactive = !isSessionActive();
+          const draggableAttr = sessionInactive ? 'draggable="true"' : "";
+          if (state.lapList.length === 0) {
+            DOM.lapListEl.innerHTML =
+              '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>';
+            return;
+          }
+          DOM.lapListEl.innerHTML = state.lapList
+            .map((id) => {
+              const task = taskMap.get(id);
+              if (!task) return "";
+              const category =
+                categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+              const isRunning =
+                isSessionActive() &&
+                task.id ===
+                  state.sessionCache.virtualSessionPlaylist[
+                    state.currentVirtualTaskIndex
+                  ]?.taskId;
+              const actions = sessionInactive
+                ? `
+                <div class="lap-item-actions">
+                  <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
+                  <button class="move-btn" data-action="bottom" title="Move to Bottom"><i class="fas fa-angle-double-down"></i></button>
+                  <button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button>
+                </div>`
+                : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button></div>`;
+              return `<div class="lap-list-item ${
+                isRunning ? "running" : ""
+              }" ${draggableAttr} data-id="${task.id}">
+              <span class="lap-category-icon" title="${category.name}">${
+                category.icon
+              }</span>
+              <div class="title">${task.title}</div>
+              <span class="duration">${formatTime(task.duration)}</span>
+              ${actions}
+            </div>`;
+            })
+            .join("");
+        };
+        const renderAll = () => {
+          renderTasks();
+          renderLapList();
+          renderCategoryButtons();
+        };
+        const resetTaskForm = () => {
+          state.editingTaskId = null;
+          DOM.formTitle.textContent = "Create New Task";
+          DOM.taskInput.value = "";
+          DOM.taskDescriptionInput.value = "";
+          state.selectedCategoryId = "cat-0";
+          DOM.durationMinutesInput.value = 1;
+          DOM.durationSecondsInput.value = 30;
+          DOM.lapIntervalInput.value = 1;
+          DOM.growthFactorInput.value = 0;
+          DOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
+          DOM.cancelEditBtn.style.display = "none";
+          renderCategoryButtons();
+          DOM.taskInput.focus();
+        };
+        const handleTaskFormSubmit = () => {
+          const title = DOM.taskInput.value.trim();
+          if (!title) {
+            alert("Task title cannot be empty.");
+            return;
+          }
+          const minutes = parseInt(DOM.durationMinutesInput.value, 10) || 0;
+          const seconds = parseInt(DOM.durationSecondsInput.value, 10) || 0;
+          const totalDuration = minutes * 60 + seconds;
+          const lapInterval = clamp(
+            parseInt(DOM.lapIntervalInput.value, 10) || 1,
+            1,
+            99
+          );
+          const growthFactor = clamp(
+            parseInt(DOM.growthFactorInput.value, 10) || 0,
+            -99,
+            99
+          );
+          if (totalDuration <= 0) {
+            alert("Duration must be greater than 0 seconds.");
+            return;
+          }
+          if (state.editingTaskId !== null) {
+            const task = state.tasks.find((t) => t.id === state.editingTaskId);
+            if (task) {
+              task.title = title;
+              task.description = DOM.taskDescriptionInput.value.trim();
+              task.categoryId = state.selectedCategoryId;
+              task.duration = totalDuration;
+              task.lapInterval = lapInterval;
+              task.growthFactor = growthFactor;
+            }
+          } else {
+            state.lastId++;
+            state.tasks.push({
+              id: state.lastId,
+              title,
+              description: DOM.taskDescriptionInput.value.trim(),
+              categoryId: state.selectedCategoryId,
+              duration: totalDuration,
+              lapInterval,
+              growthFactor,
+            });
+          }
+          saveState();
+          renderAll();
+          resetTaskForm();
+        };
+        const loadTaskIntoForm = (id) => {
+          if (isSessionActive()) {
+            alert("Cannot edit a task that is part of an active lap session.");
+            return;
+          }
+          const task = state.tasks.find((t) => t.id === id);
+          if (!task) return;
+          state.editingTaskId = id;
+          DOM.formTitle.textContent = `Editing Task #${id}`;
+          DOM.taskInput.value = task.title;
+          DOM.taskDescriptionInput.value = task.description;
+          state.selectedCategoryId = task.categoryId;
+          DOM.durationMinutesInput.value = Math.floor(task.duration / 60);
+          DOM.durationSecondsInput.value = task.duration % 60;
+          DOM.lapIntervalInput.value = task.lapInterval || 1;
+          DOM.growthFactorInput.value = task.growthFactor || 0;
+          DOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+          DOM.cancelEditBtn.style.display = "inline-block";
+          renderCategoryButtons();
+        };
+        const deleteTask = (id) => {
+          if (isSessionActive()) {
+            alert(
+              "Cannot delete a task that is part of an active lap session."
+            );
+            return;
+          }
+          state.tasks = state.tasks.filter((t) => t.id !== id);
+          state.lapList = state.lapList.filter((l) => l !== id);
+          saveState();
+          renderAll();
+        };
+        const duplicateTask = (id) => {
+          const original = state.tasks.find((t) => t.id === id);
+          if (!original) return;
+          state.lastId++;
+          const copy = { ...original, id: state.lastId };
+          if (!copy.lapInterval) copy.lapInterval = 1;
+          if (copy.growthFactor === undefined) copy.growthFactor = 0;
+          state.tasks.push(copy);
+          saveState();
+          renderAll();
+        };
+        const addTaskToLap = (id) => {
+          if (isSessionActive()) {
+            alert("Please stop the lap session to modify the playlist.");
+            return;
+          }
+          if (!state.lapList.includes(id)) {
+            state.lapList.push(id);
+            saveState();
+            renderLapList();
+          }
+        };
+        const removeTaskFromLap = (id) => {
+          if (isSessionActive()) {
+            alert("Please stop the lap session to modify the playlist.");
+            return;
+          }
+          state.lapList = state.lapList.filter((l) => l !== id);
+          saveState();
+          renderLapList();
+        };
+        const resetRunnerDisplay = () => {
+          DOM.runnerTaskCategory.textContent = "";
+          DOM.runnerTaskTitle.textContent = "No task selected";
+          DOM.taskProgressBar.style.width = "0%";
+          DOM.taskPercentage.textContent = "0%";
+          DOM.timeElapsedEl.textContent = "0s";
+          DOM.timeRemainingEl.textContent = "0s";
+          DOM.lapProgressBar.style.width = "0%";
+          DOM.lapPercentage.textContent = "0%";
+          DOM.lapTimeElapsedEl.textContent = "0s";
+          DOM.lapTimeRemainingEl.textContent = "0s";
+          DOM.sessionProgressBar.style.width = "0%";
+          DOM.sessionPercentage.textContent = "0%";
+          DOM.sessionTimeElapsedEl.textContent = "0s";
+          DOM.sessionTimeRemainingEl.textContent = "0s";
+          DOM.runnerDetails.baseDuration.textContent = "0s";
+          DOM.runnerDetails.currentDuration.textContent = "0s";
+          DOM.runnerDetails.occurrenceCount.textContent = "0";
+          DOM.runnerDetails.changePercentage.textContent = "0%";
+          DOM.runnerDetails.changeDelta.textContent = "0s";
+        };
+        const stopTimerInterval = () => {
+          clearInterval(state.sessionInterval);
+          state.sessionInterval = null;
+        };
+        const startTimerInterval = () => {
+          if (state.sessionInterval) stopTimerInterval();
+          state.sessionInterval = setInterval(() => {
+            state.currentTaskTimeLeft--;
+            updateTimerDisplay();
+            if (state.currentTaskTimeLeft < 0) handleTaskCompletion();
+          }, 1000);
+        };
+        const loadTaskToRunner = (virtualIndex) => {
+          state.currentVirtualTaskIndex = virtualIndex;
+          if (
+            virtualIndex < 0 ||
+            virtualIndex >= state.sessionCache.virtualSessionPlaylist.length
+          )
+            return stopSession(true);
+          const { taskId, calculatedDuration, baseDuration, occurrences } =
+            state.sessionCache.virtualSessionPlaylist[virtualIndex];
+          const task = state.sessionCache.taskMap.get(taskId);
+          if (!task) return stopSession(true);
+          const category =
+            categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+          DOM.runnerTaskCategory.textContent = `${category.icon} ${category.name}`;
+          DOM.runnerTaskTitle.textContent = task.title;
+          state.currentTaskTimeLeft = calculatedDuration;
+          const changeDelta = calculatedDuration - baseDuration;
+          const changePercentage =
+            baseDuration > 0
+              ? Math.round((changeDelta / baseDuration) * 100)
+              : 0;
+          DOM.runnerDetails.baseDuration.textContent = formatTime(baseDuration);
+          DOM.runnerDetails.currentDuration.textContent =
+            formatTime(calculatedDuration);
+          DOM.runnerDetails.occurrenceCount.textContent = occurrences;
+          DOM.runnerDetails.changePercentage.textContent = `${changePercentage}%`;
+          DOM.runnerDetails.changeDelta.textContent = formatTime(changeDelta);
+          DOM.runnerDetails.changePercentage.style.color =
+            changePercentage > 0
+              ? "var(--accent-green)"
+              : changePercentage < 0
+              ? "var(--accent-red)"
+              : "var(--text-secondary)";
+          DOM.runnerDetails.changeDelta.style.color =
+            changeDelta > 0
+              ? "var(--accent-green)"
+              : changeDelta < 0
+              ? "var(--accent-red)"
+              : "var(--text-secondary)";
+          updateTimerDisplay();
+          renderLapList();
+        };
+        const updateTimerDisplay = () => {
+          if (state.currentVirtualTaskIndex === -1) return;
+          const currentVirtualTask =
+            state.sessionCache.virtualSessionPlaylist[
+              state.currentVirtualTaskIndex
+            ];
+          if (!currentVirtualTask) return;
+          const { calculatedDuration, lap } = currentVirtualTask;
+          const elapsed = calculatedDuration - state.currentTaskTimeLeft;
+          const taskPercent =
+            calculatedDuration > 0
+              ? Math.floor((elapsed / calculatedDuration) * 100)
+              : 0;
+          DOM.timeElapsedEl.textContent = formatTime(elapsed);
+          DOM.timeRemainingEl.textContent = `-${formatTime(
+            state.currentTaskTimeLeft
+          )}`;
+          DOM.taskProgressBar.style.width = `${taskPercent}%`;
+          DOM.taskPercentage.textContent = `${taskPercent}%`;
+          const currentLapDuration = state.sessionCache.lapDurations[lap];
+          const lapStartTime =
+            state.sessionCache.lapStartCumulativeDurations[lap];
+          const completedDurationInLap =
+            (state.sessionCache.cumulativeSessionDurations[
+              state.currentVirtualTaskIndex
+            ] || 0) - lapStartTime;
+          const lapTimeElapsed = completedDurationInLap + elapsed;
+          const lapTimeRemaining = currentLapDuration - lapTimeElapsed;
+          const lapPercent =
+            currentLapDuration > 0
+              ? Math.floor((lapTimeElapsed / currentLapDuration) * 100)
+              : 0;
+          DOM.lapProgressBar.style.width = `${lapPercent}%`;
+          DOM.lapPercentage.textContent = `${lapPercent}%`;
+          DOM.lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
+          DOM.lapTimeRemainingEl.textContent = `-${formatTime(
+            lapTimeRemaining
+          )}`;
+          const activeLapNumber = state.sessionCache.activeLapMap.get(lap);
+          const tasksInLap = state.sessionCache.virtualSessionPlaylist.filter(
+            (t) => t.lap === lap
+          ).length;
+          const taskIndexInLap =
+            state.sessionCache.virtualSessionPlaylist
+              .filter((t) => t.lap === lap)
+              .findIndex((t) => t.taskId === currentVirtualTask.taskId) + 1;
+          DOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${
+            state.sessionCache.totalActiveLaps
+          } (Run ${lap + 1}) - Task ${taskIndexInLap} of ${tasksInLap}`;
+          const totalSessionDuration = state.sessionCache.totalSessionDuration;
+          const sessionTimeElapsed =
+            (state.sessionCache.cumulativeSessionDurations[
+              state.currentVirtualTaskIndex
+            ] || 0) + elapsed;
+          const sessionTimeRemaining =
+            totalSessionDuration - sessionTimeElapsed;
+          const sessionPercent =
+            totalSessionDuration > 0
+              ? Math.floor((sessionTimeElapsed / totalSessionDuration) * 100)
+              : 0;
+          DOM.sessionProgressBar.style.width = `${sessionPercent}%`;
+          DOM.sessionPercentage.textContent = `${sessionPercent}%`;
+          DOM.sessionTimeElapsedEl.textContent = formatTime(sessionTimeElapsed);
+          DOM.sessionTimeRemainingEl.textContent = `-${formatTime(
+            sessionTimeRemaining
+          )}`;
+        };
+        const handleTaskCompletion = () =>
+          loadTaskToRunner(state.currentVirtualTaskIndex + 1);
+        const playPauseSession = () => {
+          if (state.runnerState === "RUNNING") {
+            stopTimerInterval();
+            state.runnerState = "PAUSED";
+            DOM.playPauseBtn.innerHTML =
+              '<i class="fas fa-play"></i><span>Play</span>';
+            return;
+          }
+          if (state.lapList.length === 0) {
+            alert("Add tasks to the Lap Playlist before starting.");
+            return;
+          }
+          if (state.runnerState === "STOPPED") {
+            if (!startSession()) return;
+          }
+          if (
+            state.currentVirtualTaskIndex >=
+            state.sessionCache.virtualSessionPlaylist.length
+          )
+            return;
+          state.runnerState = "RUNNING";
+          DOM.playPauseBtn.innerHTML =
+            '<i class="fas fa-pause"></i><span>Pause</span>';
+          startTimerInterval();
+        };
+        const skipToLap = (direction) => {
+          if (
+            !isSessionActive() ||
+            state.sessionCache.virtualSessionPlaylist.length === 0
+          )
+            return;
+          const currentLap =
+            state.sessionCache.virtualSessionPlaylist[
+              state.currentVirtualTaskIndex
+            ].lap;
+          let targetLap = currentLap + direction;
+          if (targetLap >= state.sessionCache.totalLaps) {
+            stopSession(true);
+            return;
+          }
+          if (targetLap < 0) return;
+          let next = state.sessionCache.virtualSessionPlaylist.findIndex(
+            (t) => t.lap === targetLap
+          );
+          while (
+            next === -1 &&
+            targetLap < state.sessionCache.totalLaps &&
+            targetLap >= 0
+          ) {
+            targetLap += direction;
+            next = state.sessionCache.virtualSessionPlaylist.findIndex(
+              (t) => t.lap === targetLap
+            );
+          }
+          if (next !== -1) {
+            const wasRunning = state.runnerState === "RUNNING";
+            if (wasRunning) stopTimerInterval();
+            loadTaskToRunner(next);
+            if (wasRunning) startTimerInterval();
+          } else if (direction > 0) stopSession(true);
+        };
+        const buildVirtualPlaylist = (taskMap, totalLaps) => {
+          const virtualSessionPlaylist = [];
+          const lapDurations = Array(totalLaps).fill(0);
+          const lapStartCumulativeDurations = Array(totalLaps).fill(0);
+          const tasksByLap = Array.from({ length: totalLaps }, () => []);
+          let currentCumulativeDuration = 0;
+          const activeLapMap = new Map();
+          let activeLapCounter = 0;
+          const lastRunLap = new Map();
+          const taskOccurenceCounts = new Map();
+          for (let lap = 0; lap < totalLaps; lap++) {
+            lapStartCumulativeDurations[lap] = currentCumulativeDuration;
+            state.lapList.forEach((taskId) => {
+              const task = taskMap.get(taskId);
+              if (!task) return;
+              const interval = task.lapInterval || 1;
+              const lastRun = lastRunLap.has(taskId)
+                ? lastRunLap.get(taskId)
+                : -1;
+              if (
+                lap === 0 ||
+                (lap > lastRun && (lap - lastRun) % interval === 0)
+              ) {
+                const occurrences = (taskOccurenceCounts.get(taskId) || 0) + 1;
+                taskOccurenceCounts.set(taskId, occurrences);
+                const baseDuration = task.duration;
+                let calculatedDuration = baseDuration;
+                if (task.growthFactor !== 0) {
+                  calculatedDuration = Math.round(
+                    baseDuration *
+                      Math.pow(1 + task.growthFactor / 100, occurrences - 1)
+                  );
+                  calculatedDuration = clamp(
+                    calculatedDuration,
+                    MIN_DURATION_SECONDS,
+                    MAX_DURATION_SECONDS
+                  );
+                }
+                tasksByLap[lap].push({
+                  taskId,
+                  calculatedDuration,
+                  baseDuration,
+                  occurrences,
+                });
+                lastRunLap.set(taskId, lap);
+              }
+            });
+            if (tasksByLap[lap].length > 0) {
+              activeLapCounter++;
+              activeLapMap.set(lap, activeLapCounter);
+              tasksByLap[lap].forEach((taskInfo) => {
+                lapDurations[lap] += taskInfo.calculatedDuration;
+                currentCumulativeDuration += taskInfo.calculatedDuration;
+              });
+            }
+          }
+          const cumulativeSessionDurations = [];
+          currentCumulativeDuration = 0;
+          tasksByLap.forEach((tasksInThisLap, lap) => {
+            tasksInThisLap.forEach((taskInfo, taskIndexInLap) => {
+              virtualSessionPlaylist.push({
+                ...taskInfo,
+                lap,
+                tasksInLap: tasksByLap[lap],
+                taskIndexInLap,
+              });
+              cumulativeSessionDurations.push(currentCumulativeDuration);
+              currentCumulativeDuration += taskInfo.calculatedDuration;
+            });
+          });
+          return {
+            virtualSessionPlaylist,
+            lapDurations,
+            lapStartCumulativeDurations,
+            cumulativeSessionDurations,
+            totalSessionDuration: currentCumulativeDuration,
+            activeLapMap,
+            totalActiveLaps: activeLapCounter,
+            taskOccurenceCounts,
+          };
+        };
+        const startSession = () => {
+          const totalLaps = parseInt(DOM.lapsInput.value, 10) || 1;
+          const taskMap = getTaskMap();
+          const playlistData = buildVirtualPlaylist(taskMap, totalLaps);
+          if (playlistData.virtualSessionPlaylist.length === 0) {
+            alert(
+              "No tasks are scheduled to run in this session with the current intervals."
+            );
+            return false;
+          }
+          state.sessionCache = { ...playlistData, taskMap, totalLaps };
+          DOM.lapsProgressContainer.style.display = "block";
+          loadTaskToRunner(0);
+          DOM.lapsControls.style.display = "none";
+          DOM.sessionControls.style.display = "flex";
+          DOM.lapsInput.disabled = true;
+          $$('.stepper-btn[data-field="laps"]').forEach(
+            (b) => (b.disabled = true)
+          );
+          return true;
+        };
+        const stopSession = (finished = false) => {
+          stopTimerInterval();
+          state.runnerState = "STOPPED";
+          DOM.playPauseBtn.innerHTML =
+            '<i class="fas fa-play"></i><span>Play</span>';
+          DOM.lapsControls.style.display = "flex";
+          DOM.sessionControls.style.display = "none";
+          DOM.lapsInput.disabled = false;
+          $$('.stepper-btn[data-field="laps"]').forEach(
+            (b) => (b.disabled = false)
+          );
+          if (finished) {
+            DOM.lapsProgressLabel.textContent = `Session Complete! (${
+              state.sessionCache.totalLaps || 0
+            } runs)`;
+            showConfirmationModal(
+              "🎉 Congratulations! 🎉",
+              `Session Complete! You finished ${
+                state.sessionCache.totalLaps || 0
+              } run(s).`,
+              () => {
+                DOM.lapsProgressContainer.style.display = "none";
+                resetRunnerDisplay();
+              },
+              "alert"
+            );
+          } else {
+            DOM.lapsProgressContainer.style.display = "none";
+            resetRunnerDisplay();
+          }
+          state.currentVirtualTaskIndex = -1;
+          renderLapList();
+        };
+        const showConfirmationModal = (
+          title,
+          text,
+          onConfirm,
+          type = "confirm"
+        ) => {
+          DOM.modalTitle.textContent = title;
+          DOM.modalText.textContent = text;
+          state.confirmCallback = onConfirm;
+          if (type === "alert") {
+            DOM.modalCancelBtn.style.display = "none";
+            DOM.modalConfirmBtn.textContent = "OK";
+          } else {
+            DOM.modalCancelBtn.style.display = "inline-block";
+            DOM.modalConfirmBtn.textContent = "Confirm";
+          }
+          DOM.confirmModal.style.display = "flex";
+          DOM.confirmModal.classList.add("show");
+        };
+        const hideConfirmationModal = () => {
+          DOM.confirmModal.classList.remove("show");
+          setTimeout(() => {
+            DOM.confirmModal.style.display = "none";
+          }, 200);
+        };
+        const isModificationAllowed = (msg) => {
+          if (isSessionActive()) {
+            alert(msg);
+            return false;
+          }
+          return true;
+        };
+        function getDragAfterElement(container, y) {
+          const draggableElements = Array.from(
+            container.querySelectorAll(".lap-list-item:not(.dragging)")
+          );
+          return draggableElements.reduce(
+            (closest, child) => {
+              const box = child.getBoundingClientRect();
+              const offset = y - box.top - box.height / 2;
+              if (offset < 0 && offset > closest.offset)
+                return { offset, element: child };
+              return closest;
+            },
+            { offset: Number.NEGATIVE_INFINITY }
+          ).element;
+        }
+        const setupEventListeners = () => {
+          DOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
+          DOM.cancelEditBtn.addEventListener("click", resetTaskForm);
+          DOM.taskListEl.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+            const item = e.target.closest(".task-item");
+            const id = Number(item.dataset.id);
+            if (btn.classList.contains("delete-btn")) deleteTask(id);
+            if (btn.classList.contains("copy-btn")) duplicateTask(id);
+            if (btn.classList.contains("add-to-lap-btn")) addTaskToLap(id);
+            if (btn.classList.contains("edit-btn")) loadTaskIntoForm(id);
+          });
+          DOM.lapListEl.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn || isSessionActive()) return;
+            const item = e.target.closest(".lap-list-item");
+            const id = Number(item.dataset.id);
+            if (btn.classList.contains("remove-btn")) removeTaskFromLap(id);
+            else if (btn.classList.contains("move-btn")) {
+              const { action } = btn.dataset;
+              const idx = state.lapList.indexOf(id);
+              if (idx === -1) return;
+              state.lapList.splice(idx, 1);
+              if (action === "top") state.lapList.unshift(id);
+              else if (action === "bottom") state.lapList.push(id);
+              saveState();
+              renderLapList();
+            }
+          });
+          DOM.lapListEl.addEventListener("dragstart", (e) => {
+            if (isSessionActive()) return;
+            const item = e.target.closest(".lap-list-item");
+            if (!item) return;
+            state.draggedItemId = Number(item.dataset.id);
+            setTimeout(() => item.classList.add("dragging"), 0);
+          });
+          DOM.lapListEl.addEventListener("dragend", (e) => {
+            const item = e.target.closest(".lap-list-item");
+            if (item) item.classList.remove("dragging");
+            state.draggedItemId = null;
+          });
+          DOM.lapListEl.addEventListener("dragover", (e) => {
+            if (isSessionActive()) return;
+            e.preventDefault();
+            const after = getDragAfterElement(DOM.lapListEl, e.clientY);
+            $$(".drag-over-top, .drag-over-bottom").forEach((el) =>
+              el.classList.remove("drag-over-top", "drag-over-bottom")
+            );
+            if (after) after.classList.add("drag-over-top");
+            else {
+              const last = DOM.lapListEl.lastElementChild;
+              if (last && !last.classList.contains("dragging"))
+                last.classList.add("drag-over-bottom");
+            }
+          });
+          DOM.lapListEl.addEventListener("drop", (e) => {
+            if (isSessionActive()) return;
+            e.preventDefault();
+            $$(".drag-over-top, .drag-over-bottom").forEach((el) =>
+              el.classList.remove("drag-over-top", "drag-over-bottom")
+            );
+            if (state.draggedItemId === null) return;
+            const after = getDragAfterElement(DOM.lapListEl, e.clientY);
+            const oldIndex = state.lapList.indexOf(state.draggedItemId);
+            if (oldIndex > -1) state.lapList.splice(oldIndex, 1);
+            if (after) {
+              const afterId = Number(after.dataset.id);
+              const newIndex = state.lapList.indexOf(afterId);
+              state.lapList.splice(newIndex, 0, state.draggedItemId);
+            } else state.lapList.push(state.draggedItemId);
+            saveState();
+            renderLapList();
+          });
+          DOM.categoryGrid.addEventListener("click", (e) => {
+            const btn = e.target.closest(".category-btn");
+            if (!btn) return;
+            state.selectedCategoryId = btn.dataset.id;
+            renderCategoryButtons();
+          });
+          DOM.playPauseBtn.addEventListener("click", playPauseSession);
+          DOM.nextTaskBtn.addEventListener("click", () => {
+            if (isSessionActive()) handleTaskCompletion();
+          });
+          DOM.prevTaskBtn.addEventListener("click", () => {
+            if (isSessionActive() && state.currentVirtualTaskIndex > 0)
+              loadTaskToRunner(state.currentVirtualTaskIndex - 1);
+          });
+          DOM.stopLapsBtn.addEventListener("click", () => stopSession(false));
+          DOM.nextLapBtn.addEventListener("click", () => skipToLap(1));
+          DOM.prevLapBtn.addEventListener("click", () => skipToLap(-1));
+          DOM.themeToggleBtn.addEventListener("click", () =>
+            applyTheme(
+              document.body.classList.contains("dark-theme") ? "light" : "dark"
+            )
+          );
+          DOM.deleteAllBtn.addEventListener("click", () => {
+            if (
+              !isModificationAllowed(
+                "Please stop the session to delete all tasks."
+              )
+            )
+              return;
+            showConfirmationModal(
+              "Delete All Tasks?",
+              "This will permanently delete all tasks from the repository. Are you sure?",
+              () => {
+                state.tasks = [];
+                state.lapList = [];
+                state.lastId = 0;
+                saveState();
+                renderAll();
+              }
+            );
+          });
+          DOM.addAllBtn.addEventListener("click", () => {
+            if (
+              !isModificationAllowed(
+                "Please stop the session to add all tasks."
+              )
+            )
+              return;
+            state.tasks.forEach((t) => addTaskToLap(t.id));
+          });
+          DOM.clearLapListBtn.addEventListener("click", () => {
+            if (
+              !isModificationAllowed(
+                "Please stop the session to clear the playlist."
+              )
+            )
+              return;
+            showConfirmationModal(
+              "Clear Playlist?",
+              "This will remove all tasks from the current playlist. Are you sure?",
+              () => {
+                state.lapList = [];
+                saveState();
+                renderLapList();
+              }
+            );
+          });
+          DOM.resetAppBtn.addEventListener("click", () => {
+            showConfirmationModal(
+              "Reset Application?",
+              "This will clear all data and load demo tasks. Are you sure?",
+              () => {
+                stopSession();
+                state.tasks = [
+                  {
+                    id: 1,
+                    title: "Clean ears",
+                    description:
+                      "A quick but important part of a personal hygiene routine.",
+                    categoryId: "cat-1",
+                    duration: 120,
+                    lapInterval: 99,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 2,
+                    title: "Clean private email",
+                    description: "Organize and archive personal emails.",
+                    categoryId: "cat-4",
+                    duration: 60,
+                    lapInterval: 2,
+                    growthFactor: 10,
+                  },
+                  {
+                    id: 3,
+                    title: "Floss teeth",
+                    description: "Maintain dental hygiene.",
+                    categoryId: "cat-1",
+                    duration: 120,
+                    lapInterval: 99,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 4,
+                    title: "Clear personal mail",
+                    description: "Sort and remove old emails from your inbox.",
+                    categoryId: "cat-4",
+                    duration: 60,
+                    lapInterval: 3,
+                    growthFactor: 10,
+                  },
+                  {
+                    id: 5,
+                    title: "Scrape tongue",
+                    description: "Improve oral health by cleaning your tongue.",
+                    categoryId: "cat-1",
+                    duration: 120,
+                    lapInterval: 99,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 6,
+                    title: "Clear SMS/DMs/Messages",
+                    description: "Delete old or unnecessary messages and DMs.",
+                    categoryId: "cat-6",
+                    duration: 120,
+                    lapInterval: 2,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 7,
+                    title: "Pushups",
+                    description: "A quick set of pushups to build strength.",
+                    categoryId: "cat-1",
+                    duration: 60,
+                    lapInterval: 4,
+                    growthFactor: 20,
+                  },
+                  {
+                    id: 8,
+                    title: "Clear downloads",
+                    description:
+                      "Organize and delete files from your downloads folder.",
+                    categoryId: "cat-4",
+                    duration: 180,
+                    lapInterval: 3,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 9,
+                    title: "Breathing Exercise",
+                    description: "A short exercise to center yourself.",
+                    categoryId: "cat-2",
+                    duration: 30,
+                    lapInterval: 1,
+                    growthFactor: 5,
+                  },
+                  {
+                    id: 10,
+                    title: "Find Photos",
+                    description: "Sort and organize digital photo albums.",
+                    categoryId: "cat-4",
+                    duration: 300,
+                    lapInterval: 5,
+                    growthFactor: -20,
+                  },
+                  {
+                    id: 11,
+                    title: "Drink Water",
+                    description: "A quick reminder to stay hydrated.",
+                    categoryId: "cat-1",
+                    duration: 60,
+                    lapInterval: 3,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 12,
+                    title: "Code",
+                    description: "Focused coding session.",
+                    categoryId: "cat-3",
+                    duration: 300,
+                    lapInterval: 5,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 13,
+                    title: "Mindfulness",
+                    description: "Practice being present and aware.",
+                    categoryId: "cat-2",
+                    duration: 10,
+                    lapInterval: 4,
+                    growthFactor: 20,
+                  },
+                  {
+                    id: 14,
+                    title: "Work emails",
+                    description: "Review and respond to new work emails.",
+                    categoryId: "cat-3",
+                    duration: 60,
+                    lapInterval: 6,
+                    growthFactor: 5,
+                  },
+                  {
+                    id: 15,
+                    title: "Squats",
+                    description: "A quick set of squats for a leg workout.",
+                    categoryId: "cat-1",
+                    duration: 60,
+                    lapInterval: 5,
+                    growthFactor: 20,
+                  },
+                  {
+                    id: 16,
+                    title: "Review Finances",
+                    description: "Check your budget and recent transactions.",
+                    categoryId: "cat-8",
+                    duration: 90,
+                    lapInterval: 4,
+                    growthFactor: 1,
+                  },
+                  {
+                    id: 17,
+                    title: "Planning",
+                    description: "Plan out your next tasks or day.",
+                    categoryId: "cat-9",
+                    duration: 120,
+                    lapInterval: 3,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 18,
+                    title: "Stretch",
+                    description: "A short stretch to loosen up muscles.",
+                    categoryId: "cat-1",
+                    duration: 10,
+                    lapInterval: 3,
+                    growthFactor: 10,
+                  },
+                  {
+                    id: 19,
+                    title: "Recharge",
+                    description: "A quick mental break to restore focus.",
+                    categoryId: "cat-2",
+                    duration: 60,
+                    lapInterval: 7,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 20,
+                    title: "Eat",
+                    description: "Eat a healthy meal or snack.",
+                    categoryId: "cat-1",
+                    duration: 240,
+                    lapInterval: 5,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 21,
+                    title: "Power Nap",
+                    description: "A short nap to boost energy.",
+                    categoryId: "cat-1",
+                    duration: 90,
+                    lapInterval: 4,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 22,
+                    title: "Read",
+                    description: "Read a chapter from a book or article.",
+                    categoryId: "cat-7",
+                    duration: 300,
+                    lapInterval: 8,
+                    growthFactor: -5,
+                  },
+                  {
+                    id: 23,
+                    title: "Play a Game",
+                    description: "Take a fun break with a game.",
+                    categoryId: "cat-6",
+                    duration: 600,
+                    lapInterval: 10,
+                    growthFactor: -5,
+                  },
+                  {
+                    id: 24,
+                    title: "Write Journal",
+                    description: "Reflect and write down your thoughts.",
+                    categoryId: "cat-2",
+                    duration: 300,
+                    lapInterval: 9,
+                    growthFactor: -10,
+                  },
+                  {
+                    id: 25,
+                    title: "Situps",
+                    description: "A quick set of situps for core strength.",
+                    categoryId: "cat-1",
+                    duration: 60,
+                    lapInterval: 6,
+                    growthFactor: 10,
+                  },
+                  {
+                    id: 26,
+                    title: "Tidy up",
+                    description: "Organize your physical space.",
+                    categoryId: "cat-4",
+                    duration: 60,
+                    lapInterval: 3,
+                    growthFactor: 20,
+                  },
+                  {
+                    id: 27,
+                    title: "Erase tracking",
+                    description: "Clear your browser history and cookies.",
+                    categoryId: "cat-4",
+                    duration: 120,
+                    lapInterval: 6,
+                    growthFactor: -3,
+                  },
+                  {
+                    id: 28,
+                    title: "Fold Laundry",
+                    description: "Take care of your clothes.",
+                    categoryId: "cat-4",
+                    duration: 120,
+                    lapInterval: 8,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 29,
+                    title: "Work",
+                    description: "A short burst of focused work.",
+                    categoryId: "cat-3",
+                    duration: 120,
+                    lapInterval: 10,
+                    growthFactor: 2,
+                  },
+                  {
+                    id: 30,
+                    title: "Brush teeth",
+                    description: "A complete dental hygiene routine.",
+                    categoryId: "cat-1",
+                    duration: 240,
+                    lapInterval: 99,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 31,
+                    title: "Prepare",
+                    description: "Get ready for the next task or activity.",
+                    categoryId: "cat-9",
+                    duration: 120,
+                    lapInterval: 4,
+                    growthFactor: -1,
+                  },
+                  {
+                    id: 32,
+                    title: "Shower",
+                    description: "Take a refreshing shower.",
+                    categoryId: "cat-1",
+                    duration: 900,
+                    lapInterval: 99,
+                    growthFactor: 0,
+                  },
+                  {
+                    id: 33,
+                    title: "Connect with others",
+                    description:
+                      "Send a quick message to a friend or family member.",
+                    categoryId: "cat-5",
+                    duration: 120,
+                    lapInterval: 10,
+                    growthFactor: 1,
+                  },
+                  {
+                    id: 34,
+                    title: "Break",
+                    description: "A short break to refresh your mind.",
+                    categoryId: "cat-3",
+                    duration: 120,
+                    lapInterval: 1,
+                    growthFactor: 1,
+                  },
+                ];
+                state.lapList = [
+                  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                  19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                  34,
+                ];
+                state.lastId = 34;
+                saveState();
+                renderAll();
+              }
+            );
+          });
+          DOM.modalCancelBtn.addEventListener("click", hideConfirmationModal);
+          DOM.modalConfirmBtn.addEventListener("click", () => {
+            if (state.confirmCallback) state.confirmCallback();
+            hideConfirmationModal();
+          });
+          $$(".sort-header").forEach((h) =>
+            h.addEventListener("click", () => updateSort(h.id.split("-")[2]))
+          );
+          $$(".preset-btn").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              const totalSeconds = parseInt(btn.dataset.duration, 10);
+              DOM.durationMinutesInput.value = Math.floor(totalSeconds / 60);
+              DOM.durationSecondsInput.value = totalSeconds % 60;
+            })
+          );
+          $$(".stepper-btn").forEach((btn) => {
+            let interval;
+            const stopInterval = () => clearInterval(interval);
+            const { field, step } = btn.dataset;
+            const input =
+              field === "laps"
+                ? DOM.lapsInput
+                : field === "minutes"
+                ? DOM.durationMinutesInput
+                : field === "lapInterval"
+                ? DOM.lapIntervalInput
+                : field === "growthFactor"
+                ? DOM.growthFactorInput
+                : DOM.durationSecondsInput;
+            const update = () => {
+              let val = parseInt(input.value, 10) || 0;
+              const min = parseInt(input.min, 10) || 0;
+              const max = parseInt(input.max, 10) || Infinity;
+              val = Math.max(min, Math.min(max, val + parseInt(step)));
+              input.value = val;
+            };
+            btn.addEventListener("mousedown", () => {
+              update();
+              interval = setInterval(update, 120);
+            });
+            btn.addEventListener("mouseup", stopInterval);
+            btn.addEventListener("mouseleave", stopInterval);
+          });
+          document.addEventListener("click", (e) => {
+            const collapseBtn = e.target.closest(".collapse-btn");
+            if (!collapseBtn) return;
+            const panel = collapseBtn.closest(".panel, section");
+            if (!panel) return;
+            panel.classList.toggle("collapsed");
+            const isCollapsed = panel.classList.contains("collapsed");
+            collapseBtn.setAttribute("aria-expanded", !isCollapsed);
+            if (panel.id) {
+              state.panelCollapseState[panel.id] = isCollapsed;
+              localStorage.setItem(
+                "panelCollapseState",
+                JSON.stringify(state.panelCollapseState)
+              );
+            }
+          });
+        };
+        const updateSort = (field) => {
+          state.sortState.order =
+            state.sortState.field === field && state.sortState.order === "asc"
+              ? "desc"
+              : "asc";
+          state.sortState.field = field;
+          $$(".sort-header").forEach((h) => {
+            h.classList.remove("active");
+            h.querySelector("i").className = "fas";
+          });
+          const active = $(`#sort-by-${field}-btn`);
+          if (active) {
+            active.classList.add("active");
+            active
+              .querySelector("i")
+              .classList.add(
+                state.sortState.order === "asc"
+                  ? "fa-arrow-up"
+                  : "fa-arrow-down"
+              );
+          }
+          renderTasks();
+        };
+        const applyTheme = (theme) => {
+          document.body.className = `${theme}-theme`;
+          localStorage.setItem("theme", theme);
+        };
+        const init = () => {
+          applyTheme(localStorage.getItem("theme") || "dark");
+          $$(
+            "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel"
+          ).forEach((section) => {
+            if (state.panelCollapseState[section.id]) {
+              section.classList.add("collapsed");
+              const btn = section.querySelector(".collapse-btn");
+              if (btn) btn.setAttribute("aria-expanded", "false");
+            }
+          });
+          DOM.durationMinutesInput.value = 1;
+          DOM.durationSecondsInput.value = 30;
+          setupEventListeners();
+          renderCategoryButtons();
+          renderLapList();
+          updateSort("id");
+        };
+        init();
+      });
+    </script>
   </body>
 </html>
