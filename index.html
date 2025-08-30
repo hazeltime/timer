@@ -44,6 +44,7 @@
         --preset-btn-text: #4338ca;
         --preset-btn-border: #c7d2fe;
         --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1.25fr;
+        --input-height: 42px; /* Consistent input height */
       }
       body.dark-theme {
         --bg-color: #0d1117;
@@ -89,8 +90,9 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
+      /* --- UPGRADE: Wider container for large screens --- */
       .container {
-        max-width: 1440px;
+        max-width: 1600px;
         margin: 0 auto;
       }
       .panel {
@@ -237,6 +239,18 @@
         grid-template-columns: 1fr;
         gap: 1.25rem;
       }
+      /* --- UPGRADE: Form layout grid --- */
+      .form-row-split {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      .form-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
       .form-group label,
       .form-group legend {
         margin-bottom: 0.5rem;
@@ -262,6 +276,7 @@
         color: var(--text-primary);
         transition: all 0.2s ease;
         font-family: inherit;
+        height: var(--input-height);
       }
       input:focus,
       textarea:focus {
@@ -281,6 +296,7 @@
       textarea {
         resize: vertical;
         min-height: 100px;
+        height: auto;
       }
       input::placeholder,
       textarea::placeholder {
@@ -383,11 +399,11 @@
       .preset-btn:active {
         transform: scale(0.95);
       }
-      /* --- FIX: Button Contrast --- */
+      /* --- UPGRADE: Consistent button sizing --- */
       .preset-btn {
         padding: 0.625rem 0.75rem;
         font-size: 1rem;
-        height: 44px;
+        height: var(--input-height);
         background-color: var(--preset-btn-bg);
         color: var(--preset-btn-text);
         border: 1px solid var(--preset-btn-border);
@@ -397,10 +413,11 @@
         filter: brightness(0.95);
         border-color: var(--accent-blue);
       }
+      /* --- UPGRADE: Resized stepper buttons for better alignment --- */
       .stepper-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.5rem;
+        width: var(--input-height);
+        height: var(--input-height);
+        font-size: 1.25rem;
         border-radius: 0.75rem;
       }
       .stepper-btn[data-field="growthFactor"] {
@@ -1000,7 +1017,11 @@
           margin: 1.5rem 0;
         }
       }
+      /* --- UPGRADE: Breakpoint for form layout --- */
       @media (max-width: 1024px) {
+        .form-row-split {
+          grid-template-columns: 1fr;
+        }
         :root {
           --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr 1fr;
         }
@@ -1080,6 +1101,7 @@
                       placeholder="e.g., Finish project report"
                     />
                   </div>
+
                   <div class="form-group description-group">
                     <label for="task-description-input"
                       >Description (Optional)</label
@@ -1089,150 +1111,158 @@
                       placeholder="e.g., Finalize introduction and conclusion."
                     ></textarea>
                   </div>
+
                   <div class="form-group category-group">
                     <label>Category</label>
                     <div id="category-grid" class="category-grid"></div>
                   </div>
-                  <fieldset class="form-group duration-container-group">
-                    <legend>Duration</legend>
-                    <div class="duration-wrapper">
-                      <div class="duration-inputs">
-                        <div class="stepper-input">
-                          <button
-                            class="stepper-btn"
-                            data-field="minutes"
-                            data-step="-1"
-                            aria-label="Decrease minutes"
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            id="task-duration-minutes"
-                            min="0"
-                          />
-                          <button
-                            class="stepper-btn"
-                            data-field="minutes"
-                            data-step="1"
-                            aria-label="Increase minutes"
-                          >
-                            +
-                          </button>
+
+                  <div class="form-row-split">
+                    <div class="form-column">
+                      <fieldset class="form-group duration-container-group">
+                        <legend>Duration</legend>
+                        <div class="duration-wrapper">
+                          <div class="duration-inputs">
+                            <div class="stepper-input">
+                              <button
+                                class="stepper-btn"
+                                data-field="minutes"
+                                data-step="-1"
+                                aria-label="Decrease minutes"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                id="task-duration-minutes"
+                                min="0"
+                              />
+                              <button
+                                class="stepper-btn"
+                                data-field="minutes"
+                                data-step="1"
+                                aria-label="Increase minutes"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span class="unit-label">m</span>
+                            <span class="separator">:</span>
+                            <div class="stepper-input">
+                              <button
+                                class="stepper-btn"
+                                data-field="seconds"
+                                data-step="-1"
+                                aria-label="Decrease seconds"
+                              >
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                id="task-duration-seconds"
+                                min="0"
+                                max="59"
+                              />
+                              <button
+                                class="stepper-btn"
+                                data-field="seconds"
+                                data-step="1"
+                                aria-label="Increase seconds"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span class="unit-label">s</span>
+                          </div>
+                          <div class="preset-durations">
+                            <button class="preset-btn" data-duration="30">
+                              30s
+                            </button>
+                            <button class="preset-btn" data-duration="120">
+                              2m
+                            </button>
+                            <button class="preset-btn" data-duration="300">
+                              5m
+                            </button>
+                            <button class="preset-btn" data-duration="600">
+                              10m
+                            </button>
+                            <button class="preset-btn" data-duration="1500">
+                              25m
+                            </button>
+                          </div>
                         </div>
-                        <span class="unit-label">m</span>
-                        <span class="separator">:</span>
-                        <div class="stepper-input">
-                          <button
-                            class="stepper-btn"
-                            data-field="seconds"
-                            data-step="-1"
-                            aria-label="Decrease seconds"
+                      </fieldset>
+                    </div>
+                    <div class="form-column">
+                      <fieldset class="form-group">
+                        <legend>Lap Interval</legend>
+                        <div class="lap-interval-controls">
+                          <div class="stepper-input">
+                            <button
+                              class="stepper-btn"
+                              data-field="lapInterval"
+                              data-step="-1"
+                              aria-label="Decrease Lap Interval"
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              id="lap-interval-input"
+                              value="1"
+                              min="1"
+                              max="99"
+                            />
+                            <button
+                              class="stepper-btn"
+                              data-field="lapInterval"
+                              data-step="1"
+                              aria-label="Increase Lap Interval"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <span class="field-description"
+                            >Skips (N-1) laps after each run</span
                           >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            id="task-duration-seconds"
-                            min="0"
-                            max="59"
-                          />
-                          <button
-                            class="stepper-btn"
-                            data-field="seconds"
-                            data-step="1"
-                            aria-label="Increase seconds"
-                          >
-                            +
-                          </button>
                         </div>
-                        <span class="unit-label">s</span>
-                      </div>
-                      <div class="preset-durations">
-                        <button class="preset-btn" data-duration="30">
-                          30s
-                        </button>
-                        <button class="preset-btn" data-duration="120">
-                          2m
-                        </button>
-                        <button class="preset-btn" data-duration="300">
-                          5m
-                        </button>
-                        <button class="preset-btn" data-duration="600">
-                          10m
-                        </button>
-                        <button class="preset-btn" data-duration="1500">
-                          25m
-                        </button>
-                      </div>
+                      </fieldset>
+                      <fieldset class="form-group">
+                        <legend>Duration Growth/Decay</legend>
+                        <div class="growth-factor-controls">
+                          <div class="stepper-input">
+                            <button
+                              class="stepper-btn"
+                              data-field="growthFactor"
+                              data-step="-5"
+                              aria-label="Decrease growth factor"
+                            >
+                              -5%
+                            </button>
+                            <input
+                              type="number"
+                              id="growth-factor-input"
+                              value="0"
+                              min="-99"
+                              max="99"
+                            />
+                            <button
+                              class="stepper-btn"
+                              data-field="growthFactor"
+                              data-step="5"
+                              aria-label="Increase growth factor"
+                            >
+                              +5%
+                            </button>
+                          </div>
+                          <span class="field-description"
+                            >Changes duration by this % each run</span
+                          >
+                        </div>
+                      </fieldset>
                     </div>
-                  </fieldset>
-                  <fieldset class="form-group">
-                    <legend>Lap Interval</legend>
-                    <div class="lap-interval-controls">
-                      <div class="stepper-input">
-                        <button
-                          class="stepper-btn"
-                          data-field="lapInterval"
-                          data-step="-1"
-                          aria-label="Decrease Lap Interval"
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          id="lap-interval-input"
-                          value="1"
-                          min="1"
-                          max="99"
-                        />
-                        <button
-                          class="stepper-btn"
-                          data-field="lapInterval"
-                          data-step="1"
-                          aria-label="Increase Lap Interval"
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span class="field-description"
-                        >Skips (N-1) laps after each run</span
-                      >
-                    </div>
-                  </fieldset>
-                  <fieldset class="form-group">
-                    <legend>Duration Growth/Decay</legend>
-                    <div class="growth-factor-controls">
-                      <div class="stepper-input">
-                        <button
-                          class="stepper-btn"
-                          data-field="growthFactor"
-                          data-step="-5"
-                          aria-label="Decrease growth factor"
-                        >
-                          -5%
-                        </button>
-                        <input
-                          type="number"
-                          id="growth-factor-input"
-                          value="0"
-                          min="-99"
-                          max="99"
-                        />
-                        <button
-                          class="stepper-btn"
-                          data-field="growthFactor"
-                          data-step="5"
-                          aria-label="Increase growth factor"
-                        >
-                          +5%
-                        </button>
-                      </div>
-                      <span class="field-description"
-                        >Changes duration by this % each run</span
-                      >
-                    </div>
-                  </fieldset>
+                  </div>
                   <div class="form-group add-btn-group">
                     <button id="add-task-btn">
                       <i class="fas fa-plus"></i> Add Task
