@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
   const MIN_DURATION_SECONDS = 1;
   const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const $$ = (sel) => [...document.querySelectorAll(sel)];
   const DOM = {
     taskForm: $("#task-form"),
     formTitle: $("#form-title"),
@@ -492,7 +492,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentVirtualTask =
       state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
     if (!currentVirtualTask) return;
-    const { calculatedDuration, lap } = currentVirtualTask;
+    const { calculatedDuration, lap, taskIndexInLap, totalTasksInLap } =
+      currentVirtualTask;
     const elapsed = calculatedDuration - state.currentTaskTimeLeft;
     const taskPercent =
       calculatedDuration > 0
@@ -521,16 +522,9 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.lapTimeElapsedEl.textContent = formatTime(lapTimeElapsed);
     DOM.lapTimeRemainingEl.textContent = `-${formatTime(lapTimeRemaining)}`;
     const activeLapNumber = state.sessionCache.activeLapMap.get(lap);
-    const tasksInLap = state.sessionCache.virtualSessionPlaylist.filter(
-      (t) => t.lap === lap
-    ).length;
-    const taskIndexInLap =
-      state.sessionCache.virtualSessionPlaylist
-        .filter((t) => t.lap === lap)
-        .findIndex((t) => t.taskId === currentVirtualTask.taskId) + 1;
     DOM.lapsProgressLabel.textContent = `Lap ${activeLapNumber} of ${
       state.sessionCache.totalActiveLaps
-    } (Run ${lap + 1}) - Task ${taskIndexInLap} of ${tasksInLap}`;
+    } (Run ${lap + 1}) - Task ${taskIndexInLap} of ${totalTasksInLap}`;
     const totalSessionDuration = state.sessionCache.totalSessionDuration;
     const sessionTimeElapsed =
       (state.sessionCache.cumulativeSessionDurations[
@@ -664,12 +658,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const cumulativeSessionDurations = [];
     currentCumulativeDuration = 0;
     tasksByLap.forEach((tasksInThisLap, lap) => {
-      tasksInThisLap.forEach((taskInfo, taskIndexInLap) => {
+      const totalTasksInLap = tasksInThisLap.length;
+      if (totalTasksInLap === 0) return;
+      tasksInThisLap.forEach((taskInfo, indexInLap) => {
         virtualSessionPlaylist.push({
           ...taskInfo,
           lap,
-          tasksInLap: tasksByLap[lap],
-          taskIndexInLap,
+          totalTasksInLap,
+          taskIndexInLap: indexInLap + 1,
         });
         cumulativeSessionDurations.push(currentCumulativeDuration);
         currentCumulativeDuration += taskInfo.calculatedDuration;
@@ -763,9 +759,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   };
   function getDragAfterElement(container, y) {
-    const draggableElements = Array.from(
-      container.querySelectorAll(".lap-list-item:not(.dragging)")
-    );
+    const draggableElements = [
+      ...container.querySelectorAll(".lap-list-item:not(.dragging)"),
+    ];
     return draggableElements.reduce(
       (closest, child) => {
         const box = child.getBoundingClientRect();
