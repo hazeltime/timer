@@ -2,7 +2,7 @@
 
 An advanced timer application designed for managing and executing task-based sessions. Built with vanilla HTML, CSS, and JavaScript, this tool helps you structure your work, breaks, and other activities into a configurable, multi-lap playlist.
 
-![TTT Screenshot](placeholder.png) 
+![TTT Screenshot](screenshot.png)
 
 ## ✨ Features
 
