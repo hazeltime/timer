@@ -117,12 +117,13 @@ export const renderLapList = (DOM, state) => {
             state.currentVirtualTaskIndex
           ]?.taskId;
       let extraClasses = isRunning ? "running" : "";
+
       if (!sessionInactive) {
-        const totalOccurrences =
-          state.sessionCache.totalTaskOccurrencesMap.get(task.id) || 0;
+        const completedOccurrences =
+          state.sessionCache.completedOccurrencesMap.get(task.id) || 0;
         if (
           task.maxOccurrences > 0 &&
-          totalOccurrences >= task.maxOccurrences
+          completedOccurrences >= task.maxOccurrences
         ) {
           extraClasses += " maxed-out";
         }

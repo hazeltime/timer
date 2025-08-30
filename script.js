@@ -6,6 +6,7 @@ import {
   MIN_DURATION_SECONDS,
 } from "./constants.js";
 import * as UI from "./ui.js";
+import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 
 /**
  * Fetches HTML for all components and injects them into the main document.
@@ -72,6 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     lapListEl: $("#lap-list"),
     lapListDurationEl: $("#lap-list-duration"),
     themeToggleBtn: $("#theme-toggle-btn"),
+    settingsBtn: $("#settings-btn"),
     deleteAllBtn: $("#delete-all-btn"),
     addAllBtn: $("#add-all-btn"),
     clearLapListBtn: $("#clear-lap-list-btn"),
@@ -366,11 +368,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const loadTaskToRunner = (virtualIndex) => {
+    // Recalculate completed occurrences based on the new index.
+    // This is the single source of truth for strikethrough logic.
+    const newCompletedOccurrencesMap = new Map();
+    for (let i = 0; i < virtualIndex; i++) {
+      const task = state.sessionCache.virtualSessionPlaylist[i];
+      const count = newCompletedOccurrencesMap.get(task.taskId) || 0;
+      newCompletedOccurrencesMap.set(task.taskId, count + 1);
+    }
+    state.sessionCache.completedOccurrencesMap = newCompletedOccurrencesMap;
+
     state.currentVirtualTaskIndex = virtualIndex;
     if (
       virtualIndex < 0 ||
       virtualIndex >= state.sessionCache.virtualSessionPlaylist.length
     ) {
+      // Recalculate one last time to ensure all tasks are struck through if session ends
+      if (virtualIndex >= state.sessionCache.virtualSessionPlaylist.length) {
+        const finalCompletedMap = new Map();
+        state.sessionCache.virtualSessionPlaylist.forEach((task) => {
+          const count = finalCompletedMap.get(task.taskId) || 0;
+          finalCompletedMap.set(task.taskId, count + 1);
+        });
+        state.sessionCache.completedOccurrencesMap = finalCompletedMap;
+      }
       return stopSession(true);
     }
 
@@ -430,21 +451,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           state.currentVirtualTaskIndex
         ];
       const { taskId, calculatedDuration } = lastTask;
-
-      // Update total duration for the task
       const currentTotal =
         state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
       state.sessionCache.completedTaskDurationsMap.set(
         taskId,
         currentTotal + calculatedDuration
-      );
-
-      // Update completed occurrences for the task
-      const completedCount =
-        state.sessionCache.completedOccurrencesMap.get(taskId) || 0;
-      state.sessionCache.completedOccurrencesMap.set(
-        taskId,
-        completedCount + 1
       );
     }
     loadTaskToRunner(state.currentVirtualTaskIndex + 1);
@@ -489,7 +500,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let targetLap = currentLap + direction;
 
     if (targetLap >= state.sessionCache.totalLaps) {
-      stopSession(true);
+      loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
       return;
     }
     if (targetLap < 0) return;
@@ -514,7 +525,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (wasRunning) stopTimerInterval();
       loadTaskToRunner(next);
       if (wasRunning) startTimerInterval();
-    } else if (direction > 0) stopSession(true);
+    } else if (direction > 0) {
+      loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
+    }
   };
 
   const buildVirtualPlaylist = (taskMap, totalLaps) => {
@@ -891,355 +904,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         "This will clear all data and load demo tasks. Are you sure?",
         () => {
           stopSession();
-          state.tasks = [
-            {
-              id: 1,
-              title: "Clean ears",
-              description:
-                "A quick but important part of a personal hygiene routine.",
-              categoryId: "cat-1",
-              duration: 120,
-              lapInterval: 99,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 2,
-              title: "Clean private email",
-              description: "Organize and archive personal emails.",
-              categoryId: "cat-4",
-              duration: 60,
-              lapInterval: 2,
-              growthFactor: 10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 3,
-              title: "Floss teeth",
-              description: "Maintain dental hygiene.",
-              categoryId: "cat-1",
-              duration: 120,
-              lapInterval: 99,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 4,
-              title: "Clear personal mail",
-              description: "Sort and remove old emails from your inbox.",
-              categoryId: "cat-4",
-              duration: 60,
-              lapInterval: 3,
-              growthFactor: 10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 5,
-              title: "Scrape tongue",
-              description: "Improve oral health by cleaning your tongue.",
-              categoryId: "cat-1",
-              duration: 120,
-              lapInterval: 99,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 6,
-              title: "Clear SMS/DMs/Messages",
-              description: "Delete old or unnecessary messages and DMs.",
-              categoryId: "cat-6",
-              duration: 120,
-              lapInterval: 2,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 7,
-              title: "Pushups",
-              description: "A quick set of pushups to build strength.",
-              categoryId: "cat-1",
-              duration: 60,
-              lapInterval: 4,
-              growthFactor: 20,
-              maxOccurrences: 0,
-            },
-            {
-              id: 8,
-              title: "Clear downloads",
-              description:
-                "Organize and delete files from your downloads folder.",
-              categoryId: "cat-4",
-              duration: 180,
-              lapInterval: 3,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 9,
-              title: "Breathing Exercise",
-              description: "A short exercise to center yourself.",
-              categoryId: "cat-2",
-              duration: 30,
-              lapInterval: 1,
-              growthFactor: 5,
-              maxOccurrences: 3,
-            },
-            {
-              id: 10,
-              title: "Find Photos",
-              description: "Sort and organize digital photo albums.",
-              categoryId: "cat-4",
-              duration: 300,
-              lapInterval: 5,
-              growthFactor: -20,
-              maxOccurrences: 0,
-            },
-            {
-              id: 11,
-              title: "Drink Water",
-              description: "A quick reminder to stay hydrated.",
-              categoryId: "cat-1",
-              duration: 60,
-              lapInterval: 3,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 12,
-              title: "Code",
-              description: "Focused coding session.",
-              categoryId: "cat-3",
-              duration: 300,
-              lapInterval: 5,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 13,
-              title: "Mindfulness",
-              description: "Practice being present and aware.",
-              categoryId: "cat-2",
-              duration: 10,
-              lapInterval: 4,
-              growthFactor: 20,
-              maxOccurrences: 0,
-            },
-            {
-              id: 14,
-              title: "Work emails",
-              description: "Review and respond to new work emails.",
-              categoryId: "cat-3",
-              duration: 60,
-              lapInterval: 6,
-              growthFactor: 5,
-              maxOccurrences: 0,
-            },
-            {
-              id: 15,
-              title: "Squats",
-              description: "A quick set of squats for a leg workout.",
-              categoryId: "cat-1",
-              duration: 60,
-              lapInterval: 5,
-              growthFactor: 20,
-              maxOccurrences: 0,
-            },
-            {
-              id: 16,
-              title: "Review Finances",
-              description: "Check your budget and recent transactions.",
-              categoryId: "cat-8",
-              duration: 90,
-              lapInterval: 4,
-              growthFactor: 1,
-              maxOccurrences: 0,
-            },
-            {
-              id: 17,
-              title: "Planning",
-              description: "Plan out your next tasks or day.",
-              categoryId: "cat-9",
-              duration: 120,
-              lapInterval: 3,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 18,
-              title: "Stretch",
-              description: "A short stretch to loosen up muscles.",
-              categoryId: "cat-1",
-              duration: 10,
-              lapInterval: 3,
-              growthFactor: 10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 19,
-              title: "Recharge",
-              description: "A quick mental break to restore focus.",
-              categoryId: "cat-2",
-              duration: 60,
-              lapInterval: 7,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 20,
-              title: "Eat",
-              description: "Eat a healthy meal or snack.",
-              categoryId: "cat-1",
-              duration: 240,
-              lapInterval: 5,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 21,
-              title: "Power Nap",
-              description: "A short nap to boost energy.",
-              categoryId: "cat-1",
-              duration: 90,
-              lapInterval: 4,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 22,
-              title: "Read",
-              description: "Read a chapter from a book or article.",
-              categoryId: "cat-7",
-              duration: 300,
-              lapInterval: 8,
-              growthFactor: -5,
-              maxOccurrences: 0,
-            },
-            {
-              id: 23,
-              title: "Play a Game",
-              description: "Take a fun break with a game.",
-              categoryId: "cat-6",
-              duration: 600,
-              lapInterval: 10,
-              growthFactor: -5,
-              maxOccurrences: 0,
-            },
-            {
-              id: 24,
-              title: "Write Journal",
-              description: "Reflect and write down your thoughts.",
-              categoryId: "cat-2",
-              duration: 300,
-              lapInterval: 9,
-              growthFactor: -10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 25,
-              title: "Situps",
-              description: "A quick set of situps for core strength.",
-              categoryId: "cat-1",
-              duration: 60,
-              lapInterval: 6,
-              growthFactor: 10,
-              maxOccurrences: 0,
-            },
-            {
-              id: 26,
-              title: "Tidy up",
-              description: "Organize your physical space.",
-              categoryId: "cat-4",
-              duration: 60,
-              lapInterval: 3,
-              growthFactor: 20,
-              maxOccurrences: 0,
-            },
-            {
-              id: 27,
-              title: "Erase tracking",
-              description: "Clear your browser history and cookies.",
-              categoryId: "cat-4",
-              duration: 120,
-              lapInterval: 6,
-              growthFactor: -3,
-              maxOccurrences: 0,
-            },
-            {
-              id: 28,
-              title: "Fold Laundry",
-              description: "Take care of your clothes.",
-              categoryId: "cat-4",
-              duration: 120,
-              lapInterval: 8,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 29,
-              title: "Work",
-              description: "A short burst of focused work.",
-              categoryId: "cat-3",
-              duration: 120,
-              lapInterval: 10,
-              growthFactor: 2,
-              maxOccurrences: 0,
-            },
-            {
-              id: 30,
-              title: "Brush teeth",
-              description: "A complete dental hygiene routine.",
-              categoryId: "cat-1",
-              duration: 240,
-              lapInterval: 99,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 31,
-              title: "Prepare",
-              description: "Get ready for the next task or activity.",
-              categoryId: "cat-9",
-              duration: 120,
-              lapInterval: 4,
-              growthFactor: -1,
-              maxOccurrences: 0,
-            },
-            {
-              id: 32,
-              title: "Shower",
-              description: "Take a refreshing shower.",
-              categoryId: "cat-1",
-              duration: 900,
-              lapInterval: 99,
-              growthFactor: 0,
-              maxOccurrences: 0,
-            },
-            {
-              id: 33,
-              title: "Connect with others",
-              description: "Send a quick message to a friend or family member.",
-              categoryId: "cat-5",
-              duration: 120,
-              lapInterval: 10,
-              growthFactor: 1,
-              maxOccurrences: 0,
-            },
-            {
-              id: 34,
-              title: "Break",
-              description: "A short break to refresh your mind.",
-              categoryId: "cat-3",
-              duration: 120,
-              lapInterval: 1,
-              growthFactor: 1,
-              maxOccurrences: 0,
-            },
-          ];
-          state.lapList = [
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-          ];
-          state.lastId = 34;
+          // Use deep copy to prevent modifying the original constant
+          state.tasks = JSON.parse(JSON.stringify(DEMO_TASKS));
+          state.lapList = [...DEMO_LAP_LIST];
+          state.lastId = DEMO_TASKS.reduce(
+            (max, task) => Math.max(max, task.id),
+            0
+          );
           saveState();
           renderAll();
         }
