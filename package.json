@@ -1,0 +1,24 @@
+{
+  "name": "timer",
+  "version": "1.0.0",
+  "description": "An advanced timer application designed for managing and executing task-based sessions. Built with vanilla HTML, CSS, and JavaScript, this tool helps you structure your work, breaks, and other activities into a configurable, multi-lap playlist.",
+  "main": "constants.js",
+  "scripts": {
+    "start": "http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hazeltime/timer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hazeltime/timer/issues"
+  },
+  "homepage": "https://github.com/hazeltime/timer#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
