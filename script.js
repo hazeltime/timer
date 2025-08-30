@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetAppBtn: $("#reset-app-btn"),
     globalCollapseBtn: $("#global-collapse-btn"),
     globalExpandBtn: $("#global-expand-btn"),
-    popoutRunnerBtn: $("#popout-runner-btn"), // NEW
+    popoutRunnerBtn: $("#popout-runner-btn"),
     runnerTaskCategory: $("#runner-task-category"),
     runnerTaskTitle: $("#runner-task-title"),
     taskProgressBar: $("#task-progress-bar"),
@@ -66,11 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
       occurrenceCount: $("#runner-occurrence-count"),
       changePercentage: $("#runner-change-percentage"),
       changeDelta: $("#runner-change-delta"),
+      sessionTotal: $("#runner-session-total"), // NEW
     },
     lapsControls: $(".laps-controls"),
     sessionControls: $("#session-controls"),
     lapsInput: $("#laps-input"),
     stopLapsBtn: $("#stop-laps-btn"),
+    restartLapsBtn: $("#restart-laps-btn"), // NEW
     prevLapBtn: $("#prev-lap-btn"),
     nextLapBtn: $("#next-lap-btn"),
     lapsProgressContainer: $("#laps-progress-container"),
@@ -114,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
       totalActiveLaps: 0,
       totalLaps: 1,
       totalTaskOccurrencesMap: new Map(),
+      completedTaskDurationsMap: new Map(), // NEW
     },
   };
   const saveState = () => {
@@ -271,7 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
           category.icon
         }</span>
               <div class="title">${task.title}</div>
-              <span class="duration">${formatTime(task.duration)}</span>
+              <span class="duration">${formatTime(task.duration).replace(
+                /(\d+)([a-z]+)/g,
+                "$1 $2"
+              )}</span>
               ${actions}
             </div>`;
       })
@@ -427,6 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.runnerDetails.occurrenceCount.textContent = "0";
     DOM.runnerDetails.changePercentage.textContent = "0%";
     DOM.runnerDetails.changeDelta.textContent = "0s";
+    DOM.runnerDetails.sessionTotal.textContent = "0s";
   };
   const scrollToRunningTask = () => {
     const container = DOM.lapListEl;
@@ -484,12 +491,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const changeDelta = calculatedDuration - baseDuration;
     const changePercentage =
       baseDuration > 0 ? Math.round((changeDelta / baseDuration) * 100) : 0;
+    const sessionTotalTime =
+      state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
     DOM.runnerDetails.baseDuration.textContent = formatTime(baseDuration);
     DOM.runnerDetails.currentDuration.textContent =
       formatTime(calculatedDuration);
     DOM.runnerDetails.occurrenceCount.textContent = `${occurrences} of ${totalOccurrences}`;
     DOM.runnerDetails.changePercentage.textContent = `${changePercentage}%`;
     DOM.runnerDetails.changeDelta.textContent = formatTime(changeDelta);
+    DOM.runnerDetails.sessionTotal.textContent = formatTime(sessionTotalTime);
     DOM.runnerDetails.changePercentage.style.color =
       changePercentage > 0
         ? "var(--accent-green)"
@@ -511,13 +521,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentVirtualTask =
       state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
     if (!currentVirtualTask) return;
-    const { calculatedDuration, lap, taskIndexInLap, totalTasksInLap } =
+    const { taskId, calculatedDuration, lap, taskIndexInLap, totalTasksInLap } =
       currentVirtualTask;
     const elapsed = calculatedDuration - state.currentTaskTimeLeft;
     const taskPercent =
       calculatedDuration > 0
         ? Math.floor((elapsed / calculatedDuration) * 100)
         : 0;
+    const sessionTotalTime =
+      (state.sessionCache.completedTaskDurationsMap.get(taskId) || 0) + elapsed;
+    DOM.runnerDetails.sessionTotal.textContent = formatTime(sessionTotalTime);
     DOM.timeElapsedEl.textContent = formatTime(elapsed);
     DOM.timeRemainingEl.textContent = `-${formatTime(
       state.currentTaskTimeLeft
@@ -559,8 +572,22 @@ document.addEventListener("DOMContentLoaded", () => {
       sessionTimeRemaining
     )}`;
   };
-  const handleTaskCompletion = () =>
+  const handleTaskCompletion = () => {
+    if (state.currentVirtualTaskIndex > -1) {
+      const lastTask =
+        state.sessionCache.virtualSessionPlaylist[
+          state.currentVirtualTaskIndex
+        ];
+      const { taskId, calculatedDuration } = lastTask;
+      const currentTotal =
+        state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
+      state.sessionCache.completedTaskDurationsMap.set(
+        taskId,
+        currentTotal + calculatedDuration
+      );
+    }
     loadTaskToRunner(state.currentVirtualTaskIndex + 1);
+  };
   const playPauseSession = () => {
     if (state.runnerState === "RUNNING") {
       stopTimerInterval();
@@ -710,7 +737,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       return false;
     }
-    state.sessionCache = { ...playlistData, taskMap, totalLaps };
+    state.sessionCache = {
+      ...playlistData,
+      taskMap,
+      totalLaps,
+      completedTaskDurationsMap: new Map(), // Reset for new session
+    };
     DOM.lapsProgressContainer.style.display = "block";
     loadTaskToRunner(0);
     DOM.lapsControls.style.display = "none";
@@ -728,12 +760,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (finished) {
       DOM.lapsProgressLabel.textContent = `Session Complete! (${
         state.sessionCache.totalLaps || 0
-      } runs)`;
+      } laps)`;
       showConfirmationModal(
         "🎉 Congratulations! 🎉",
         `Session Complete! You finished ${
           state.sessionCache.totalLaps || 0
-        } run(s).`,
+        } lap(s).`,
         () => {
           DOM.lapsProgressContainer.style.display = "none";
           resetRunnerDisplay();
@@ -746,6 +778,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     state.currentVirtualTaskIndex = -1;
     renderLapList();
+  };
+  const restartSession = () => {
+    // NEW
+    stopTimerInterval();
+    state.runnerState = "PAUSED"; // Go to paused state, not stopped
+    DOM.playPauseBtn.innerHTML = '<i class="fas fa-play"></i><span>Play</span>';
+    // Rebuild playlist and reset completed times
+    state.sessionCache.completedTaskDurationsMap = new Map();
+    const playlistData = buildVirtualPlaylist(
+      state.sessionCache.taskMap,
+      state.sessionCache.totalLaps
+    );
+    state.sessionCache = { ...state.sessionCache, ...playlistData };
+    loadTaskToRunner(0);
+    state.runnerState = "RUNNING"; // Pretend it was running to allow immediate pause/play
+    playPauseSession(); // Call this to set state to PAUSED correctly
   };
   const showConfirmationModal = (title, text, onConfirm, type = "confirm") => {
     DOM.modalTitle.textContent = title;
@@ -765,7 +813,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.confirmModal.classList.remove("show");
     setTimeout(() => {
       DOM.confirmModal.style.display = "none";
-    }, 200);
+    }, 300); // Match animation duration
   };
   const isModificationAllowed = (msg) => {
     if (isSessionActive()) {
@@ -810,7 +858,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   };
   const toggleRunnerPopout = () => {
-    // NEW: Focus Mode controller
     const panel = $("#task-runner-panel");
     const body = document.body;
     const icon = DOM.popoutRunnerBtn.querySelector("i");
@@ -841,7 +888,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toggleAllPanels(true)
     );
     DOM.globalExpandBtn.addEventListener("click", () => toggleAllPanels(false));
-    DOM.popoutRunnerBtn.addEventListener("click", toggleRunnerPopout); // NEW
+    DOM.popoutRunnerBtn.addEventListener("click", toggleRunnerPopout);
     DOM.taskListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -928,6 +975,14 @@ document.addEventListener("DOMContentLoaded", () => {
         loadTaskToRunner(state.currentVirtualTaskIndex - 1);
     });
     DOM.stopLapsBtn.addEventListener("click", () => stopSession(false));
+    DOM.restartLapsBtn.addEventListener("click", () => {
+      if (!isSessionActive()) return;
+      showConfirmationModal(
+        "Restart Session?",
+        "This will restart the current session from the beginning. Are you sure?",
+        () => restartSession()
+      );
+    });
     DOM.nextLapBtn.addEventListener("click", () => skipToLap(1));
     DOM.prevLapBtn.addEventListener("click", () => skipToLap(-1));
     DOM.themeToggleBtn.addEventListener("click", () =>

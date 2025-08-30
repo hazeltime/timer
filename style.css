@@ -76,7 +76,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* NEW: Popout overlay */
 body.runner-popped-out::before {
   content: "";
   position: fixed;
@@ -202,7 +201,6 @@ body.dark-theme .theme-btn .fa-moon {
   align-items: center;
   margin-bottom: 1.25rem;
 }
-/* NEW: Wrapper for right-aligned panel header buttons */
 .panel-header-controls {
   display: flex;
   gap: 0.5rem;
@@ -225,7 +223,6 @@ body.dark-theme .theme-btn .fa-moon {
 .panel-header-btn:hover {
   background-color: var(--hover-bg);
 }
-
 .lap-list-header {
   gap: 0.5rem;
 }
@@ -411,6 +408,7 @@ textarea::placeholder {
 .duration-inputs-wrapper {
   display: flex;
   gap: 1rem;
+  max-width: fit-content; /* FIX: Prevent inputs from exceeding center */
 }
 .duration-input-group {
   display: flex;
@@ -426,7 +424,7 @@ textarea::placeholder {
 .preset-durations {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr); /* NEW: 3 rows */
   gap: 0.5rem;
 }
 .preset-btn {
@@ -652,9 +650,8 @@ textarea::placeholder {
 .task-runner-panel {
   position: sticky;
   top: 1.5rem;
-  transition: all 0.3s ease-in-out; /* NEW: for smooth popout */
+  transition: all 0.3s ease-in-out;
 }
-/* NEW: Popout Panel Style */
 #task-runner-panel.task-runner-popout {
   position: fixed;
   top: 2rem;
@@ -671,7 +668,6 @@ textarea::placeholder {
   flex-grow: 1;
   overflow-y: auto;
 }
-
 #runner-task-info {
   display: flex;
   justify-content: space-between;
@@ -832,7 +828,11 @@ textarea::placeholder {
   background-color: var(--accent-red);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+}
+.session-btn.restart {
+  background-color: var(--button-secondary-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 .session-btn:hover {
   color: var(--text-primary);
@@ -849,7 +849,9 @@ textarea::placeholder {
   margin-top: 1rem;
 }
 .stop-session-container {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 .repo-header {
@@ -1027,22 +1029,13 @@ textarea::placeholder {
 }
 .runner-details-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, 1fr); /* NEW: 3 columns for 6 stats */
+  gap: 1rem;
   margin-bottom: 1.5rem;
-  padding: 0.75rem;
+  padding: 1rem;
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: 0.75rem;
-}
-.runner-details-grid .runner-detail:nth-child(1),
-.runner-details-grid .runner-detail:nth-child(2),
-.runner-details-grid .runner-detail:nth-child(3) {
-  grid-column: span 2;
-}
-.runner-details-grid .runner-detail:nth-child(4),
-.runner-details-grid .runner-detail:nth-child(5) {
-  grid-column: span 3;
 }
 .runner-detail {
   display: flex;
@@ -1062,10 +1055,11 @@ textarea::placeholder {
   margin-top: 0.25rem;
   color: var(--text-primary);
 }
-@keyframes modal-fade-in {
+@keyframes modal-fade-in-scale {
+  /* NEW: Animation for modal */
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -1086,20 +1080,20 @@ textarea::placeholder {
   z-index: 1001;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 .modal-overlay.show {
   opacity: 1;
   visibility: visible;
 }
 .modal-overlay.show .modal-content {
-  animation: modal-fade-in 0.2s ease-out forwards;
+  animation: modal-fade-in-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* NEW */
 }
 .modal-content {
-  padding: 2rem;
+  padding: 2.5rem; /* Increased size */
   border-radius: 1rem;
   width: 90%;
-  max-width: 400px;
+  max-width: 480px; /* Increased size */
   text-align: center;
   border: 1px solid var(--border-color);
   background-color: var(--panel-bg);
@@ -1120,7 +1114,6 @@ textarea::placeholder {
   .task-runner-panel {
     position: static;
   }
-  /* NEW: Disable sticky positioning on smaller screens when popout is active */
   #task-runner-panel.task-runner-popout {
     position: fixed;
   }
