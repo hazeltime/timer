@@ -1,0 +1,27 @@
+<section class="panel" id="lap-list-panel">
+  <div class="panel-header lap-list-header">
+    <h2>Lap Playlist</h2>
+    <div class="lap-list-controls">
+      <span id="lap-list-duration">Total: 0s</span>
+      <button
+        id="clear-lap-list-btn"
+        title="Clear Playlist"
+        class="btn-icon-danger"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+    <button
+      class="collapse-btn"
+      aria-expanded="true"
+      aria-controls="lap-list-content"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+  <div id="lap-list-content" class="panel-content">
+    <div class="lap-list-wrapper">
+      <div id="lap-list" class="lap-list"></div>
+    </div>
+  </div>
+</section>

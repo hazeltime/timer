@@ -1,0 +1,457 @@
+/* css/components.css */
+
+/* --- Panels --- */
+.panel {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+  background-color: var(--panel-bg);
+  box-shadow: var(--shadow);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.panel-header-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.panel.collapsed .panel-header {
+  margin-bottom: 0;
+}
+
+.panel-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.panel-content > div {
+  min-height: 0;
+  overflow: visible;
+}
+
+.panel.collapsed .panel-content {
+  grid-template-rows: 0fr;
+}
+
+.collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.collapse-btn:hover {
+  background-color: var(--hover-bg);
+}
+.collapse-btn i {
+  transition: transform 0.3s ease;
+}
+.panel.collapsed .collapse-btn i {
+  transform: rotate(180deg);
+}
+
+/* --- Buttons --- */
+.theme-btn {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 0.75rem;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.theme-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
+.theme-btn .fa-sun {
+  display: none;
+}
+.theme-btn .fa-moon {
+  display: block;
+}
+body.dark-theme .theme-btn .fa-sun {
+  display: block;
+}
+body.dark-theme .theme-btn .fa-moon {
+  display: none;
+}
+#global-collapse-btn i,
+#global-expand-btn i {
+  font-size: 1rem;
+}
+
+.panel-header-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.panel-header-btn:hover {
+  background-color: var(--hover-bg);
+}
+
+#add-task-btn,
+#cancel-edit-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  color: white;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#add-task-btn {
+  background-color: var(--accent-green-dark);
+}
+#add-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+#cancel-edit-btn {
+  background-color: var(--text-secondary);
+}
+#cancel-edit-btn:hover {
+  opacity: 0.9;
+}
+
+.btn-icon-danger {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+.btn-icon-danger:hover {
+  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+.runner-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  background-color: var(--button-secondary-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.runner-btn:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+.runner-btn.play {
+  background-color: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+  font-size: 1.125rem;
+  padding: 0.75rem 1.5rem;
+}
+.runner-btn.play:hover {
+  transform: scale(1.05);
+}
+.runner-btn.stop {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
+}
+
+.repo-btn,
+.delete-all {
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+}
+.repo-btn {
+  background-color: var(--button-secondary-bg);
+  color: var(--text-primary);
+}
+.repo-btn:hover {
+  border-color: var(--text-secondary);
+}
+.delete-all {
+  background-color: var(--accent-red);
+  color: white;
+  border-color: var(--accent-red);
+}
+.delete-all:hover {
+  opacity: 0.9;
+}
+
+.preset-btn {
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  height: auto;
+  background-color: var(--preset-btn-bg);
+  color: var(--preset-btn-text);
+  border: 1px solid var(--preset-btn-border);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.preset-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: scale(1.05);
+}
+
+.stepper-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: var(--input-height);
+  font-size: 1.25rem;
+}
+.stepper-btn:active {
+  transform: scale(0.95);
+}
+.stepper-btn[data-field="growthFactor"] {
+  width: 60px;
+  font-size: 0.875rem;
+  padding: 0 0.5rem;
+}
+.stepper-btn[data-step="1"],
+.stepper-btn[data-step="5"] {
+  background-color: var(--stepper-increment-bg);
+  color: var(--stepper-increment-text);
+}
+.stepper-btn[data-step="-1"],
+.stepper-btn[data-step="-5"] {
+  background-color: var(--stepper-decrement-bg);
+  color: var(--stepper-decrement-text);
+}
+
+.lap-item-actions button,
+.task-actions-col button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.lap-item-actions button:hover,
+.task-actions-col button:hover {
+  transform: scale(1.1);
+  background-color: var(--hover-bg);
+}
+
+/* --- Form Inputs --- */
+input,
+textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  height: var(--input-height);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-blue-focus-shadow);
+  border-color: var(--accent-blue);
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  text-align: center;
+}
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  height: auto;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.stepper-input {
+  display: flex;
+}
+.stepper-input .stepper-btn {
+  border: 1px solid var(--input-border);
+  position: relative;
+  z-index: 2;
+}
+.stepper-input .stepper-btn:hover {
+  filter: brightness(0.95);
+}
+.stepper-input .stepper-btn:first-child {
+  border-radius: 0.75rem 0 0 0.75rem;
+}
+.stepper-input input {
+  border-radius: 0;
+  position: relative;
+  z-index: 1;
+  margin-left: -1px;
+  margin-right: -1px;
+  width: 60px;
+}
+.stepper-input .stepper-btn:last-child {
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+
+/* --- Progress Bars --- */
+.progress-bar-container {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  background-color: var(--progress-container-bg);
+  overflow: hidden;
+}
+.percentage-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+#task-progress-bar,
+#lap-progress-bar,
+#session-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: 12px;
+  /* IMPROVEMENT: Smoother, more pleasing animation for progress bars */
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+#task-progress-bar {
+  background-color: var(--accent-blue);
+}
+#lap-progress-bar {
+  background-color: var(--accent-green);
+}
+#session-progress-bar {
+  background-color: var(--accent-purple);
+}
+
+/* --- Modal --- */
+@keyframes modal-fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-overlay.show .modal-content {
+  animation: modal-fade-in-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.modal-content {
+  padding: 2.5rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 480px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  background-color: var(--panel-bg);
+  box-shadow: var(--shadow-lg);
+}
+.modal-actions button {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}

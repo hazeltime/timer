@@ -1,0 +1,222 @@
+<section class="panel" id="create-task-panel">
+  <div class="panel-header">
+    <h2 id="form-title">Create New Task</h2>
+    <button
+      class="collapse-btn"
+      aria-expanded="true"
+      aria-controls="create-task-content"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+  <div id="create-task-content" class="panel-content">
+    <div>
+      <div id="task-form" class="input-grid">
+        <div class="form-row-split">
+          <div class="form-group">
+            <label for="task-input">Title</label>
+            <input
+              type="text"
+              id="task-input"
+              placeholder="e.g., Finish project report"
+            />
+          </div>
+          <div class="form-group description-group">
+            <label for="task-description-input">Description (Optional)</label>
+            <textarea
+              id="task-description-input"
+              placeholder="e.g., Finalize introduction and conclusion."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-row-split-advanced">
+          <div class="form-group category-group">
+            <label>Category</label>
+            <div id="category-grid" class="category-grid"></div>
+          </div>
+          <div class="form-column">
+            <fieldset class="form-group">
+              <legend>Lap Interval</legend>
+              <div class="lap-interval-controls">
+                <div class="stepper-input">
+                  <button
+                    class="stepper-btn"
+                    data-field="lapInterval"
+                    data-step="-1"
+                    aria-label="Decrease Lap Interval"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    id="lap-interval-input"
+                    value="1"
+                    min="1"
+                    max="99"
+                  />
+                  <button
+                    class="stepper-btn"
+                    data-field="lapInterval"
+                    data-step="1"
+                    aria-label="Increase Lap Interval"
+                  >
+                    +
+                  </button>
+                </div>
+                <span class="field-description">Appears every N lap</span>
+              </div>
+            </fieldset>
+            <fieldset class="form-group">
+              <legend>Duration Growth/Decay</legend>
+              <div class="growth-factor-controls">
+                <div class="stepper-input">
+                  <button
+                    class="stepper-btn"
+                    data-field="growthFactor"
+                    data-step="-5"
+                    aria-label="Decrease growth factor"
+                  >
+                    -5%
+                  </button>
+                  <input
+                    type="number"
+                    id="growth-factor-input"
+                    value="0"
+                    min="-99"
+                    max="99"
+                  />
+                  <button
+                    class="stepper-btn"
+                    data-field="growthFactor"
+                    data-step="5"
+                    aria-label="Increase growth factor"
+                  >
+                    +5%
+                  </button>
+                </div>
+                <span class="field-description"
+                  >Changes duration by this % each run</span
+                >
+              </div>
+            </fieldset>
+            <fieldset class="form-group">
+              <legend>Max Occurrences</legend>
+              <div class="max-occurrences-controls">
+                <div class="stepper-input">
+                  <button
+                    class="stepper-btn"
+                    data-field="maxOccurrences"
+                    data-step="-1"
+                    aria-label="Decrease max occurrences"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    id="max-occurrences-input"
+                    value="0"
+                    min="0"
+                    max="999"
+                  />
+                  <button
+                    class="stepper-btn"
+                    data-field="maxOccurrences"
+                    data-step="1"
+                    aria-label="Increase max occurrences"
+                  >
+                    +
+                  </button>
+                </div>
+                <span class="field-description"
+                  >Stops after N runs (0 for infinite)</span
+                >
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="form-group duration-container-group">
+          <fieldset>
+            <legend>Duration</legend>
+            <div class="duration-layout-grid">
+              <div class="duration-inputs-wrapper">
+                <div class="duration-input-group">
+                  <label for="task-duration-minutes">Minutes</label>
+                  <div class="stepper-input">
+                    <button
+                      class="stepper-btn"
+                      data-field="minutes"
+                      data-step="-1"
+                      aria-label="Decrease minutes"
+                    >
+                      -
+                    </button>
+                    <input type="number" id="task-duration-minutes" min="0" />
+                    <button
+                      class="stepper-btn"
+                      data-field="minutes"
+                      data-step="1"
+                      aria-label="Increase minutes"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="duration-input-group">
+                  <label for="task-duration-seconds">Seconds</label>
+                  <div class="stepper-input">
+                    <button
+                      class="stepper-btn"
+                      data-field="seconds"
+                      data-step="-1"
+                      aria-label="Decrease seconds"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      id="task-duration-seconds"
+                      min="0"
+                      max="59"
+                    />
+                    <button
+                      class="stepper-btn"
+                      data-field="seconds"
+                      data-step="1"
+                      aria-label="Increase seconds"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="preset-group">
+                <label>Presets</label>
+                <div class="preset-durations">
+                  <button class="preset-btn" data-duration="10">10 s</button>
+                  <button class="preset-btn" data-duration="20">20 s</button>
+                  <button class="preset-btn" data-duration="30">30 s</button>
+                  <button class="preset-btn" data-duration="120">2 m</button>
+                  <button class="preset-btn" data-duration="300">5 m</button>
+                  <button class="preset-btn" data-duration="600">10 m</button>
+                  <button class="preset-btn" data-duration="900">15 m</button>
+                  <button class="preset-btn" data-duration="1800">30 m</button>
+                  <button class="preset-btn" data-duration="3600">60 m</button>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="form-group add-btn-group">
+          <button id="add-task-btn">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+          <button id="cancel-edit-btn" style="display: none">
+            <i class="fas fa-times"></i> Cancel Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

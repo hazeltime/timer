@@ -1,0 +1,92 @@
+<section class="panel" id="task-repository-panel">
+  <div class="panel-header repo-header">
+    <h2>Task Repository</h2>
+    <div class="repo-controls">
+      <button id="add-all-btn" class="repo-btn">
+        <i class="fas fa-plus-square"></i> Add All
+      </button>
+      <button id="delete-all-btn" class="delete-all">
+        <i class="fas fa-trash-alt"></i> Delete All
+      </button>
+    </div>
+    <button
+      class="collapse-btn"
+      aria-expanded="true"
+      aria-controls="task-repository-content"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+  <div id="task-repository-content" class="panel-content">
+    <div>
+      <div class="task-list-container">
+        <div class="task-list-header">
+          <div
+            class="task-cell task-id-col sort-header"
+            id="sort-by-id-btn"
+            role="button"
+            tabindex="0"
+          >
+            # <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-title-col sort-header"
+            id="sort-by-title-btn"
+            role="button"
+            tabindex="0"
+          >
+            Task <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-category-col sort-header"
+            id="sort-by-category-btn"
+            role="button"
+            tabindex="0"
+          >
+            Category <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-duration-col sort-header"
+            id="sort-by-duration-btn"
+            role="button"
+            tabindex="0"
+          >
+            Duration <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-interval-col sort-header"
+            id="sort-by-lapInterval-btn"
+            role="button"
+            tabindex="0"
+          >
+            Interval <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-limit-col sort-header"
+            id="sort-by-maxOccurrences-btn"
+            role="button"
+            tabindex="0"
+          >
+            Limit <i class="fas"></i>
+          </div>
+          <div
+            class="task-cell task-growth-col sort-header"
+            id="sort-by-growthFactor-btn"
+            role="button"
+            tabindex="0"
+          >
+            Growth <i class="fas"></i>
+          </div>
+          <div class="task-cell task-actions-col">Actions</div>
+        </div>
+        <div id="task-list"></div>
+      </div>
+      <footer class="task-list-footer">
+        <div id="no-tasks-message" style="display: none">
+          No tasks yet. Add one above!
+        </div>
+        <div id="task-summary"></div>
+      </footer>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,189 @@
+<section class="panel task-runner-panel" id="task-runner-panel">
+  <div class="panel-header">
+    <h2>Task Runner</h2>
+    <div class="panel-header-controls">
+      <button
+        id="popout-runner-btn"
+        class="panel-header-btn"
+        title="Focus Mode"
+      >
+        <i class="fas fa-expand-arrows-alt"></i>
+      </button>
+      <button
+        class="collapse-btn"
+        aria-expanded="true"
+        aria-controls="task-runner-content"
+      >
+        <i class="fas fa-chevron-up"></i>
+      </button>
+    </div>
+  </div>
+  <div id="task-runner-content" class="panel-content">
+    <div>
+      <div id="runner-task-info">
+        <h3 id="runner-task-title">No task selected</h3>
+        <span id="runner-task-category"></span>
+      </div>
+      <div class="runner-details-grid">
+        <div class="runner-detail">
+          <span class="runner-detail-label">Base Duration</span>
+          <span id="runner-base-duration" class="runner-detail-value">0s</span>
+        </div>
+        <div class="runner-detail">
+          <span class="runner-detail-label">Current Duration</span>
+          <span id="runner-current-duration" class="runner-detail-value"
+            >0s</span
+          >
+        </div>
+        <div class="runner-detail">
+          <span class="runner-detail-label">Occurrence</span>
+          <span id="runner-occurrence-count" class="runner-detail-value"
+            >0</span
+          >
+        </div>
+        <div class="runner-detail">
+          <span class="runner-detail-label">Time Change</span>
+          <span id="runner-change-delta" class="runner-detail-value">0s</span>
+        </div>
+        <div class="runner-detail">
+          <span class="runner-detail-label">Total Change %</span>
+          <span id="runner-change-percentage" class="runner-detail-value"
+            >0%</span
+          >
+        </div>
+        <div class="runner-detail">
+          <span class="runner-detail-label">Session Total</span>
+          <span id="runner-session-total" class="runner-detail-value">0s</span>
+        </div>
+      </div>
+      <h4 id="task-progress-label" class="progress-section-label">Task</h4>
+      <div class="progress-bar-container">
+        <div
+          id="task-progress-bar"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+        <span id="task-percentage" class="percentage-indicator">0%</span>
+      </div>
+      <div class="timer-display">
+        <div>
+          <span class="timer-label">Elapsed</span
+          ><span id="time-elapsed">0s</span>
+        </div>
+        <div>
+          <span class="timer-label">Remaining</span
+          ><span id="time-remaining">0s</span>
+        </div>
+      </div>
+      <div class="runner-controls">
+        <button id="prev-task-btn" class="runner-btn" title="Previous Task">
+          <i class="fas fa-backward-step"></i><span>Prev</span>
+        </button>
+        <button id="play-pause-btn" class="runner-btn play" title="Play/Pause">
+          <i class="fas fa-play"></i><span>Play</span>
+        </button>
+        <button id="next-task-btn" class="runner-btn" title="Next Task">
+          <span>Next</span><i class="fas fa-forward-step"></i>
+        </button>
+      </div>
+      <hr class="runner-divider" />
+      <div class="laps-section">
+        <div class="laps-section-header">
+          <div class="laps-controls">
+            <label for="laps-input">Laps:</label>
+            <div class="stepper-input">
+              <button
+                class="stepper-btn"
+                data-field="laps"
+                data-step="-1"
+                aria-label="Decrease laps"
+              >
+                -
+              </button>
+              <input type="number" id="laps-input" value="1" min="1" />
+              <button
+                class="stepper-btn"
+                data-field="laps"
+                data-step="1"
+                aria-label="Increase laps"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="runner-progress-details"
+          id="laps-progress-container"
+          style="display: none"
+        >
+          <h4 class="progress-section-label">Laps</h4>
+          <div id="laps-progress-label">Lap Progress</div>
+          <div class="progress-bar-container">
+            <div
+              id="lap-progress-bar"
+              role="progressbar"
+              aria-valuenow="0"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+            <span id="lap-percentage" class="percentage-indicator">0%</span>
+          </div>
+          <div class="timer-display">
+            <div>
+              <span class="timer-label">Elapsed</span
+              ><span id="lap-time-elapsed">0s</span>
+            </div>
+            <div>
+              <span class="timer-label">Remaining</span
+              ><span id="lap-time-remaining">0s</span>
+            </div>
+          </div>
+          <div class="lap-navigation-controls">
+            <button id="prev-lap-btn" class="runner-btn" title="Previous Lap">
+              <i class="fas fa-backward-step"></i><span>Prev Lap</span>
+            </button>
+            <button id="next-lap-btn" class="runner-btn" title="Next Lap">
+              <span>Next Lap</span><i class="fas fa-forward-step"></i>
+            </button>
+          </div>
+          <div class="divider"></div>
+          <h4 class="progress-section-label" id="session-progress-label">
+            Session
+          </h4>
+          <div class="progress-bar-container">
+            <div
+              id="session-progress-bar"
+              role="progressbar"
+              aria-valuenow="0"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+            <span id="session-percentage" class="percentage-indicator">0%</span>
+          </div>
+          <div class="timer-display">
+            <div>
+              <span class="timer-label">Elapsed</span
+              ><span id="session-time-elapsed">0s</span>
+            </div>
+            <div>
+              <span class="timer-label">Remaining</span
+              ><span id="session-time-remaining">0s</span>
+            </div>
+          </div>
+          <div class="stop-session-container">
+            <button id="stop-laps-btn" class="runner-btn stop">
+              <i class="fas fa-stop-circle"></i><span>Stop Session</span>
+            </button>
+            <button id="restart-laps-btn" class="runner-btn">
+              <i class="fas fa-redo-alt"></i><span>Restart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

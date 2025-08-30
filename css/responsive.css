@@ -1,0 +1,70 @@
+/* css/responsive.css */
+
+@media (max-width: 1200px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+  .task-runner-panel {
+    position: static;
+  }
+  #task-runner-panel.task-runner-popout {
+    position: fixed;
+  }
+  .left-column > .panel,
+  .right-column > .panel {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .form-row-split,
+  .form-row-split-advanced {
+    grid-template-columns: 1fr;
+  }
+  .duration-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  :root {
+    --task-grid-columns: 40px minmax(150px, 4fr) 2fr 1.5fr 1.25fr 1fr;
+  }
+  .task-interval-col,
+  .task-limit-col {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  #task-runner-panel.task-runner-popout {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+  :root {
+    --task-grid-columns: 1fr auto;
+  }
+  .task-list-header {
+    display: none;
+  }
+  .task-item {
+    align-items: center;
+    padding: 1rem 0.5rem;
+  }
+  .task-title-col {
+    grid-column: 1;
+  }
+  .task-actions-col {
+    grid-column: 2;
+  }
+  .task-id-col,
+  .task-category-col,
+  .task-duration-col,
+  .task-interval-col,
+  .task-limit-col,
+  .task-growth-col {
+    display: none;
+  }
+}
