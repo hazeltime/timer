@@ -24,6 +24,7 @@ const loadHTMLComponents = async () => {
     { id: "#runner-view-placeholder", url: "components/runner-view.html" },
     { id: "#playlist-view-placeholder", url: "components/playlist-view.html" },
     { id: "#modal-placeholder", url: "components/modal.html" },
+    { id: "#guide-modal-placeholder", url: "components/guide-modal.html" },
   ];
 
   try {
@@ -128,8 +129,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const headerDOM = {
     themeToggleBtn: $("#theme-toggle-btn"),
     resetAppBtn: $("#reset-app-btn"),
-    globalCollapseBtn: $("#global-collapse-btn"),
+        globalCollapseBtn: $("#global-collapse-btn"),
     globalExpandBtn: $("#global-expand-btn"),
+    guideBtn: $("#guide-btn"),
   };
 
   const modalDOM = {
@@ -140,7 +142,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalConfirmBtn: $("#modal-confirm-btn"),
   };
 
-  const DOM = { ...formDOM, ...repoDOM, ...playlistDOM, ...runnerDOM, ...headerDOM, ...modalDOM };
+  const guideModalDOM = {
+    guideModal: $("#guide-modal"),
+    guideModalCloseBtn: $("#guide-modal-close-btn"),
+  };
+
+  const DOM = { ...formDOM, ...repoDOM, ...playlistDOM, ...runnerDOM, ...headerDOM, ...modalDOM, ...guideModalDOM };
 
   // ----------------------
   // Application State
@@ -393,6 +400,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     runnerDOM.popoutRunnerBtn.addEventListener("click", () =>
       UI.toggleRunnerPopout(runnerDOM, state)
     );
+
+    headerDOM.guideBtn.addEventListener("click", () => {
+      guideModalDOM.guideModal.style.display = "flex";
+      guideModalDOM.guideModal.classList.add("show");
+    });
+
+    guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
+      guideModalDOM.guideModal.classList.remove("show");
+      setTimeout(() => {
+        guideModalDOM.guideModal.style.display = "none";
+      }, 300);
+    });
+
+    headerDOM.guideBtn.addEventListener("click", () => {
+      const guideModal = $("#guide-modal");
+      if (guideModal) guideModal.style.display = "flex";
+    });
+
+    document.body.addEventListener("click", (e) => {
+      if (e.target.id === 'guide-modal-close-btn' || e.target.closest('#guide-modal-close-btn')) {
+        const guideModal = $("#guide-modal");
+        if (guideModal) guideModal.style.display = "none";
+      }
+    });
 
     repoDOM.taskListEl.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
