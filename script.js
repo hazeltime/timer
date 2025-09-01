@@ -620,7 +620,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     document.addEventListener("click", (e) => {
-      const collapseBtn = e.target.closest("collapse-btn");
+      const collapseBtn = e.target.closest(".collapse-btn");
       if (!collapseBtn) return;
       const panel = collapseBtn.closest(".panel, section");
       if (!panel) return;

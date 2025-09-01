@@ -300,6 +300,9 @@ fieldset {
   flex-grow: 1;
   overflow-y: auto;
 }
+#task-runner-panel.task-runner-popout.collapsed .panel-content {
+  display: none;
+}
 #runner-task-info {
   display: flex;
   justify-content: space-between;
