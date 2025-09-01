@@ -159,6 +159,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     panelCollapseState:
       JSON.parse(localStorage.getItem("panelCollapseState")) || {},
     draggedItemId: null,
+    runnerState: "STOPPED",
+    currentVirtualTaskIndex: -1,
+    sessionCache: { completedOccurrencesMap: new Map(), virtualSessionPlaylist: [] },
   };
 
   // --- UTILS ---
