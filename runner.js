@@ -84,6 +84,7 @@ const loadTaskToRunner = (virtualIndex) => {
         categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     runnerDOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`;
     runnerDOM.runnerTaskTitle.textContent = task.title;
+    runnerDOM.runnerTaskDescription.textContent = task.description;
     state.currentTaskTimeLeft = calculatedDuration;
 
     const changeDelta = calculatedDuration - baseDuration;

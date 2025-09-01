@@ -17,6 +17,14 @@
   margin-bottom: 1.25rem;
 }
 
+.runner-task-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: -0.75rem;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
 .panel-header-controls {
   display: flex;
   gap: 0.5rem;

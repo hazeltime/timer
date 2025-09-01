@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     popoutRunnerBtn: $("#popout-runner-btn"),
     runnerTaskCategory: $("#runner-task-category"),
     runnerTaskTitle: $("#runner-task-title"),
+    runnerTaskDescription: $("#runner-task-description"),
     taskProgressBar: $("#task-progress-bar"),
     taskPercentage: $("#task-percentage"),
     timeElapsedEl: $("#time-elapsed"),
