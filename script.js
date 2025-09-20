@@ -33,11 +33,24 @@ const loadHTMLComponents = async () => {
     responses.forEach((html, index) => {
       const { id } = components[index];
       const placeholder = document.querySelector(id);
-      if (placeholder) {
-        placeholder.outerHTML = html;
-      } else {
+      if (!placeholder) {
         console.error(`Placeholder with ID ${id} not found.`);
+        return;
       }
+      // Basic validation: ensure fetched fragment contains an HTML tag
+      if (!/<\w+/.test(html)) {
+        console.error(`Component ${id} returned invalid HTML.`);
+        return;
+      }
+      // Insert into a temporary container to avoid replacing the placeholder element itself
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      // Move children out of wrapper into DOM where placeholder was
+      while (wrapper.firstChild) {
+        placeholder.parentNode.insertBefore(wrapper.firstChild, placeholder);
+      }
+      // Remove the placeholder after inserting content
+      placeholder.parentNode.removeChild(placeholder);
     });
   } catch (error) {
     console.error("Failed to load HTML components:", error);
