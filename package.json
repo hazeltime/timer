@@ -15,7 +15,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
+  "jest": {
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [".js"],
+    "transform": {}
+  },
   "bugs": {
     "url": "https://github.com/hazeltime/timer/issues"
   },
