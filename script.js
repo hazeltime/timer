@@ -402,8 +402,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     headerDOM.guideBtn.addEventListener("click", () => {
-      guideModalDOM.guideModal.style.display = "flex";
-      guideModalDOM.guideModal.classList.add("show");
+      const guideModal = $("#guide-modal");
+      if (!guideModal) return;
+      // Save previously focused element to restore later
+      const previouslyFocused = document.activeElement;
+      guideModal.style.display = "flex";
+      guideModal.classList.add("show");
+      const closeBtn = $("#guide-modal-close-btn");
+      if (closeBtn) closeBtn.focus();
+
+      // Focus trap
+      const handleKey = (e) => {
+        if (e.key === 'Escape') {
+          guideModal.classList.remove('show');
+          guideModal.style.display = 'none';
+          if (previouslyFocused) previouslyFocused.focus();
+          document.removeEventListener('keydown', handleKey);
+        }
+        if (e.key === 'Tab') {
+          const focusable = guideModal.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+          if (focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+      document.addEventListener('keydown', handleKey);
     });
 
     guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
