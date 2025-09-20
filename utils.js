@@ -19,8 +19,10 @@ export const escapeHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({
 	"'": '&#39;'
 }[c]));
 // Create an icon element safely
-export const createIconElement = (iconName) => {
-	const iconElement = document.createElement('span');
-	iconElement.className = `icon-${escapeHTML(iconName)}`;
-	return iconElement;
+export const createIconElement = (icon) => {
+	const span = document.createElement('span');
+	span.className = 'icon';
+	// Icons in constants are small emoji strings; insert as textContent to avoid HTML parsing
+	span.textContent = icon == null ? '' : String(icon);
+	return span;
 };
