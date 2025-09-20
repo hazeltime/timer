@@ -6,9 +6,11 @@ export const $ = (sel) => document.querySelector(sel);
 export const $$ = (sel) => [...document.querySelectorAll(sel)];
 
 export const formatTime = (totalSeconds) => {
-  if (totalSeconds === 0) return "0s";
-  const isNegative = totalSeconds < 0;
-  const absSeconds = Math.abs(totalSeconds);
+  const n = Number(totalSeconds);
+  if (!Number.isFinite(n) || Number.isNaN(n)) return "0s";
+  if (n === 0) return "0s";
+  const isNegative = n < 0;
+  const absSeconds = Math.abs(Math.floor(n));
   const hours = Math.floor(absSeconds / 3600);
   const minutes = Math.floor((absSeconds % 3600) / 60);
   const seconds = absSeconds % 60;
