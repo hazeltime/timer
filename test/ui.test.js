@@ -1,4 +1,9 @@
-import { formatTime } from '../ui.js';
+let formatTime;
+
+beforeAll(async () => {
+  const mod = await import('../ui.js');
+  formatTime = mod.formatTime;
+});
 
 describe('formatTime', () => {
   test('formats zero as 0s', () => {
