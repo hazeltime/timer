@@ -316,6 +316,22 @@ fieldset {
   overflow: visible;
   align-items: flex-start;
 }
+/* Ensure header controls keep their right alignment and size in popout mode */
+#task-runner-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#task-runner-panel .panel-header .panel-header-controls {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+#task-runner-panel.task-runner-popout.collapsed .panel-header .panel-header-controls {
+  /* don't let controls reflow when content hidden */
+  position: relative;
+  right: 0;
+}
 #runner-task-info {
   display: flex;
   justify-content: space-between;

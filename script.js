@@ -396,6 +396,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       UI.toggleRunnerPopout(runnerDOM, state)
     );
 
+    // Clicking outside the popout runner panel should exit popout mode
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('task-runner-panel');
+      if (!panel) return;
+      if (!panel.classList.contains('task-runner-popout')) return;
+      // If click is inside the panel, do nothing
+      if (panel.contains(e.target)) return;
+      // Otherwise exit popout mode
+      panel.classList.remove('task-runner-popout');
+      document.body.classList.remove('runner-popped-out');
+    });
+
     headerDOM.guideBtn.addEventListener("click", () => {
       const guideModal = $("#guide-modal");
       if (!guideModal) return;
