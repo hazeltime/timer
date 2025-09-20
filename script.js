@@ -165,8 +165,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionCache: { completedOccurrencesMap: new Map(), virtualSessionPlaylist: [] },
   };
 
-  // Utility: clamp value
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // Use shared clamp from runner
+  const { clamp } = Runner;
 
   // State management
   const saveState = () => {
