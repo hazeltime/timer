@@ -672,7 +672,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initialization
   // ----------------------
   const init = () => {
-    Runner.initRunner(state, DOM);
+    // Pass a focused subset of DOM refs to the runner to avoid accidental coupling
+    const runnerDOMForInit = {
+      runnerTaskCategory: runnerDOM.runnerTaskCategory,
+      runnerTaskTitle: runnerDOM.runnerTaskTitle,
+      runnerTaskDescription: runnerDOM.runnerTaskDescription,
+      taskProgressBar: runnerDOM.taskProgressBar,
+      taskPercentage: runnerDOM.taskPercentage,
+      timeElapsedEl: runnerDOM.timeElapsedEl,
+      timeRemainingEl: runnerDOM.timeRemainingEl,
+      prevTaskBtn: runnerDOM.prevTaskBtn,
+      playPauseBtn: runnerDOM.playPauseBtn,
+      nextTaskBtn: runnerDOM.nextTaskBtn,
+      runnerDetails: runnerDOM.runnerDetails,
+      lapsControls: runnerDOM.lapsControls,
+      lapsInput: runnerDOM.lapsInput,
+      stopLapsBtn: runnerDOM.stopLapsBtn,
+      restartLapsBtn: runnerDOM.restartLapsBtn,
+      prevLapBtn: runnerDOM.prevLapBtn,
+      nextLapBtn: runnerDOM.nextLapBtn,
+      lapsProgressContainer: runnerDOM.lapsProgressContainer,
+      lapsProgressLabel: runnerDOM.lapsProgressLabel,
+      lapProgressBar: runnerDOM.lapProgressBar,
+      lapPercentage: runnerDOM.lapPercentage,
+      lapTimeElapsedEl: runnerDOM.lapTimeElapsedEl,
+      lapTimeRemainingEl: runnerDOM.lapTimeRemainingEl,
+      sessionProgressBar: runnerDOM.sessionProgressBar,
+      sessionPercentage: runnerDOM.sessionPercentage,
+      sessionTimeElapsedEl: runnerDOM.sessionTimeElapsedEl,
+      sessionTimeRemainingEl: runnerDOM.sessionTimeRemainingEl,
+    };
+
+    Runner.initRunner(state, runnerDOMForInit);
     UI.applyTheme(localStorage.getItem("theme") || "dark");
     $$(
       "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel"
