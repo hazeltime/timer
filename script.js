@@ -724,6 +724,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       sessionPercentage: runnerDOM.sessionPercentage,
       sessionTimeElapsedEl: runnerDOM.sessionTimeElapsedEl,
       sessionTimeRemainingEl: runnerDOM.sessionTimeRemainingEl,
+      // Playlist rendering targets so runner can update the lap list UI
+      lapListEl: playlistDOM.lapListEl,
+      lapListDurationEl: playlistDOM.lapListDurationEl,
     };
 
     Runner.initRunner(state, runnerDOMForInit);

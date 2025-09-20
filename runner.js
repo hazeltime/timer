@@ -120,8 +120,12 @@ const loadTaskToRunner = (virtualIndex) => {
                 : "var(--text-secondary)";
 
     UI.updateTimerDisplay(runnerDOM, state);
-    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
-    UI.scrollToRunningTask(runnerDOM);
+    const playlistTarget = {
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+    UI.renderLapList(playlistTarget, state, new Map(state.tasks.map((t) => [t.id, t])));
+    UI.scrollToRunningTask(playlistTarget);
 };
 
 export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) => {
@@ -299,7 +303,11 @@ export const stopSession = (finished = false) => {
         UI.resetRunnerDisplay(runnerDOM);
     }
     state.currentVirtualTaskIndex = -1;
-    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
+    const playlistTargetStop = {
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+    UI.renderLapList(playlistTargetStop, state, new Map(state.tasks.map((t) => [t.id, t])));
 };
 
 export const restartSession = () => {

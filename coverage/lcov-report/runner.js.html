@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.77% </span>
+                <span class="strong">26.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/239</span>
+                <span class='fraction'>64/241</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.05% </span>
+                <span class="strong">27.8% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>62/221</span>
+                <span class='fraction'>62/223</span>
             </div>
         
             
@@ -475,7 +475,15 @@
 <a name='L410'></a><a href='#L410'>410</a>
 <a name='L411'></a><a href='#L411'>411</a>
 <a name='L412'></a><a href='#L412'>412</a>
-<a name='L413'></a><a href='#L413'>413</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -597,6 +605,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -776,6 +788,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1009,8 +1025,12 @@ const loadTaskToRunner = <span class="fstat-no" title="function not covered" >(v
                 : "var(--text-secondary)";
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    UI.updateTimerDisplay(runnerDOM, state);</span>
-<span class="cstat-no" title="statement not covered" >    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >[t.id, t])</span>));</span>
-<span class="cstat-no" title="statement not covered" >    UI.scrollToRunningTask(runnerDOM);</span>
+    const playlistTarget = <span class="cstat-no" title="statement not covered" >{</span>
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+<span class="cstat-no" title="statement not covered" >    UI.renderLapList(playlistTarget, state, new Map(state.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >[t.id, t])</span>));</span>
+<span class="cstat-no" title="statement not covered" >    UI.scrollToRunningTask(playlistTarget);</span>
 };
 &nbsp;
 export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) =&gt; {
@@ -1188,7 +1208,11 @@ export const stopSession = <span class="fstat-no" title="function not covered" >
 <span class="cstat-no" title="statement not covered" >        UI.resetRunnerDisplay(runnerDOM);</span>
     }
 <span class="cstat-no" title="statement not covered" >    state.currentVirtualTaskIndex = -1;</span>
-<span class="cstat-no" title="statement not covered" >    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >[t.id, t])</span>));</span>
+    const playlistTargetStop = <span class="cstat-no" title="statement not covered" >{</span>
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+<span class="cstat-no" title="statement not covered" >    UI.renderLapList(playlistTargetStop, state, new Map(state.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >[t.id, t])</span>));</span>
 };
 &nbsp;
 export const restartSession = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
@@ -1306,7 +1330,7 @@ export const initRunner = <span class="fstat-no" title="function not covered" >(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-20T21:25:40.750Z
+                at 2025-09-20T21:38:57.754Z
             </div>
         <script src="prettify.js"></script>
         <script>
