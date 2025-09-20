@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.54% </span>
+                <span class="strong">27.35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>65/236</span>
+                <span class='fraction'>64/234</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">20.68% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>6/30</span>
+                <span class='fraction'>6/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.03% </span>
+                <span class="strong">28.7% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>63/217</span>
+                <span class='fraction'>62/216</span>
             </div>
         
             
@@ -470,10 +470,8 @@
 <a name='L405'></a><a href='#L405'>405</a>
 <a name='L406'></a><a href='#L406'>406</a>
 <a name='L407'></a><a href='#L407'>407</a>
-<a name='L408'></a><a href='#L408'>408</a>
-<a name='L409'></a><a href='#L409'>409</a>
-<a name='L410'></a><a href='#L410'>410</a>
-<a name='L411'></a><a href='#L411'>411</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L408'></a><a href='#L408'>408</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -482,8 +480,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -518,7 +514,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -882,19 +877,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// runner.js
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Task runner: builds virtual playlist and controls session timer
 import * as UI from "./ui.js";
 import {
     categoryMap,
     MAX_DURATION_SECONDS,
     MIN_DURATION_SECONDS,
 } from "./constants.js";
+import { clamp } from "./utils.js";
 &nbsp;
 let state = null;
 let runnerDOM = null;
-&nbsp;
-const clamp = <span class="fstat-no" title="function not covered" >(v</span>, a, b) =&gt; <span class="cstat-no" title="statement not covered" >Math.max(a, Math.min(b, v));</span>
 &nbsp;
 const stopTimerInterval = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >    clearInterval(state.sessionInterval);</span>
@@ -928,8 +921,7 @@ const startTimerInterval = <span class="fstat-no" title="function not covered" >
 };
 &nbsp;
 const loadTaskToRunner = <span class="fstat-no" title="function not covered" >(v</span>irtualIndex) =&gt; {
-    // Recalculate completed occurrences based on the new index.
-    // This is the single source of truth for strikethrough logic.
+    // Recalculate completed occurrences up to virtualIndex
     const newCompletedOccurrencesMap = <span class="cstat-no" title="statement not covered" >new Map();</span>
 <span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; virtualIndex; i++) {</span>
         const task = <span class="cstat-no" title="statement not covered" >state.sessionCache.virtualSessionPlaylist[i];</span>
@@ -943,7 +935,7 @@ const loadTaskToRunner = <span class="fstat-no" title="function not covered" >(v
         virtualIndex &lt; 0 ||
         virtualIndex &gt;= state.sessionCache.virtualSessionPlaylist.length
     ) {
-        // Recalculate one last time to ensure all tasks are struck through if session ends
+        // If index out of range, finalize occurrences and stop
 <span class="cstat-no" title="statement not covered" >        if (virtualIndex &gt;= state.sessionCache.virtualSessionPlaylist.length) {</span>
             const finalCompletedMap = <span class="cstat-no" title="statement not covered" >new Map();</span>
 <span class="cstat-no" title="statement not covered" >            state.sessionCache.virtualSessionPlaylist.forEach(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; {</span>
@@ -1026,8 +1018,8 @@ export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) =&gt; {
             const maxOccurrences = task.maxOccurrences || 0;
             const occurrencesSoFar = totalTaskOccurrencesMap.get(taskId) || 0;
 &nbsp;
-            <span class="missing-if-branch" title="if path not taken" >I</span>if (maxOccurrences &gt; 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >occurrencesSoFar &gt;= maxOccurrences)</span> {
-<span class="cstat-no" title="statement not covered" >                return; </span>// Skip if max occurrences reached
+                    <span class="missing-if-branch" title="if path not taken" >I</span>if (maxOccurrences &gt; 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >occurrencesSoFar &gt;= maxOccurrences)</span> {
+<span class="cstat-no" title="statement not covered" >                        return; </span>// Skip when max occurrences reached
             }
 &nbsp;
             const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;
@@ -1291,8 +1283,7 @@ export const initRunner = <span class="fstat-no" title="function not covered" >(
     };
 };
 &nbsp;
-// Re-export clamp for unit testing convenience
-export { clamp };
+// clamp is provided from `utils.js` now
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1300,7 +1291,7 @@ export { clamp };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-20T21:06:30.036Z
+                at 2025-09-20T21:15:14.938Z
             </div>
         <script src="prettify.js"></script>
         <script>
