@@ -97,62 +97,90 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
   );
   playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
   const sessionInactive = state.runnerState === "STOPPED";
-  const draggableAttr = sessionInactive ? 'draggable="true"' : "";
 
+  // Empty case
   if (state.lapList.length === 0) {
-    playlistDOM.lapListEl.innerHTML =
-      '<div class="lap-list-item">Add tasks from the repository to create a playlist.</div>';
+    playlistDOM.lapListEl.innerHTML = '';
+    const empty = document.createElement('div');
+    empty.className = 'lap-list-item';
+    empty.textContent = 'Add tasks from the repository to create a playlist.';
+    playlistDOM.lapListEl.appendChild(empty);
     return;
   }
 
-  playlistDOM.lapListEl.innerHTML = state.lapList
-    .map((id) => {
-      const task = taskMap.get(id);
-      if (!task) return "";
-      const category =
-        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-      const isRunning =
-        state.currentVirtualTaskIndex > -1 &&
-        task.id ===
-          state.sessionCache.virtualSessionPlaylist[
-            state.currentVirtualTaskIndex
-          ]?.taskId;
-      let extraClasses = isRunning ? "running" : "";
+  // Build nodes with DocumentFragment to minimize reflows and avoid innerHTML parsing
+  const frag = document.createDocumentFragment();
+  const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
 
-      if (!sessionInactive) {
-        const completedOccurrences =
-          state.sessionCache.completedOccurrencesMap.get(task.id) || 0;
-        if (
-          task.maxOccurrences > 0 &&
-          completedOccurrences >= task.maxOccurrences
-        ) {
-          extraClasses += " maxed-out";
-        }
+  state.lapList.forEach((id) => {
+    const task = taskMap.get(id);
+    if (!task) return;
+    const category = categoryMap.get(task.categoryId) || categoryMap.get('cat-0');
+    const isRunning = runningTaskId === task.id;
+    const item = document.createElement('div');
+    item.className = 'lap-list-item' + (isRunning ? ' running' : '');
+    item.dataset.id = task.id;
+    if (sessionInactive) item.setAttribute('draggable', 'true');
+
+    // check maxed-out
+    if (!sessionInactive) {
+      const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+      if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+        item.classList.add('maxed-out');
       }
+    }
 
-      const actions = sessionInactive
-        ? `<div class="lap-item-actions">
-            <button class="move-btn" data-action="top" title="Move to Top"><i class="fas fa-angle-double-up"></i></button>
-            <button class="move-btn" data-action="bottom" title="Move to Bottom"><i class="fas fa-angle-double-down"></i></button>
-            <button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button>
-          </div>`
-        : `<div class="lap-item-actions"><button class="remove-btn" title="Remove from Lap"><i class="fas fa-trash-alt"></i></button></div>`;
+    const icon = document.createElement('span');
+    icon.className = 'lap-category-icon';
+    icon.title = category.name;
+    icon.innerHTML = category.icon;
 
-      return `<div class="lap-list-item ${extraClasses}" ${draggableAttr} data-id="${
-        task.id
-      }">
-            <span class="lap-category-icon" title="${category.name}">${
-        category.icon
-      }</span>
-            <div class="title">${task.title}</div>
-            <span class="duration">${formatTime(task.duration).replace(
-              /(\d+)([a-z]+)/g,
-              "$1 $2"
-            )}</span>
-            ${actions}
-          </div>`;
-    })
-    .join("");
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = task.title;
+
+    const duration = document.createElement('span');
+    duration.className = 'duration';
+    duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, '$1 $2');
+
+    const actions = document.createElement('div');
+    actions.className = 'lap-item-actions';
+    if (sessionInactive) {
+      const topBtn = document.createElement('button');
+      topBtn.className = 'move-btn';
+      topBtn.dataset.action = 'top';
+      topBtn.title = 'Move to Top';
+      topBtn.innerHTML = '<i class="fas fa-angle-double-up"></i>';
+      const bottomBtn = document.createElement('button');
+      bottomBtn.className = 'move-btn';
+      bottomBtn.dataset.action = 'bottom';
+      bottomBtn.title = 'Move to Bottom';
+      bottomBtn.innerHTML = '<i class="fas fa-angle-double-down"></i>';
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.title = 'Remove from Lap';
+      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      actions.appendChild(topBtn);
+      actions.appendChild(bottomBtn);
+      actions.appendChild(removeBtn);
+    } else {
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.title = 'Remove from Lap';
+      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      actions.appendChild(removeBtn);
+    }
+
+    item.appendChild(icon);
+    item.appendChild(title);
+    item.appendChild(duration);
+    item.appendChild(actions);
+    frag.appendChild(item);
+  });
+
+  // Replace content
+  playlistDOM.lapListEl.innerHTML = '';
+  playlistDOM.lapListEl.appendChild(frag);
 };
 
 export const updateSortHeaders = (sortState) => {
