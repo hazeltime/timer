@@ -46,7 +46,7 @@ export const renderTaskSummary = (repoDOM, tasks) => {
   )}</span>`;
 };
 
-export const renderTasks = (repoDOM, tasks, sortState) => {
+export const renderTasks = (repoDOM, tasks, _sortState) => {
   repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
   // Build element tree using DocumentFragment to avoid innerHTML and minimize reflows
   const container = document.createDocumentFragment();
@@ -498,20 +498,34 @@ export const initializeStepper = (stepperEl) => {
 
 // Reuse the confirmation modal for simple alert messages (single OK button)
 export const showAlert = (modalDOM, title, text) => {
-  // Use the same modal but hide the cancel button and set a short callback
-  modalDOM.modalTitle.textContent = title || "Alert";
-  modalDOM.modalText.textContent = text || "";
-  modalDOM.modalCancelBtn.style.display = "none";
-  modalDOM.modalConfirmBtn.textContent = "OK";
-  modalDOM.confirmModal.style.display = "flex";
-  modalDOM.confirmModal.classList.add("show");
-  // ensure confirm just hides the modal
+  // Accept either a modal-like object or attempt to find modal elements in DOM
+  let m = modalDOM;
+  if (!m || !m.confirmModal) {
+    m = {
+      confirmModal: document.getElementById("confirm-modal"),
+      modalTitle: document.getElementById("modal-title"),
+      modalText: document.getElementById("modal-text"),
+      modalCancelBtn: document.getElementById("modal-cancel-btn"),
+      modalConfirmBtn: document.getElementById("modal-confirm-btn"),
+    };
+  }
+  if (!m || !m.confirmModal) {
+    // Fallback to native alert if no modal is available
+    try { window.alert(text || title || ""); } catch (e) { /* noop */ }
+    return;
+  }
+  // Use the same modal but hide the cancel button and set a one-time callback
+  if (m.modalTitle) m.modalTitle.textContent = title || "Alert";
+  if (m.modalText) m.modalText.textContent = text || "";
+  if (m.modalCancelBtn) m.modalCancelBtn.style.display = "none";
+  if (m.modalConfirmBtn) m.modalConfirmBtn.textContent = "OK";
+  m.confirmModal.style.display = "flex";
+  m.confirmModal.classList.add("show");
   const onOk = () => {
-    modalDOM.confirmModal.classList.remove("show");
+    m.confirmModal.classList.remove("show");
     setTimeout(() => {
-      modalDOM.confirmModal.style.display = "none";
+      m.confirmModal.style.display = "none";
     }, 300);
-    modalDOM.modalConfirmBtn.removeEventListener("click", onOk);
   };
-  modalDOM.modalConfirmBtn.addEventListener("click", onOk);
+  if (m.modalConfirmBtn) m.modalConfirmBtn.addEventListener("click", onOk, { once: true });
 };

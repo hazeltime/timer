@@ -1,10 +1,5 @@
 // Entry script: bootstraps app, loads components and wires UI
-import {
-  CATEGORIES,
-  categoryMap,
-  MAX_DURATION_SECONDS,
-  MIN_DURATION_SECONDS,
-} from "./constants.js";
+import { categoryMap } from "./constants.js";
 import * as UI from "./ui.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import * as Runner from "./runner.js";
