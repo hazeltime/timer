@@ -303,6 +303,19 @@ fieldset {
 #task-runner-panel.task-runner-popout.collapsed .panel-content {
   display: none;
 }
+/* When the runner is in popout (fullscreen-like) mode and collapsed,
+   reduce the fixed area so only the header remains visible. This
+   prevents a large empty gray panel from occupying the viewport.
+*/
+#task-runner-panel.task-runner-popout.collapsed {
+  /* stop stretching to bottom */
+  bottom: auto;
+  /* keep near top and allow compact height */
+  max-height: 5.5rem;
+  height: auto;
+  overflow: visible;
+  align-items: flex-start;
+}
 #runner-task-info {
   display: flex;
   justify-content: space-between;
