@@ -80,7 +80,13 @@ const loadTaskToRunner = (virtualIndex) => {
 
     const category =
         categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-    runnerDOM.runnerTaskCategory.innerHTML = `<span class="icon">${category.icon}</span> ${category.name}`;
+    // Render category icon and name using DOM APIs to avoid string-based HTML injection
+    runnerDOM.runnerTaskCategory.textContent = '';
+    const catIcon = document.createElement('span');
+    catIcon.className = 'icon';
+    catIcon.innerHTML = category.icon; // icons from constants are trusted
+    runnerDOM.runnerTaskCategory.appendChild(catIcon);
+    runnerDOM.runnerTaskCategory.appendChild(document.createTextNode(' ' + category.name));
     runnerDOM.runnerTaskTitle.textContent = task.title;
     runnerDOM.runnerTaskDescription.textContent = task.description;
     state.currentTaskTimeLeft = calculatedDuration;

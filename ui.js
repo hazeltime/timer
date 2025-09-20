@@ -48,44 +48,93 @@ export const renderTaskSummary = (repoDOM, tasks) => {
 
 export const renderTasks = (repoDOM, tasks, sortState) => {
   repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
+  // Build element tree using DocumentFragment to avoid innerHTML and minimize reflows
+  const container = document.createDocumentFragment();
   if (tasks.length === 0) {
     repoDOM.taskListEl.innerHTML = "";
   } else {
-    repoDOM.taskListEl.innerHTML = tasks
-      .map((task) => {
-        const category =
-          categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-        const intervalText =
-          task.lapInterval === 1
-            ? "Always"
-            : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
-        const growthText = `${task.growthFactor || 0}%`;
-        const limitText = task.maxOccurrences === 0 ? "∞" : task.maxOccurrences;
-        return `
-          <div class="task-item" data-id="${task.id}">
-            <div class="task-cell task-id-col">#${task.id}</div>
-            <div class="task-cell task-title-col">
-              <span class="task-title">${task.title}</span>
-              <span class="task-description">${task.description || ""}</span>
-            </div>
-            <div class="task-cell task-category-col"><span class="task-category-badge" style="background-color: ${
-              category.color
-            };">${category.icon} ${category.name}</span></div>
-            <div class="task-cell task-duration-col">${formatTime(
-              task.duration
-            )}</div>
-            <div class="task-cell task-interval-col">${intervalText}</div>
-            <div class="task-cell task-limit-col">${limitText}</div>
-            <div class="task-cell task-growth-col">${growthText}</div>
-            <div class="task-cell task-actions-col">
-              <button class="add-to-lap-btn" title="Add to Lap"><i class="fas fa-plus-circle"></i></button>
-              <button class="edit-btn" title="Edit Task"><i class="fas fa-edit"></i></button>
-              <button class="copy-btn" title="Duplicate"><i class="fas fa-copy"></i></button>
-              <button class="delete-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
-            </div>
-          </div>`;
-      })
-      .join("");
+    tasks.forEach((task) => {
+      const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+      const item = document.createElement('div');
+      item.className = 'task-item';
+      item.dataset.id = task.id;
+
+      const idCol = document.createElement('div');
+      idCol.className = 'task-cell task-id-col';
+      idCol.textContent = `#${task.id}`;
+
+      const titleCol = document.createElement('div');
+      titleCol.className = 'task-cell task-title-col';
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'task-title';
+      titleSpan.textContent = task.title;
+      const descSpan = document.createElement('span');
+      descSpan.className = 'task-description';
+      descSpan.textContent = task.description || '';
+      titleCol.appendChild(titleSpan);
+      titleCol.appendChild(descSpan);
+
+      const categoryCol = document.createElement('div');
+      categoryCol.className = 'task-cell task-category-col';
+      const badge = document.createElement('span');
+      badge.className = 'task-category-badge';
+      badge.style.backgroundColor = category.color;
+      badge.innerHTML = `${category.icon} ${category.name}`;
+      categoryCol.appendChild(badge);
+
+      const durationCol = document.createElement('div');
+      durationCol.className = 'task-cell task-duration-col';
+      durationCol.textContent = formatTime(task.duration);
+
+      const intervalCol = document.createElement('div');
+      intervalCol.className = 'task-cell task-interval-col';
+      intervalCol.innerHTML = task.lapInterval === 1 ? 'Always' : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
+
+      const limitCol = document.createElement('div');
+      limitCol.className = 'task-cell task-limit-col';
+      limitCol.textContent = task.maxOccurrences === 0 ? '∞' : String(task.maxOccurrences);
+
+      const growthCol = document.createElement('div');
+      growthCol.className = 'task-cell task-growth-col';
+      growthCol.textContent = `${task.growthFactor || 0}%`;
+
+      const actionsCol = document.createElement('div');
+      actionsCol.className = 'task-cell task-actions-col';
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-to-lap-btn';
+      addBtn.title = 'Add to Lap';
+      addBtn.innerHTML = '<i class="fas fa-plus-circle"></i>';
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.title = 'Edit Task';
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.title = 'Duplicate';
+      copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.title = 'Delete';
+      deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      actionsCol.appendChild(addBtn);
+      actionsCol.appendChild(editBtn);
+      actionsCol.appendChild(copyBtn);
+      actionsCol.appendChild(deleteBtn);
+
+      item.appendChild(idCol);
+      item.appendChild(titleCol);
+      item.appendChild(categoryCol);
+      item.appendChild(durationCol);
+      item.appendChild(intervalCol);
+      item.appendChild(limitCol);
+      item.appendChild(growthCol);
+      item.appendChild(actionsCol);
+
+      container.appendChild(item);
+    });
+    // Replace content in a single operation
+    repoDOM.taskListEl.innerHTML = '';
+    repoDOM.taskListEl.appendChild(container);
   }
   renderTaskSummary(repoDOM, tasks);
 };
