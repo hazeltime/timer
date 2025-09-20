@@ -120,7 +120,7 @@ const loadTaskToRunner = (virtualIndex) => {
     UI.scrollToRunningTask(runnerDOM);
 };
 
-const buildVirtualPlaylist = (taskMap, totalLaps) => {
+export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) => {
     const virtualSessionPlaylist = [];
     const lapDurations = Array(totalLaps).fill(0);
     const lapStartCumulativeDurations = Array(totalLaps).fill(0);
@@ -133,7 +133,8 @@ const buildVirtualPlaylist = (taskMap, totalLaps) => {
 
     for (let lap = 0; lap < totalLaps; lap++) {
         lapStartCumulativeDurations[lap] = currentCumulativeDuration;
-        state.lapList.forEach((taskId) => {
+        const listToUse = Array.isArray(lapList) ? lapList : (state.lapList || []);
+        listToUse.forEach((taskId) => {
             const task = taskMap.get(taskId);
             if (!task) return;
             const interval = task.lapInterval || 1;
@@ -404,3 +405,6 @@ export const initRunner = (mainState, mainDom) => {
         sessionTotal: document.createElement('div'),
     };
 };
+
+// Re-export clamp for unit testing convenience
+export { clamp };
