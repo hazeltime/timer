@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.35% </span>
+                <span class="strong">26.77% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/234</span>
+                <span class='fraction'>64/239</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.7% </span>
+                <span class="strong">28.05% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>62/216</span>
+                <span class='fraction'>62/221</span>
             </div>
         
             
@@ -470,7 +470,12 @@
 <a name='L405'></a><a href='#L405'>405</a>
 <a name='L406'></a><a href='#L406'>406</a>
 <a name='L407'></a><a href='#L407'>407</a>
-<a name='L408'></a><a href='#L408'>408</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -551,6 +556,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -692,9 +703,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -959,7 +969,13 @@ const loadTaskToRunner = <span class="fstat-no" title="function not covered" >(v
 &nbsp;
     const category =
 <span class="cstat-no" title="statement not covered" >        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");</span>
-<span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskCategory.innerHTML = `&lt;span class="icon"&gt;${category.icon}&lt;/span&gt; ${category.name}`;</span>
+    // Render category icon and name using DOM APIs to avoid string-based HTML injection
+<span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskCategory.textContent = '';</span>
+    const catIcon = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
+<span class="cstat-no" title="statement not covered" >    catIcon.className = 'icon';</span>
+<span class="cstat-no" title="statement not covered" >    catIcon.innerHTML = category.icon; </span>// icons from constants are trusted
+<span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskCategory.appendChild(catIcon);</span>
+<span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskCategory.appendChild(document.createTextNode(' ' + category.name));</span>
 <span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskTitle.textContent = task.title;</span>
 <span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskDescription.textContent = task.description;</span>
 <span class="cstat-no" title="statement not covered" >    state.currentTaskTimeLeft = calculatedDuration;</span>
@@ -1099,9 +1115,8 @@ const startSession = <span class="fstat-no" title="function not covered" >()</sp
     const taskMap = <span class="cstat-no" title="statement not covered" >new Map(state.tasks.map(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >[t.id, t])</span>);</span>
     const playlistData = <span class="cstat-no" title="statement not covered" >buildVirtualPlaylist(taskMap, totalLaps);</span>
 <span class="cstat-no" title="statement not covered" >    if (playlistData.virtualSessionPlaylist.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >        alert(</span>
-            "No tasks are scheduled to run in this session with the current intervals and limits."
-        );
+        // Use non-blocking in-app alert
+<span class="cstat-no" title="statement not covered" >        UI.showAlert(runnerDOM, "No Tasks", "No tasks are scheduled to run in this session with the current intervals and limits.");</span>
 <span class="cstat-no" title="statement not covered" >        return false;</span>
     }
 <span class="cstat-no" title="statement not covered" >    state.sessionCache = {</span>
@@ -1128,7 +1143,7 @@ export const playPauseSession = <span class="fstat-no" title="function not cover
 <span class="cstat-no" title="statement not covered" >        return;</span>
     }
 <span class="cstat-no" title="statement not covered" >    if (state.lapList.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >        alert("Add tasks to the Lap Playlist before starting.");</span>
+<span class="cstat-no" title="statement not covered" >        UI.showAlert(runnerDOM, "Empty Playlist", "Add tasks to the Lap Playlist before starting.");</span>
 <span class="cstat-no" title="statement not covered" >        return;</span>
     }
 <span class="cstat-no" title="statement not covered" >    if (state.runnerState === "STOPPED") {</span>
@@ -1291,7 +1306,7 @@ export const initRunner = <span class="fstat-no" title="function not covered" >(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-20T21:15:14.938Z
+                at 2025-09-20T21:25:40.750Z
             </div>
         <script src="prettify.js"></script>
         <script>
