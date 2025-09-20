@@ -220,9 +220,8 @@ const startSession = () => {
     const taskMap = new Map(state.tasks.map((t) => [t.id, t]));
     const playlistData = buildVirtualPlaylist(taskMap, totalLaps);
     if (playlistData.virtualSessionPlaylist.length === 0) {
-        alert(
-            "No tasks are scheduled to run in this session with the current intervals and limits."
-        );
+        // Use non-blocking in-app alert
+        UI.showAlert(runnerDOM, "No Tasks", "No tasks are scheduled to run in this session with the current intervals and limits.");
         return false;
     }
     state.sessionCache = {
@@ -249,7 +248,7 @@ export const playPauseSession = () => {
         return;
     }
     if (state.lapList.length === 0) {
-        alert("Add tasks to the Lap Playlist before starting.");
+        UI.showAlert(runnerDOM, "Empty Playlist", "Add tasks to the Lap Playlist before starting.");
         return;
     }
     if (state.runnerState === "STOPPED") {

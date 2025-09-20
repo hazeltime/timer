@@ -234,9 +234,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const handleTaskFormSubmit = () => {
     const title = formDOM.taskInput.value.trim();
-    if (!title) {
-      alert("Task title cannot be empty.");
-      return;
+      if (!title) {
+        UI.showAlert(DOM, "Validation", "Task title cannot be empty.");
+        return;
     }
     const minutes = parseInt(formDOM.durationMinutesInput.value, 10) || 0;
     const seconds = parseInt(formDOM.durationSecondsInput.value, 10) || 0;
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       999
     );
     if (totalDuration <= 0) {
-      alert("Duration must be greater than 0 seconds.");
+      UI.showAlert(DOM, "Validation", "Duration must be greater than 0 seconds.");
       return;
     }
     if (state.editingTaskId !== null) {
@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const loadTaskIntoForm = (id) => {
     if (isSessionActive()) {
-      alert("Cannot edit a task that is part of an active lap session.");
+      UI.showAlert(DOM, "Action blocked", "Cannot edit a task that is part of an active lap session.");
       return;
     }
     const task = state.tasks.find((t) => t.id === id);
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const deleteTask = (id) => {
     if (isSessionActive()) {
-      alert("Cannot delete a task that is part of an active lap session.");
+      UI.showAlert(DOM, "Action blocked", "Cannot delete a task that is part of an active lap session.");
       return;
     }
     state.tasks = state.tasks.filter((t) => t.id !== id);
@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const addTaskToLap = (id) => {
     if (isSessionActive()) {
-      alert("Please stop the lap session to modify the playlist.");
+      UI.showAlert(DOM, "Action blocked", "Please stop the lap session to modify the playlist.");
       return;
     }
     if (!state.lapList.includes(id)) {
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const removeTaskFromLap = (id) => {
     if (isSessionActive()) {
-      alert("Please stop the lap session to modify the playlist.");
+      UI.showAlert(DOM, "Action blocked", "Please stop the lap session to modify the playlist.");
       return;
     }
     state.lapList = state.lapList.filter((l) => l !== id);
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const isModificationAllowed = (msg) => {
     if (isSessionActive()) {
-      alert(msg);
+      UI.showAlert(DOM, "Info", msg);
       return false;
     }
     return true;

@@ -446,3 +446,23 @@ export const initializeStepper = (stepperEl) => {
   stepUpBtn.addEventListener("mouseup", stopInterval);
   stepUpBtn.addEventListener("mouseleave", stopInterval);
 };
+
+// Reuse the confirmation modal for simple alert messages (single OK button)
+export const showAlert = (modalDOM, title, text) => {
+  // Use the same modal but hide the cancel button and set a short callback
+  modalDOM.modalTitle.textContent = title || "Alert";
+  modalDOM.modalText.textContent = text || "";
+  modalDOM.modalCancelBtn.style.display = "none";
+  modalDOM.modalConfirmBtn.textContent = "OK";
+  modalDOM.confirmModal.style.display = "flex";
+  modalDOM.confirmModal.classList.add("show");
+  // ensure confirm just hides the modal
+  const onOk = () => {
+    modalDOM.confirmModal.classList.remove("show");
+    setTimeout(() => {
+      modalDOM.confirmModal.style.display = "none";
+    }, 300);
+    modalDOM.modalConfirmBtn.removeEventListener("click", onOk);
+  };
+  modalDOM.modalConfirmBtn.addEventListener("click", onOk);
+};
