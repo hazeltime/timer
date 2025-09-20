@@ -1,4 +1,4 @@
-// script.js
+// Entry script: bootstraps app, loads components and wires UI
 import {
   CATEGORIES,
   categoryMap,
@@ -9,10 +9,7 @@ import * as UI from "./ui.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import * as Runner from "./runner.js";
 
-/**
- * Fetches HTML for all components and injects them into the main document.
- * This function must complete before the rest of the application logic runs.
- */
+// Load and inject HTML component fragments before app initialization
 const loadHTMLComponents = async () => {
   const components = [
     { id: "#header-placeholder", url: "components/header.html" },
@@ -55,9 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // The rest of the application logic starts only after the await above is complete
   const { $$, $ } = UI;
 
-  // ----------------------
-  // DOM Elements
-  // ----------------------
+  // DOM element references
   const formDOM = {
     taskForm: $("#task-form"),
     formTitle: $("#form-title"),
@@ -149,9 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const DOM = { ...formDOM, ...repoDOM, ...playlistDOM, ...runnerDOM, ...headerDOM, ...modalDOM, ...guideModalDOM };
 
-  // ----------------------
-  // Application State
-  // ----------------------
+  // Application state
   const state = {
     tasks: (JSON.parse(localStorage.getItem("tasks")) || []).map((t) => ({
       ...t,
@@ -172,12 +165,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionCache: { completedOccurrencesMap: new Map(), virtualSessionPlaylist: [] },
   };
 
-  // --- UTILS ---
+  // Utility: clamp value
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-  // ----------------------
-  // State Management
-  // ----------------------
+  // State management
   const saveState = () => {
     localStorage.setItem("tasks", JSON.stringify(state.tasks));
     localStorage.setItem("lapList", JSON.stringify(state.lapList));
@@ -232,9 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     UI.renderTasks(repoDOM, sortedTasks, state.sortState);
   };
 
-  // ----------------------
-  // Core Logic
-  // ----------------------
+  // Core logic
 
   const resetTaskForm = () => {
     state.editingTaskId = null;
@@ -385,9 +374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ).element;
   };
 
-  // ----------------------
-  // Event Listeners
-  // ----------------------
+  // Event listeners
   const setupEventListeners = () => {
     formDOM.addTaskBtn.addEventListener("click", handleTaskFormSubmit);
     formDOM.cancelEditBtn.addEventListener("click", resetTaskForm);
@@ -698,9 +685,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   };
 
-  // ----------------------
   // Initialization
-  // ----------------------
   const init = () => {
     // Pass a focused subset of DOM refs to the runner to avoid accidental coupling
     const runnerDOMForInit = {

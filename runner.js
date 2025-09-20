@@ -1,4 +1,4 @@
-// runner.js
+// Task runner: builds virtual playlist and controls session timer
 import * as UI from "./ui.js";
 import {
     categoryMap,
@@ -43,8 +43,7 @@ const startTimerInterval = () => {
 };
 
 const loadTaskToRunner = (virtualIndex) => {
-    // Recalculate completed occurrences based on the new index.
-    // This is the single source of truth for strikethrough logic.
+    // Recalculate completed occurrences up to virtualIndex
     const newCompletedOccurrencesMap = new Map();
     for (let i = 0; i < virtualIndex; i++) {
         const task = state.sessionCache.virtualSessionPlaylist[i];
@@ -58,7 +57,7 @@ const loadTaskToRunner = (virtualIndex) => {
         virtualIndex < 0 ||
         virtualIndex >= state.sessionCache.virtualSessionPlaylist.length
     ) {
-        // Recalculate one last time to ensure all tasks are struck through if session ends
+        // If index out of range, finalize occurrences and stop
         if (virtualIndex >= state.sessionCache.virtualSessionPlaylist.length) {
             const finalCompletedMap = new Map();
             state.sessionCache.virtualSessionPlaylist.forEach((task) => {
@@ -141,8 +140,8 @@ export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) => {
             const maxOccurrences = task.maxOccurrences || 0;
             const occurrencesSoFar = totalTaskOccurrencesMap.get(taskId) || 0;
 
-            if (maxOccurrences > 0 && occurrencesSoFar >= maxOccurrences) {
-                return; // Skip if max occurrences reached
+                    if (maxOccurrences > 0 && occurrencesSoFar >= maxOccurrences) {
+                        return; // Skip when max occurrences reached
             }
 
             const lastRun = lastRunLap.has(taskId) ? lastRunLap.get(taskId) : -1;

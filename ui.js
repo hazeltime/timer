@@ -1,7 +1,7 @@
-// ui.js
+// UI helpers and render functions
 import { CATEGORIES, categoryMap } from "./constants.js";
 
-// --- UTILITY FUNCTIONS ---
+// Utility helpers
 export const $ = (sel) => document.querySelector(sel);
 export const $$ = (sel) => [...document.querySelectorAll(sel)];
 
@@ -22,7 +22,7 @@ export const formatTime = (totalSeconds) => {
   return isNegative ? `-${formatted}` : formatted;
 };
 
-// --- RENDER FUNCTIONS ---
+// Render functions
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   formDOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
     const isActive = cat.id === selectedCategoryId;
