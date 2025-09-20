@@ -5,11 +5,10 @@ import {
     MAX_DURATION_SECONDS,
     MIN_DURATION_SECONDS,
 } from "./constants.js";
+import { clamp } from "./utils.js";
 
 let state = null;
 let runnerDOM = null;
-
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const stopTimerInterval = () => {
     clearInterval(state.sessionInterval);
@@ -405,5 +404,4 @@ export const initRunner = (mainState, mainDom) => {
     };
 };
 
-// Re-export clamp for unit testing convenience
-export { clamp };
+// clamp is provided from `utils.js` now

@@ -8,6 +8,7 @@ import {
 import * as UI from "./ui.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import * as Runner from "./runner.js";
+import { clamp } from "./utils.js";
 
 // Load and inject HTML component fragments before app initialization
 const loadHTMLComponents = async () => {
@@ -165,8 +166,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionCache: { completedOccurrencesMap: new Map(), virtualSessionPlaylist: [] },
   };
 
-  // Use shared clamp from runner
-  const { clamp } = Runner;
+  // Use shared clamp from utils
 
   // State management
   const saveState = () => {
