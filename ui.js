@@ -24,26 +24,41 @@ export const formatTime = (totalSeconds) => {
 
 // Render functions
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
-  formDOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
+  // Clear existing
+  formDOM.categoryGrid.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  CATEGORIES.forEach((cat) => {
     const isActive = cat.id === selectedCategoryId;
-    return `
-      <button class="category-btn ${isActive ? "active" : ""}" data-id="${
-      cat.id
-    }" style="outline-color: ${isActive ? cat.color : "transparent"};">
-        <span class="icon">${cat.icon}</span><span class="name">${
-      cat.name
-    }</span>
-      </button>
-    `;
-  }).join("");
+    const btn = document.createElement('button');
+    btn.className = `category-btn ${isActive ? 'active' : ''}`;
+    btn.dataset.id = cat.id;
+    btn.style.outlineColor = isActive ? cat.color : 'transparent';
+
+    const icon = document.createElement('span');
+    icon.className = 'icon';
+    icon.innerHTML = cat.icon;
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = cat.name;
+    btn.appendChild(icon);
+    btn.appendChild(name);
+    frag.appendChild(btn);
+  });
+  formDOM.categoryGrid.appendChild(frag);
 };
 
 export const renderTaskSummary = (repoDOM, tasks) => {
   const totalTasks = tasks.length;
   const totalDurationInSeconds = tasks.reduce((s, t) => s + t.duration, 0);
-  repoDOM.taskSummaryEl.innerHTML = `<span><strong>Total Tasks:</strong> ${totalTasks}</span><span><strong>Total Duration:</strong> ${formatTime(
-    totalDurationInSeconds
-  )}</span>`;
+  repoDOM.taskSummaryEl.innerHTML = '';
+  const left = document.createElement('span');
+  left.innerHTML = `<strong>Total Tasks:</strong> `;
+  left.appendChild(document.createTextNode(String(totalTasks)));
+  const right = document.createElement('span');
+  right.innerHTML = `<strong>Total Duration:</strong> `;
+  right.appendChild(document.createTextNode(formatTime(totalDurationInSeconds)));
+  repoDOM.taskSummaryEl.appendChild(left);
+  repoDOM.taskSummaryEl.appendChild(right);
 };
 
 export const renderTasks = (repoDOM, tasks, _sortState) => {
