@@ -5,7 +5,7 @@ import {
     MAX_DURATION_SECONDS,
     MIN_DURATION_SECONDS,
 } from "./constants.js";
-import { clamp } from "./utils.js";
+import { clamp, createIconElement } from "./utils.js";
 
 let state = null;
 let runnerDOM = null;
@@ -82,9 +82,7 @@ const loadTaskToRunner = (virtualIndex) => {
         categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     // Render category icon and name using DOM APIs to avoid string-based HTML injection
     runnerDOM.runnerTaskCategory.textContent = '';
-    const catIcon = document.createElement('span');
-    catIcon.className = 'icon';
-    catIcon.innerHTML = category.icon; // icons from constants are trusted
+    const catIcon = createIconElement(category.icon);
     runnerDOM.runnerTaskCategory.appendChild(catIcon);
     runnerDOM.runnerTaskCategory.appendChild(document.createTextNode(' ' + category.name));
     runnerDOM.runnerTaskTitle.textContent = task.title;

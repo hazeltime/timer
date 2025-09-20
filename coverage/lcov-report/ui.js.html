@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.75% </span>
+                <span class="strong">9.77% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>39/400</span>
+                <span class='fraction'>39/399</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.04% </span>
+                <span class="strong">9.06% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/376</span>
+                <span class='fraction'>34/375</span>
             </div>
         
             
@@ -612,6 +612,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -651,8 +652,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -706,6 +705,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -804,7 +805,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1155,6 +1155,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// UI helpers and render functions
 import { CATEGORIES, categoryMap } from "./constants.js";
+import { createIconElement } from "./utils.js";
 &nbsp;
 // Utility helpers
 export const $ = <span class="fstat-no" title="function not covered" >(s</span>el) =&gt; <span class="cstat-no" title="statement not covered" >document.querySelector(sel);</span>
@@ -1189,14 +1190,12 @@ export const renderCategoryButtons = <span class="fstat-no" title="function not 
 <span class="cstat-no" title="statement not covered" >    btn.dataset.id = cat.id;</span>
 <span class="cstat-no" title="statement not covered" >    btn.style.outlineColor = isActive ? cat.color : 'transparent';</span>
 &nbsp;
-    const icon = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
-<span class="cstat-no" title="statement not covered" >    icon.className = 'icon';</span>
-<span class="cstat-no" title="statement not covered" >    icon.innerHTML = cat.icon;</span>
-    const name = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
-<span class="cstat-no" title="statement not covered" >    name.className = 'name';</span>
-<span class="cstat-no" title="statement not covered" >    name.textContent = cat.name;</span>
-<span class="cstat-no" title="statement not covered" >    btn.appendChild(icon);</span>
-<span class="cstat-no" title="statement not covered" >    btn.appendChild(name);</span>
+  const iconEl = <span class="cstat-no" title="statement not covered" >createIconElement(cat.icon);</span>
+  const name = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
+<span class="cstat-no" title="statement not covered" >  name.className = 'name';</span>
+<span class="cstat-no" title="statement not covered" >  name.textContent = cat.name;</span>
+<span class="cstat-no" title="statement not covered" >  btn.appendChild(iconEl);</span>
+<span class="cstat-no" title="statement not covered" >  btn.appendChild(name);</span>
 <span class="cstat-no" title="statement not covered" >    frag.appendChild(btn);</span>
   });
 <span class="cstat-no" title="statement not covered" >  formDOM.categoryGrid.appendChild(frag);</span>
@@ -1246,11 +1245,13 @@ export const renderTasks = <span class="fstat-no" title="function not covered" >
 &nbsp;
       const categoryCol = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >      categoryCol.className = 'task-cell task-category-col';</span>
-      const badge = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
-<span class="cstat-no" title="statement not covered" >      badge.className = 'task-category-badge';</span>
-<span class="cstat-no" title="statement not covered" >      badge.style.backgroundColor = category.color;</span>
-<span class="cstat-no" title="statement not covered" >      badge.innerHTML = `${category.icon} ${category.name}`;</span>
-<span class="cstat-no" title="statement not covered" >      categoryCol.appendChild(badge);</span>
+  const badge = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
+<span class="cstat-no" title="statement not covered" >  badge.className = 'task-category-badge';</span>
+<span class="cstat-no" title="statement not covered" >  badge.style.backgroundColor = category.color;</span>
+  const catIconEl = <span class="cstat-no" title="statement not covered" >createIconElement(category.icon);</span>
+<span class="cstat-no" title="statement not covered" >  badge.appendChild(catIconEl);</span>
+<span class="cstat-no" title="statement not covered" >  badge.appendChild(document.createTextNode(' ' + category.name));</span>
+<span class="cstat-no" title="statement not covered" >  categoryCol.appendChild(badge);</span>
 &nbsp;
       const durationCol = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >      durationCol.className = 'task-cell task-duration-col';</span>
@@ -1349,10 +1350,9 @@ export const renderLapList = <span class="fstat-no" title="function not covered"
       }
     }
 &nbsp;
-    const icon = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
-<span class="cstat-no" title="statement not covered" >    icon.className = 'lap-category-icon';</span>
-<span class="cstat-no" title="statement not covered" >    icon.title = category.name;</span>
-<span class="cstat-no" title="statement not covered" >    icon.innerHTML = category.icon;</span>
+  const icon = <span class="cstat-no" title="statement not covered" >createIconElement(category.icon);</span>
+<span class="cstat-no" title="statement not covered" >  icon.classList.add('lap-category-icon');</span>
+<span class="cstat-no" title="statement not covered" >  icon.title = category.name;</span>
 &nbsp;
     const title = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >    title.className = 'title';</span>
@@ -1705,7 +1705,7 @@ export const showAlert = <span class="fstat-no" title="function not covered" >(m
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-20T21:38:57.754Z
+                at 2025-09-20T23:51:46.506Z
             </div>
         <script src="prettify.js"></script>
         <script>

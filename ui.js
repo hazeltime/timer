@@ -1,5 +1,6 @@
 // UI helpers and render functions
 import { CATEGORIES, categoryMap } from "./constants.js";
+import { createIconElement } from "./utils.js";
 
 // Utility helpers
 export const $ = (sel) => document.querySelector(sel);
@@ -34,14 +35,12 @@ export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
     btn.dataset.id = cat.id;
     btn.style.outlineColor = isActive ? cat.color : 'transparent';
 
-    const icon = document.createElement('span');
-    icon.className = 'icon';
-    icon.innerHTML = cat.icon;
-    const name = document.createElement('span');
-    name.className = 'name';
-    name.textContent = cat.name;
-    btn.appendChild(icon);
-    btn.appendChild(name);
+  const iconEl = createIconElement(cat.icon);
+  const name = document.createElement('span');
+  name.className = 'name';
+  name.textContent = cat.name;
+  btn.appendChild(iconEl);
+  btn.appendChild(name);
     frag.appendChild(btn);
   });
   formDOM.categoryGrid.appendChild(frag);
@@ -91,11 +90,13 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
 
       const categoryCol = document.createElement('div');
       categoryCol.className = 'task-cell task-category-col';
-      const badge = document.createElement('span');
-      badge.className = 'task-category-badge';
-      badge.style.backgroundColor = category.color;
-      badge.innerHTML = `${category.icon} ${category.name}`;
-      categoryCol.appendChild(badge);
+  const badge = document.createElement('span');
+  badge.className = 'task-category-badge';
+  badge.style.backgroundColor = category.color;
+  const catIconEl = createIconElement(category.icon);
+  badge.appendChild(catIconEl);
+  badge.appendChild(document.createTextNode(' ' + category.name));
+  categoryCol.appendChild(badge);
 
       const durationCol = document.createElement('div');
       durationCol.className = 'task-cell task-duration-col';
@@ -194,10 +195,9 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
       }
     }
 
-    const icon = document.createElement('span');
-    icon.className = 'lap-category-icon';
-    icon.title = category.name;
-    icon.innerHTML = category.icon;
+  const icon = createIconElement(category.icon);
+  icon.classList.add('lap-category-icon');
+  icon.title = category.name;
 
     const title = document.createElement('div');
     title.className = 'title';
