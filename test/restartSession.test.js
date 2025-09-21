@@ -19,9 +19,14 @@ test('restartSession resets completed maps and restarts', () => {
     currentVirtualTaskIndex: 0,
   };
 
-  const runnerDOM = { lapsInput: document.createElement('input'), lapsControls: document.createElement('div'), playPauseBtn: document.createElement('button') };
+  const runnerDOM = { lapsInput: document.createElement('input'), lapsControls: document.createElement('div'), playPauseBtn: document.createElement('button'), lapListEl: document.createElement('div'), lapListDurationEl: document.createElement('div') };
   runnerDOM.lapsInput.value = '1';
-  runnerDOM.lapsInput.parentElement = document.createElement('div');
+  const wrapper = document.createElement('div');
+  const stepper = document.createElement('button');
+  stepper.className = 'stepper-btn';
+  wrapper.appendChild(stepper);
+  wrapper.appendChild(runnerDOM.lapsInput);
+  // runnerDOM.lapsInput.parentElement now equals wrapper
 
   initRunner(state, runnerDOM, null);
   restartSession();
