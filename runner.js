@@ -45,12 +45,18 @@ const startTimerInterval = () => {
 const loadTaskToRunner = (virtualIndex) => {
     // Recalculate completed occurrences up to virtualIndex
     const newCompletedOccurrencesMap = new Map();
+    const newCompletedTaskDurationsMap = new Map();
     for (let i = 0; i < virtualIndex; i++) {
         const task = state.sessionCache.virtualSessionPlaylist[i];
         const count = newCompletedOccurrencesMap.get(task.taskId) || 0;
         newCompletedOccurrencesMap.set(task.taskId, count + 1);
+
+        const { taskId, calculatedDuration } = task;
+        const currentTotal = newCompletedTaskDurationsMap.get(taskId) || 0;
+        newCompletedTaskDurationsMap.set(taskId, currentTotal + calculatedDuration);
     }
     state.sessionCache.completedOccurrencesMap = newCompletedOccurrencesMap;
+    state.sessionCache.completedTaskDurationsMap = newCompletedTaskDurationsMap;
 
     state.currentVirtualTaskIndex = virtualIndex;
     if (
