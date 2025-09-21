@@ -58,6 +58,13 @@
   gap: 1.5rem;
 }
 
+/* Left grid used to show form and repository side-by-side */
+.left-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
 header {
   display: flex;
   justify-content: space-between;
@@ -87,4 +94,16 @@ body.runner-popped-out::before {
   background-color: rgba(17, 24, 39, 0.6);
   backdrop-filter: blur(4px);
   z-index: 990;
+}
+
+/* Two-up left column for medium and larger screens */
+@media (min-width: 1100px) {
+  .left-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .panel-divider {
+    display: none;
+  }
 }
