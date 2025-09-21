@@ -597,9 +597,10 @@ export const showAlert = (modalDOM, title, text) => {
   }
   if (!m || !m.confirmModal) {
     // Fallback to native alert if no modal is available
+    // Avoid calling `window.alert` in test environments (jsdom's alert throws).
     try {
-      if (typeof window !== 'undefined' && typeof window.alert === 'function') {
-        window.alert(text || title || "");
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(text || title || "");
       }
     } catch (e) {
       /* noop */
