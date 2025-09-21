@@ -1,15 +1,39 @@
 /* css/layout.css */
 
 .container {
-  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  /* Use a readable measure but allow expansion on large screens */
+  max-width: clamp(1100px, 90%, 2200px);
 }
 
 .main-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) 1fr;
+  grid-template-columns: minmax(0, 1.5fr) 0.9fr;
   gap: 1.5rem;
   align-items: start;
+}
+
+@media (min-width: 1400px) {
+  .main-layout {
+    grid-template-columns: minmax(0, 1.7fr) 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Wide screens: make better use of space without stretching content */
+@media (min-width: 2000px) {
+  .container {
+    max-width: 1800px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .main-layout {
+    grid-template-columns: minmax(0, 1.5fr) 1fr;
+    gap: 2rem;
+  }
 }
 
 .left-column,

@@ -1,17 +1,32 @@
+/* --- Panel Styles --- */
+.panel {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  width: 100%;
+}
+/* Ensure header titles wrap and don't push layout */
+.panel .panel-header h2,
+.panel .panel-header h1 {
+  margin: 0;
+  word-break: break-word;
+  hyphens: auto;
+}
 /* css/views.css */
 
 /* --- Create Task Form View --- */
 .input-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .form-row-split,
 .form-row-split-advanced {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: start;
 }
 
@@ -105,8 +120,8 @@ fieldset {
 .preset-durations {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 0.5rem;
+  grid-auto-rows: minmax(28px, auto);
+  gap: 0.4rem;
 }
 
 .lap-interval-controls,
@@ -125,6 +140,40 @@ fieldset {
 .add-btn-group {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Compact toggle styles (checkbox + label) to collapse advanced controls on small screens */
+.form-compact-toggle {
+  display: none; /* visible only on small screens */
+  margin-bottom: 0.5rem;
+}
+.form-compact-toggle input {
+  display: none;
+}
+.form-compact-toggle .compact-toggle-label {
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--accent-blue);
+}
+
+@media (max-width: 900px) {
+  .form-compact-toggle {
+    display: block;
+  }
+  /* When toggle is unchecked, hide advanced controls to save space */
+  .form-compact-toggle input:not(:checked) ~ .input-grid .form-row-split-advanced,
+  .form-compact-toggle input:not(:checked) ~ .input-grid .duration-container-group {
+    display: none;
+  }
+  /* Make the main form tighter on small screens */
+  .input-grid {
+    gap: 0.75rem;
+  }
+  .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 0.5rem;
+  }
 }
 
 /* --- Task Repository View --- */
@@ -295,6 +344,8 @@ fieldset {
   z-index: 991;
   display: flex;
   flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 #task-runner-panel.task-runner-popout .panel-content {
   flex-grow: 1;
@@ -476,9 +527,15 @@ fieldset {
   border: 1px solid var(--border-color);
 }
 .lap-list {
-  max-height: 390px;
+  max-height: min(390px, 40vh);
   overflow-y: auto;
   padding: 4px;
+}
+
+/* Constrain runner popout content so inner scrolling is contained */
+#task-runner-panel.task-runner-popout .panel-content {
+  max-height: calc(100vh - 8rem);
+  overflow: auto;
 }
 .lap-list-item {
   display: flex;

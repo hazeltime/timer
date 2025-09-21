@@ -11,6 +11,11 @@
   </div>
   <div id="create-task-content" class="panel-content">
     <div>
+      <!-- Small-screen toggle to collapse advanced controls for compactness -->
+      <div class="form-compact-toggle">
+        <input type="checkbox" id="compact-advanced-toggle" aria-hidden="true" />
+        <label for="compact-advanced-toggle" class="compact-toggle-label">Show advanced</label>
+      </div>
       <div id="task-form" class="input-grid">
         <div class="form-row-split">
           <div class="form-group">
@@ -30,7 +35,7 @@
           </div>
         </div>
 
-        <div class="form-row-split-advanced">
+  <div class="form-row-split-advanced">
           <div class="form-group category-group">
             <label>Category</label>
             <div id="category-grid" class="category-grid"></div>
