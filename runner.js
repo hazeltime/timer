@@ -345,6 +345,7 @@ export const skipToLap = (direction) => {
 
     if (targetLap >= state.sessionCache.totalLaps) {
         loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
+        UI.updateTimerDisplay(runnerDOM, state);
         return;
     }
     if (targetLap < 0) return;
@@ -369,18 +370,25 @@ export const skipToLap = (direction) => {
         if (wasRunning) stopTimerInterval();
         loadTaskToRunner(next);
         if (wasRunning) startTimerInterval();
+        UI.updateTimerDisplay(runnerDOM, state);
     } else if (direction > 0) {
         loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
+        UI.updateTimerDisplay(runnerDOM, state);
     }
 };
 
 export const nextTask = () => {
-    if (state.runnerState !== "STOPPED") handleTaskCompletion();
+    if (state.runnerState !== "STOPPED") {
+        handleTaskCompletion();
+        UI.updateTimerDisplay(runnerDOM, state);
+    }
 }
 
 export const prevTask = () => {
-    if (state.runnerState !== "STOPPED" && state.currentVirtualTaskIndex > 0)
+    if (state.runnerState !== "STOPPED" && state.currentVirtualTaskIndex > 0) {
         loadTaskToRunner(state.currentVirtualTaskIndex - 1);
+        UI.updateTimerDisplay(runnerDOM, state);
+    }
 }
 
 export function isSessionActive() {
