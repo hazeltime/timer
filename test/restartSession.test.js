@@ -30,6 +30,8 @@ test('restartSession resets completed maps and restarts', () => {
 
   initRunner(state, runnerDOM, null);
   restartSession();
-  expect(state.sessionCache.completedTaskDurationsMap.get('a')).toBe(0);
+  // completedTaskDurationsMap is reset to an empty Map
+  expect(state.sessionCache.completedTaskDurationsMap.get('a')).toBeUndefined();
+  expect(state.sessionCache.completedTaskDurationsMap.size).toBe(0);
   expect(state.runnerState).toBe('RUNNING');
 });
