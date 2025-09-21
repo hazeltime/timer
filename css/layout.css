@@ -24,15 +24,30 @@
 }
 
 /* Wide screens: make better use of space without stretching content */
-@media (min-width: 2000px) {
+/* Ultra-wide screens: let the container expand closer to the viewport width
+   while still maintaining horizontal gutters for readability. */
+@media (min-width: 1600px) {
   .container {
-    max-width: 1800px;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    max-width: 96vw;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
   .main-layout {
-    grid-template-columns: minmax(0, 1.5fr) 1fr;
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1.8fr) 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* 4K / ultra-wide screens: use almost the full viewport width while keeping gutters */
+@media (min-width: 3200px) {
+  .container {
+    max-width: 98vw;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  .main-layout {
+    grid-template-columns: minmax(0, 2fr) 0.9fr;
+    gap: 3rem;
   }
 }
 

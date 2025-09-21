@@ -74,7 +74,7 @@ body {
     Helvetica, Arial, sans-serif;
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
-  padding: 2rem;
+  padding: 1rem 0; /* use vertical padding only; container handles horizontal gutters */
   background-color: var(--bg-color);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
