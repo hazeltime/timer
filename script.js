@@ -744,7 +744,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       lapListDurationEl: playlistDOM.lapListDurationEl,
     };
 
-    Runner.initRunner(state, runnerDOMForInit);
+    Runner.initRunner(state, runnerDOMForInit, modalDOM);
     UI.applyTheme(localStorage.getItem("theme") || "dark");
     $$(
       "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel"

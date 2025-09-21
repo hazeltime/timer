@@ -285,7 +285,7 @@ export const stopSession = (finished = false) => {
         runnerDOM.lapsProgressLabel.textContent = `Session Complete! (${state.sessionCache.totalLaps || 0
             } laps)`;
         UI.showConfirmationModal(
-            runnerDOM,
+            modalDOM,
             state,
             "🎉 Congratulations! 🎉",
             `Session Complete! You finished ${state.sessionCache.totalLaps || 0
@@ -380,39 +380,6 @@ export function isSessionActive() {
     return state.runnerState !== "STOPPED";
 }
 
-export const initRunner = (mainState, mainDom) => {
-    state = mainState;
-    // Expect mainDom to contain the runner-related DOM refs (as provided by script.js)
-    runnerDOM = mainDom;
-    // Defensive defaults to prevent runtime errors if a field is missing
-    runnerDOM.runnerTaskCategory = runnerDOM.runnerTaskCategory || document.createElement('div');
-    runnerDOM.runnerTaskTitle = runnerDOM.runnerTaskTitle || document.createElement('div');
-    runnerDOM.runnerTaskDescription = runnerDOM.runnerTaskDescription || document.createElement('div');
-    runnerDOM.taskProgressBar = runnerDOM.taskProgressBar || { style: { width: '0%' } };
-    runnerDOM.taskPercentage = runnerDOM.taskPercentage || document.createElement('div');
-    runnerDOM.timeElapsedEl = runnerDOM.timeElapsedEl || document.createElement('div');
-    runnerDOM.timeRemainingEl = runnerDOM.timeRemainingEl || document.createElement('div');
-    runnerDOM.playPauseBtn = runnerDOM.playPauseBtn || document.createElement('button');
-    runnerDOM.lapsControls = runnerDOM.lapsControls || document.createElement('div');
-    runnerDOM.lapsInput = runnerDOM.lapsInput || document.createElement('input');
-    runnerDOM.lapsProgressContainer = runnerDOM.lapsProgressContainer || document.createElement('div');
-    runnerDOM.lapsProgressLabel = runnerDOM.lapsProgressLabel || document.createElement('div');
-    runnerDOM.lapProgressBar = runnerDOM.lapProgressBar || { style: { width: '0%' } };
-    runnerDOM.lapPercentage = runnerDOM.lapPercentage || document.createElement('div');
-    runnerDOM.lapTimeElapsedEl = runnerDOM.lapTimeElapsedEl || document.createElement('div');
-    runnerDOM.lapTimeRemainingEl = runnerDOM.lapTimeRemainingEl || document.createElement('div');
-    runnerDOM.sessionProgressBar = runnerDOM.sessionProgressBar || { style: { width: '0%' } };
-    runnerDOM.sessionPercentage = runnerDOM.sessionPercentage || document.createElement('div');
-    runnerDOM.sessionTimeElapsedEl = runnerDOM.sessionTimeElapsedEl || document.createElement('div');
-    runnerDOM.sessionTimeRemainingEl = runnerDOM.sessionTimeRemainingEl || document.createElement('div');
-    runnerDOM.runnerDetails = runnerDOM.runnerDetails || {
-        baseDuration: document.createElement('div'),
-        currentDuration: document.createElement('div'),
-        occurrenceCount: document.createElement('div'),
-        changePercentage: document.createElement('div'),
-        changeDelta: document.createElement('div'),
-        sessionTotal: document.createElement('div'),
-    };
-};
+let modalDOM = null;
 
 // clamp is provided from `utils.js` now
