@@ -406,8 +406,22 @@ export const showConfirmationModal = (
   onConfirm,
   type = "confirm"
 ) => {
-  modalDOM.modalTitle.textContent = title;
-  modalDOM.modalText.textContent = text;
+  // Accept both the `modalDOM` object constructed in `script.js` or the
+  // raw DOM node if that's passed; normalize to an object with expected fields.
+  let m = modalDOM;
+  if (!m || !m.modalTitle) {
+    const node = document.getElementById('confirm-modal');
+    if (!node) return;
+    m = {
+      confirmModal: node,
+      modalTitle: node.querySelector('#modal-title'),
+      modalText: node.querySelector('#modal-text'),
+      modalCancelBtn: node.querySelector('#modal-cancel-btn'),
+      modalConfirmBtn: node.querySelector('#modal-confirm-btn'),
+    };
+  }
+  m.modalTitle.textContent = title;
+  m.modalText.textContent = text;
   state.confirmCallback = onConfirm;
   if (type === "alert") {
     modalDOM.modalCancelBtn.style.display = "none";
@@ -416,8 +430,12 @@ export const showConfirmationModal = (
     modalDOM.modalCancelBtn.style.display = "inline-block";
     modalDOM.modalConfirmBtn.textContent = "Confirm";
   }
-  modalDOM.confirmModal.style.display = "flex";
-  modalDOM.confirmModal.classList.add("show");
+  m.confirmModal.style.display = "flex";
+  // give it a small delay then focus the confirm button for accessibility
+  m.confirmModal.classList.add("show");
+  setTimeout(() => {
+    if (m.modalConfirmBtn) m.modalConfirmBtn.focus();
+  }, 200);
 };
 
 export const hideConfirmationModal = (modalDOM) => {

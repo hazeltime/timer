@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.77% </span>
+                <span class="strong">9.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>39/399</span>
+                <span class='fraction'>39/408</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.18% </span>
+                <span class="strong">10.59% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>16/143</span>
+                <span class='fraction'>16/151</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.77% </span>
+                <span class="strong">2.7% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/36</span>
+                <span class='fraction'>1/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.06% </span>
+                <span class="strong">8.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/375</span>
+                <span class='fraction'>34/382</span>
             </div>
         
             
@@ -608,7 +608,25 @@
 <a name='L543'></a><a href='#L543'>543</a>
 <a name='L544'></a><a href='#L544'>544</a>
 <a name='L545'></a><a href='#L545'>545</a>
-<a name='L546'></a><a href='#L546'>546</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L546'></a><a href='#L546'>546</a>
+<a name='L547'></a><a href='#L547'>547</a>
+<a name='L548'></a><a href='#L548'>548</a>
+<a name='L549'></a><a href='#L549'>549</a>
+<a name='L550'></a><a href='#L550'>550</a>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a>
+<a name='L553'></a><a href='#L553'>553</a>
+<a name='L554'></a><a href='#L554'>554</a>
+<a name='L555'></a><a href='#L555'>555</a>
+<a name='L556'></a><a href='#L556'>556</a>
+<a name='L557'></a><a href='#L557'>557</a>
+<a name='L558'></a><a href='#L558'>558</a>
+<a name='L559'></a><a href='#L559'>559</a>
+<a name='L560'></a><a href='#L560'>560</a>
+<a name='L561'></a><a href='#L561'>561</a>
+<a name='L562'></a><a href='#L562'>562</a>
+<a name='L563'></a><a href='#L563'>563</a>
+<a name='L564'></a><a href='#L564'>564</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1016,6 +1034,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1027,7 +1059,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -1561,8 +1597,22 @@ export const showConfirmationModal = <span class="fstat-no" title="function not 
   onConfirm,
   type = <span class="branch-0 cbranch-no" title="branch not covered" >"confirm"</span>
 ) =&gt; {
-<span class="cstat-no" title="statement not covered" >  modalDOM.modalTitle.textContent = title;</span>
-<span class="cstat-no" title="statement not covered" >  modalDOM.modalText.textContent = text;</span>
+  // Accept both the `modalDOM` object constructed in `script.js` or the
+  // raw DOM node if that's passed; normalize to an object with expected fields.
+  let m = <span class="cstat-no" title="statement not covered" >modalDOM;</span>
+<span class="cstat-no" title="statement not covered" >  if (!m || !m.modalTitle) {</span>
+    const node = <span class="cstat-no" title="statement not covered" >document.getElementById('confirm-modal');</span>
+<span class="cstat-no" title="statement not covered" >    if (!node) <span class="cstat-no" title="statement not covered" >return;</span></span>
+<span class="cstat-no" title="statement not covered" >    m = {</span>
+      confirmModal: node,
+      modalTitle: node.querySelector('#modal-title'),
+      modalText: node.querySelector('#modal-text'),
+      modalCancelBtn: node.querySelector('#modal-cancel-btn'),
+      modalConfirmBtn: node.querySelector('#modal-confirm-btn'),
+    };
+  }
+<span class="cstat-no" title="statement not covered" >  m.modalTitle.textContent = title;</span>
+<span class="cstat-no" title="statement not covered" >  m.modalText.textContent = text;</span>
 <span class="cstat-no" title="statement not covered" >  state.confirmCallback = onConfirm;</span>
 <span class="cstat-no" title="statement not covered" >  if (type === "alert") {</span>
 <span class="cstat-no" title="statement not covered" >    modalDOM.modalCancelBtn.style.display = "none";</span>
@@ -1571,8 +1621,12 @@ export const showConfirmationModal = <span class="fstat-no" title="function not 
 <span class="cstat-no" title="statement not covered" >    modalDOM.modalCancelBtn.style.display = "inline-block";</span>
 <span class="cstat-no" title="statement not covered" >    modalDOM.modalConfirmBtn.textContent = "Confirm";</span>
   }
-<span class="cstat-no" title="statement not covered" >  modalDOM.confirmModal.style.display = "flex";</span>
-<span class="cstat-no" title="statement not covered" >  modalDOM.confirmModal.classList.add("show");</span>
+<span class="cstat-no" title="statement not covered" >  m.confirmModal.style.display = "flex";</span>
+  // give it a small delay then focus the confirm button for accessibility
+<span class="cstat-no" title="statement not covered" >  m.confirmModal.classList.add("show");</span>
+<span class="cstat-no" title="statement not covered" >  setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (m.modalConfirmBtn) <span class="cstat-no" title="statement not covered" >m.modalConfirmBtn.focus();</span></span>
+  }, 200);
 };
 &nbsp;
 export const hideConfirmationModal = <span class="fstat-no" title="function not covered" >(m</span>odalDOM) =&gt; {
@@ -1705,7 +1759,7 @@ export const showAlert = <span class="fstat-no" title="function not covered" >(m
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-21T00:09:43.242Z
+                at 2025-09-21T00:15:23.774Z
             </div>
         <script src="prettify.js"></script>
         <script>

@@ -4,17 +4,17 @@
 .panel {
   border: 1px solid var(--border-color);
   border-radius: 1rem;
-  padding: 1.5rem;
-  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+  padding: 1.25rem;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s, transform 0.12s;
   background-color: var(--panel-bg);
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .runner-task-description {
@@ -38,13 +38,25 @@
 .panel-content {
   display: grid;
   grid-template-rows: 1fr;
-  transition: grid-template-rows 0.3s ease-in-out;
+  transition: grid-template-rows 0.24s ease-in-out;
   overflow: hidden;
 }
 
 .panel-content > div {
   min-height: 0;
   overflow: visible;
+}
+
+/* Compact form actions: keep buttons visible and avoid large form height pushing layout */
+.panel .form-actions-sticky {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(255,255,255,0.98), rgba(255,255,255,0));
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .panel.collapsed .panel-content {
@@ -332,6 +344,7 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
   text-align: center;
 }
