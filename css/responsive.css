@@ -38,10 +38,10 @@
     padding: 1rem;
   }
   #task-runner-panel.task-runner-popout {
-    top: 1rem;
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
+    top: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
   }
   :root {
     --task-grid-columns: 1fr auto;
@@ -66,5 +66,12 @@
   .task-limit-col,
   .task-growth-col {
     display: none;
+  }
+}
+
+/* mobile: make lap-list smaller to avoid long panels */
+@media (max-width: 480px) {
+  .lap-list {
+    max-height: min(260px, 35vh);
   }
 }

@@ -103,16 +103,6 @@ export const DEMO_TASKS = [
     maxOccurrences: 15,
   },
   {
-    id: 11,
-    title: "Power",
-    description: "Power nap or meditation",
-    categoryId: "cat-0", // None
-    duration: 90, // 1m 30s
-    lapInterval: 7,
-    growthFactor: -5,
-    maxOccurrences: 7,
-  },
-  {
     id: 12,
     title: "Drink Eat",
     description: "Drink and eat and take supplement.",
@@ -136,7 +126,7 @@ export const DEMO_TASKS = [
     id: 14,
     title: "Exercise",
     description: "Pushups Squats Situps Back Motion",
-    categoryId: "cat-0", // None
+    categoryId: "cat-1", // Body
     duration: 10, // 10s
     lapInterval: 3,
     growthFactor: 5,
@@ -155,5 +145,5 @@ export const DEMO_TASKS = [
 ];
 
 export const DEMO_LAP_LIST = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15,
 ];

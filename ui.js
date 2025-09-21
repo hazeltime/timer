@@ -1,5 +1,6 @@
 // UI helpers and render functions
 import { CATEGORIES, categoryMap } from "./constants.js";
+import { createIconElement } from "./utils.js";
 
 // Utility helpers
 export const $ = (sel) => document.querySelector(sel);
@@ -24,97 +25,135 @@ export const formatTime = (totalSeconds) => {
 
 // Render functions
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
-  formDOM.categoryGrid.innerHTML = CATEGORIES.map((cat) => {
+  // Clear existing
+  formDOM.categoryGrid.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  CATEGORIES.forEach((cat) => {
     const isActive = cat.id === selectedCategoryId;
-    return `
-      <button class="category-btn ${isActive ? "active" : ""}" data-id="${
-      cat.id
-    }" style="outline-color: ${isActive ? cat.color : "transparent"};">
-        <span class="icon">${cat.icon}</span><span class="name">${
-      cat.name
-    }</span>
-      </button>
-    `;
-  }).join("");
+    const btn = document.createElement('button');
+    btn.className = `category-btn ${isActive ? 'active' : ''}`;
+    btn.dataset.id = cat.id;
+    btn.style.outlineColor = isActive ? cat.color : 'transparent';
+
+  const iconEl = createIconElement(cat.icon);
+  const name = document.createElement('span');
+  name.className = 'name';
+  name.textContent = cat.name;
+  btn.appendChild(iconEl);
+  btn.appendChild(name);
+    frag.appendChild(btn);
+  });
+  formDOM.categoryGrid.appendChild(frag);
 };
 
 export const renderTaskSummary = (repoDOM, tasks) => {
   const totalTasks = tasks.length;
   const totalDurationInSeconds = tasks.reduce((s, t) => s + t.duration, 0);
-  repoDOM.taskSummaryEl.innerHTML = `<span><strong>Total Tasks:</strong> ${totalTasks}</span><span><strong>Total Duration:</strong> ${formatTime(
-    totalDurationInSeconds
-  )}</span>`;
+  repoDOM.taskSummaryEl.innerHTML = '';
+  const left = document.createElement('span');
+  left.innerHTML = `<strong>Total Tasks:</strong> `; 
+  left.appendChild(document.createTextNode(String(totalTasks)));
+  const right = document.createElement('span');
+  right.innerHTML = `<strong>Total Duration:</strong> `; 
+  right.appendChild(document.createTextNode(formatTime(totalDurationInSeconds)));
+  repoDOM.taskSummaryEl.appendChild(left);
+  repoDOM.taskSummaryEl.appendChild(right);
 };
 
-export const renderTasks = (repoDOM, tasks, sortState) => {
+export const renderTasks = (repoDOM, tasks, _sortState) => {
   repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
-  // Build element tree using DocumentFragment to avoid innerHTML and minimize reflows
-  const container = document.createDocumentFragment();
-  if (tasks.length === 0) {
-    repoDOM.taskListEl.innerHTML = "";
-  } else {
-    tasks.forEach((task) => {
-      const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-      const item = document.createElement('div');
-      item.className = 'task-item';
+
+  const taskListEl = repoDOM.taskListEl;
+  const existingTaskElements = new Map();
+  for (const child of taskListEl.children) {
+    existingTaskElements.set(child.dataset.id, child);
+  }
+
+  const newFragment = document.createDocumentFragment();
+
+  for (const task of tasks) {
+    const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+    let item = existingTaskElements.get(String(task.id));
+
+    if (item) {
+      // Update existing element
+      item.querySelector(".task-title").textContent = task.title;
+      item.querySelector(".task-description").textContent = task.description || "";
+      const badge = item.querySelector(".task-category-badge");
+      badge.style.backgroundColor = category.color;
+      badge.innerHTML = "";
+      const catIconEl = createIconElement(category.icon);
+      badge.appendChild(catIconEl);
+      badge.appendChild(document.createTextNode(" " + category.name));
+      item.querySelector(".task-duration-col").textContent = formatTime(task.duration);
+      item.querySelector(".task-interval-col").innerHTML = task.lapInterval === 1 ? "Always" : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
+      item.querySelector(".task-limit-col").textContent = task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
+      item.querySelector(".task-growth-col").textContent = `${task.growthFactor || 0}%`;
+      existingTaskElements.delete(String(task.id));
+    } else {
+      // Create new element
+      item = document.createElement("div");
+      item.className = "task-item";
       item.dataset.id = task.id;
 
-      const idCol = document.createElement('div');
-      idCol.className = 'task-cell task-id-col';
+      const idCol = document.createElement("div");
+      idCol.className = "task-cell task-id-col";
       idCol.textContent = `#${task.id}`;
 
-      const titleCol = document.createElement('div');
-      titleCol.className = 'task-cell task-title-col';
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'task-title';
+      const titleCol = document.createElement("div");
+      titleCol.className = "task-cell task-title-col";
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "task-title";
       titleSpan.textContent = task.title;
-      const descSpan = document.createElement('span');
-      descSpan.className = 'task-description';
-      descSpan.textContent = task.description || '';
+      const descSpan = document.createElement("span");
+      descSpan.className = "task-description";
+      descSpan.textContent = task.description || "";
       titleCol.appendChild(titleSpan);
       titleCol.appendChild(descSpan);
 
-      const categoryCol = document.createElement('div');
-      categoryCol.className = 'task-cell task-category-col';
-      const badge = document.createElement('span');
-      badge.className = 'task-category-badge';
+      const categoryCol = document.createElement("div");
+      categoryCol.className = "task-cell task-category-col";
+      const badge = document.createElement("span");
+      badge.className = "task-category-badge";
       badge.style.backgroundColor = category.color;
-      badge.innerHTML = `${category.icon} ${category.name}`;
+      const catIconEl = createIconElement(category.icon);
+      badge.appendChild(catIconEl);
+      badge.appendChild(document.createTextNode(" " + category.name));
       categoryCol.appendChild(badge);
 
-      const durationCol = document.createElement('div');
-      durationCol.className = 'task-cell task-duration-col';
+      const durationCol = document.createElement("div");
+      durationCol.className = "task-cell task-duration-col";
       durationCol.textContent = formatTime(task.duration);
 
-      const intervalCol = document.createElement('div');
-      intervalCol.className = 'task-cell task-interval-col';
-      intervalCol.innerHTML = task.lapInterval === 1 ? 'Always' : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
+      const intervalCol = document.createElement("div");
+      intervalCol.className = "task-cell task-interval-col";
+      intervalCol.innerHTML = task.lapInterval === 1 ? "Always" : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
 
-      const limitCol = document.createElement('div');
-      limitCol.className = 'task-cell task-limit-col';
-      limitCol.textContent = task.maxOccurrences === 0 ? '∞' : String(task.maxOccurrences);
+      const limitCol = document.createElement("div");
+      limitCol.className = "task-cell task-limit-col";
+      limitCol.textContent = task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
 
-      const growthCol = document.createElement('div');
-      growthCol.className = 'task-cell task-growth-col';
+      const growthCol = document.createElement("div");
+      growthCol.className = "task-cell task-growth-col";
       growthCol.textContent = `${task.growthFactor || 0}%`;
 
-      const actionsCol = document.createElement('div');
-      actionsCol.className = 'task-cell task-actions-col';
-      const addBtn = document.createElement('button');
-      addBtn.className = 'add-to-lap-btn';
-      addBtn.title = 'Add to Lap';
+      const actionsCol = document.createElement("div");
+      actionsCol.className = "task-cell task-actions-col";
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-to-lap-btn";
+      addBtn.title = "Add to Lap";
       addBtn.innerHTML = '<i class="fas fa-plus-circle"></i>';
-      const editBtn = document.createElement('button');
-      editBtn.className = 'edit-btn';
-      editBtn.title = 'Edit Task';
+      const editBtn = document.createElement("button");
+      editBtn.className = "edit-btn";
+      editBtn.title = "Edit Task";
       editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.title = 'Duplicate';
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.title = "Duplicate";
       copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.title = 'Delete';
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "delete-btn";
+      deleteBtn.title = "Delete";
       deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
       actionsCol.appendChild(addBtn);
       actionsCol.appendChild(editBtn);
@@ -129,13 +168,16 @@ export const renderTasks = (repoDOM, tasks, sortState) => {
       item.appendChild(limitCol);
       item.appendChild(growthCol);
       item.appendChild(actionsCol);
-
-      container.appendChild(item);
-    });
-    // Replace content in a single operation
-    repoDOM.taskListEl.innerHTML = '';
-    repoDOM.taskListEl.appendChild(container);
+    }
+    newFragment.appendChild(item);
   }
+
+  for (const child of existingTaskElements.values()) {
+    child.remove();
+  }
+
+  taskListEl.appendChild(newFragment);
+
   renderTaskSummary(repoDOM, tasks);
 };
 
@@ -147,89 +189,115 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
   playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
   const sessionInactive = state.runnerState === "STOPPED";
 
-  // Empty case
+  const lapListEl = playlistDOM.lapListEl;
+  const existingLapElements = new Map();
+  for (const child of lapListEl.children) {
+    existingLapElements.set(child.dataset.id, child);
+  }
+
+  const newFragment = document.createDocumentFragment();
+
   if (state.lapList.length === 0) {
-    playlistDOM.lapListEl.innerHTML = '';
+    lapListEl.innerHTML = '';
     const empty = document.createElement('div');
     empty.className = 'lap-list-item';
     empty.textContent = 'Add tasks from the repository to create a playlist.';
-    playlistDOM.lapListEl.appendChild(empty);
-    return;
+    newFragment.appendChild(empty);
+  } else {
+    const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
+
+    for (const id of state.lapList) {
+      const task = taskMap.get(id);
+      if (!task) continue;
+
+      const category = categoryMap.get(task.categoryId) || categoryMap.get('cat-0');
+      const isRunning = runningTaskId === task.id;
+      let item = existingLapElements.get(String(task.id));
+
+      if (item) {
+        // Update existing element
+        item.className = "lap-list-item" + (isRunning ? " running" : "");
+        if (sessionInactive) item.setAttribute("draggable", "true");
+        else item.removeAttribute("draggable");
+
+        if (!sessionInactive) {
+          const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+          if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+            item.classList.add("maxed-out");
+          } else {
+            item.classList.remove("maxed-out");
+          }
+        }
+        existingLapElements.delete(String(task.id));
+      } else {
+        // Create new element
+        item = document.createElement("div");
+        item.className = "lap-list-item" + (isRunning ? " running" : "");
+        item.dataset.id = task.id;
+        if (sessionInactive) item.setAttribute("draggable", "true");
+
+        if (!sessionInactive) {
+          const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+          if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+            item.classList.add("maxed-out");
+          }
+        }
+
+        const icon = createIconElement(category.icon);
+        icon.classList.add("lap-category-icon");
+        icon.title = category.name;
+
+        const title = document.createElement("div");
+        title.className = "title";
+        title.textContent = task.title;
+
+        const duration = document.createElement("span");
+        duration.className = "duration";
+        duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, "$1 $2");
+
+        const actions = document.createElement("div");
+        actions.className = "lap-item-actions";
+        if (sessionInactive) {
+          const topBtn = document.createElement("button");
+          topBtn.className = "move-btn";
+          topBtn.dataset.action = "top";
+          topBtn.title = "Move to Top";
+          topBtn.innerHTML = '<i class="fas fa-angle-double-up"></i>';
+          const bottomBtn = document.createElement("button");
+          bottomBtn.className = "move-btn";
+          bottomBtn.dataset.action = "bottom";
+          bottomBtn.title = "Move to Bottom";
+          bottomBtn.innerHTML = '<i class="fas fa-angle-double-down"></i>';
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "remove-btn";
+          removeBtn.title = "Remove from Lap";
+          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+          actions.appendChild(topBtn);
+          actions.appendChild(bottomBtn);
+          actions.appendChild(removeBtn);
+        } else {
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "remove-btn";
+          removeBtn.title = "Remove from Lap";
+          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+          actions.appendChild(removeBtn);
+        }
+
+        item.appendChild(icon);
+        item.appendChild(title);
+        item.appendChild(duration);
+        item.appendChild(actions);
+      }
+      newFragment.appendChild(item);
+    }
   }
 
-  // Build nodes with DocumentFragment to minimize reflows and avoid innerHTML parsing
-  const frag = document.createDocumentFragment();
-  const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
+  for (const child of existingLapElements.values()) {
+    child.remove();
+  }
 
-  state.lapList.forEach((id) => {
-    const task = taskMap.get(id);
-    if (!task) return;
-    const category = categoryMap.get(task.categoryId) || categoryMap.get('cat-0');
-    const isRunning = runningTaskId === task.id;
-    const item = document.createElement('div');
-    item.className = 'lap-list-item' + (isRunning ? ' running' : '');
-    item.dataset.id = task.id;
-    if (sessionInactive) item.setAttribute('draggable', 'true');
-
-    // check maxed-out
-    if (!sessionInactive) {
-      const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-      if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
-        item.classList.add('maxed-out');
-      }
-    }
-
-    const icon = document.createElement('span');
-    icon.className = 'lap-category-icon';
-    icon.title = category.name;
-    icon.innerHTML = category.icon;
-
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = task.title;
-
-    const duration = document.createElement('span');
-    duration.className = 'duration';
-    duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, '$1 $2');
-
-    const actions = document.createElement('div');
-    actions.className = 'lap-item-actions';
-    if (sessionInactive) {
-      const topBtn = document.createElement('button');
-      topBtn.className = 'move-btn';
-      topBtn.dataset.action = 'top';
-      topBtn.title = 'Move to Top';
-      topBtn.innerHTML = '<i class="fas fa-angle-double-up"></i>';
-      const bottomBtn = document.createElement('button');
-      bottomBtn.className = 'move-btn';
-      bottomBtn.dataset.action = 'bottom';
-      bottomBtn.title = 'Move to Bottom';
-      bottomBtn.innerHTML = '<i class="fas fa-angle-double-down"></i>';
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'remove-btn';
-      removeBtn.title = 'Remove from Lap';
-      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-      actions.appendChild(topBtn);
-      actions.appendChild(bottomBtn);
-      actions.appendChild(removeBtn);
-    } else {
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'remove-btn';
-      removeBtn.title = 'Remove from Lap';
-      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-      actions.appendChild(removeBtn);
-    }
-
-    item.appendChild(icon);
-    item.appendChild(title);
-    item.appendChild(duration);
-    item.appendChild(actions);
-    frag.appendChild(item);
-  });
-
-  // Replace content
-  playlistDOM.lapListEl.innerHTML = '';
-  playlistDOM.lapListEl.appendChild(frag);
+  lapListEl.innerHTML = '';
+  lapListEl.appendChild(newFragment);
 };
 
 export const updateSortHeaders = (sortState) => {
@@ -237,7 +305,7 @@ export const updateSortHeaders = (sortState) => {
     h.classList.remove("active");
     h.querySelector("i").className = "fas";
   });
-  const active = $(`#sort-by-${sortState.field}-btn`);
+  const active = $("#sort-by-" + sortState.field + "-btn");
   if (active) {
     active.classList.add("active");
     active
@@ -391,8 +459,22 @@ export const showConfirmationModal = (
   onConfirm,
   type = "confirm"
 ) => {
-  modalDOM.modalTitle.textContent = title;
-  modalDOM.modalText.textContent = text;
+  // Accept both the `modalDOM` object constructed in `script.js` or the
+  // raw DOM node if that's passed; normalize to an object with expected fields.
+  let m = modalDOM;
+  if (!m || !m.modalTitle) {
+    const node = document.getElementById('confirm-modal');
+    if (!node) return;
+    m = {
+      confirmModal: node,
+      modalTitle: node.querySelector('#modal-title'),
+      modalText: node.querySelector('#modal-text'),
+      modalCancelBtn: node.querySelector('#modal-cancel-btn'),
+      modalConfirmBtn: node.querySelector('#modal-confirm-btn'),
+    };
+  }
+  m.modalTitle.textContent = title;
+  m.modalText.textContent = text;
   state.confirmCallback = onConfirm;
   if (type === "alert") {
     modalDOM.modalCancelBtn.style.display = "none";
@@ -401,8 +483,12 @@ export const showConfirmationModal = (
     modalDOM.modalCancelBtn.style.display = "inline-block";
     modalDOM.modalConfirmBtn.textContent = "Confirm";
   }
-  modalDOM.confirmModal.style.display = "flex";
-  modalDOM.confirmModal.classList.add("show");
+  m.confirmModal.style.display = "flex";
+  // give it a small delay then focus the confirm button for accessibility
+  m.confirmModal.classList.add("show");
+  setTimeout(() => {
+    if (m.modalConfirmBtn) m.modalConfirmBtn.focus();
+  }, 200);
 };
 
 export const hideConfirmationModal = (modalDOM) => {
@@ -498,20 +584,41 @@ export const initializeStepper = (stepperEl) => {
 
 // Reuse the confirmation modal for simple alert messages (single OK button)
 export const showAlert = (modalDOM, title, text) => {
-  // Use the same modal but hide the cancel button and set a short callback
-  modalDOM.modalTitle.textContent = title || "Alert";
-  modalDOM.modalText.textContent = text || "";
-  modalDOM.modalCancelBtn.style.display = "none";
-  modalDOM.modalConfirmBtn.textContent = "OK";
-  modalDOM.confirmModal.style.display = "flex";
-  modalDOM.confirmModal.classList.add("show");
-  // ensure confirm just hides the modal
+  // Accept either a modal-like object or attempt to find modal elements in DOM
+  let m = modalDOM;
+  if (!m || !m.confirmModal) {
+    m = {
+      confirmModal: document.getElementById("confirm-modal"),
+      modalTitle: document.getElementById("modal-title"),
+      modalText: document.getElementById("modal-text"),
+      modalCancelBtn: document.getElementById("modal-cancel-btn"),
+      modalConfirmBtn: document.getElementById("modal-confirm-btn"),
+    };
+  }
+  if (!m || !m.confirmModal) {
+    // Fallback to native alert if no modal is available
+    // Avoid calling `window.alert` in test environments (jsdom's alert throws).
+    try {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(text || title || "");
+      }
+    } catch (e) {
+      /* noop */
+    }
+    return;
+  }
+  // Use the same modal but hide the cancel button and set a one-time callback
+  if (m.modalTitle) m.modalTitle.textContent = title || "Alert";
+  if (m.modalText) m.modalText.textContent = text || "";
+  if (m.modalCancelBtn) m.modalCancelBtn.style.display = "none";
+  if (m.modalConfirmBtn) m.modalConfirmBtn.textContent = "OK";
+  m.confirmModal.style.display = "flex";
+  m.confirmModal.classList.add("show");
   const onOk = () => {
-    modalDOM.confirmModal.classList.remove("show");
+    m.confirmModal.classList.remove("show");
     setTimeout(() => {
-      modalDOM.confirmModal.style.display = "none";
+      m.confirmModal.style.display = "none";
     }, 300);
-    modalDOM.modalConfirmBtn.removeEventListener("click", onOk);
   };
-  modalDOM.modalConfirmBtn.addEventListener("click", onOk);
+  if (m.modalConfirmBtn) m.modalConfirmBtn.addEventListener("click", onOk, { once: true });
 };

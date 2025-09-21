@@ -5,10 +5,11 @@ import {
     MAX_DURATION_SECONDS,
     MIN_DURATION_SECONDS,
 } from "./constants.js";
-import { clamp } from "./utils.js";
+import { clamp, createIconElement } from "./utils.js";
 
 let state = null;
 let runnerDOM = null;
+let modalDOM = null;
 
 const stopTimerInterval = () => {
     clearInterval(state.sessionInterval);
@@ -44,12 +45,18 @@ const startTimerInterval = () => {
 const loadTaskToRunner = (virtualIndex) => {
     // Recalculate completed occurrences up to virtualIndex
     const newCompletedOccurrencesMap = new Map();
+    const newCompletedTaskDurationsMap = new Map();
     for (let i = 0; i < virtualIndex; i++) {
         const task = state.sessionCache.virtualSessionPlaylist[i];
         const count = newCompletedOccurrencesMap.get(task.taskId) || 0;
         newCompletedOccurrencesMap.set(task.taskId, count + 1);
+
+        const { taskId, calculatedDuration } = task;
+        const currentTotal = newCompletedTaskDurationsMap.get(taskId) || 0;
+        newCompletedTaskDurationsMap.set(taskId, currentTotal + calculatedDuration);
     }
     state.sessionCache.completedOccurrencesMap = newCompletedOccurrencesMap;
+    state.sessionCache.completedTaskDurationsMap = newCompletedTaskDurationsMap;
 
     state.currentVirtualTaskIndex = virtualIndex;
     if (
@@ -82,9 +89,7 @@ const loadTaskToRunner = (virtualIndex) => {
         categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     // Render category icon and name using DOM APIs to avoid string-based HTML injection
     runnerDOM.runnerTaskCategory.textContent = '';
-    const catIcon = document.createElement('span');
-    catIcon.className = 'icon';
-    catIcon.innerHTML = category.icon; // icons from constants are trusted
+    const catIcon = createIconElement(category.icon);
     runnerDOM.runnerTaskCategory.appendChild(catIcon);
     runnerDOM.runnerTaskCategory.appendChild(document.createTextNode(' ' + category.name));
     runnerDOM.runnerTaskTitle.textContent = task.title;
@@ -120,8 +125,12 @@ const loadTaskToRunner = (virtualIndex) => {
                 : "var(--text-secondary)";
 
     UI.updateTimerDisplay(runnerDOM, state);
-    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
-    UI.scrollToRunningTask(runnerDOM);
+    const playlistTarget = {
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+    UI.renderLapList(playlistTarget, state, new Map(state.tasks.map((t) => [t.id, t])));
+    UI.scrollToRunningTask(playlistTarget);
 };
 
 export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) => {
@@ -283,7 +292,7 @@ export const stopSession = (finished = false) => {
         runnerDOM.lapsProgressLabel.textContent = `Session Complete! (${state.sessionCache.totalLaps || 0
             } laps)`;
         UI.showConfirmationModal(
-            runnerDOM,
+            modalDOM,
             state,
             "🎉 Congratulations! 🎉",
             `Session Complete! You finished ${state.sessionCache.totalLaps || 0
@@ -299,7 +308,11 @@ export const stopSession = (finished = false) => {
         UI.resetRunnerDisplay(runnerDOM);
     }
     state.currentVirtualTaskIndex = -1;
-    UI.renderLapList(runnerDOM, state, new Map(state.tasks.map((t) => [t.id, t])));
+    const playlistTargetStop = {
+        lapListEl: runnerDOM.lapListEl,
+        lapListDurationEl: runnerDOM.lapListDurationEl,
+    };
+    UI.renderLapList(playlistTargetStop, state, new Map(state.tasks.map((t) => [t.id, t])));
 };
 
 export const restartSession = () => {
@@ -325,59 +338,72 @@ export const skipToLap = (direction) => {
     )
         return;
 
-    const currentLap =
-        state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex]
-            .lap;
-    let targetLap = currentLap + direction;
+    const wasRunning = state.runnerState === "RUNNING";
+    if (wasRunning) stopTimerInterval();
 
-    if (targetLap >= state.sessionCache.totalLaps) {
-        loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
-        return;
+    const currentVirtualTask = state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
+    const elapsed = currentVirtualTask.calculatedDuration - state.currentTaskTimeLeft;
+
+    if (direction > 0) {
+        const currentLap = currentVirtualTask.lap;
+        let nextTaskIndex = state.currentVirtualTaskIndex;
+        // Find the beginning of the next lap
+        while (nextTaskIndex < state.sessionCache.virtualSessionPlaylist.length && state.sessionCache.virtualSessionPlaylist[nextTaskIndex].lap === currentLap) {
+            nextTaskIndex++;
+        }
+        // If we are already in the last lap, move to the end of the playlist
+        if (nextTaskIndex >= state.sessionCache.virtualSessionPlaylist.length) {
+            loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
+            if (wasRunning) startTimerInterval();
+            return;
+        }
+        loadTaskToRunner(nextTaskIndex);
+    } else { // direction < 0
+        const currentLap = currentVirtualTask.lap;
+        if (currentLap === 0) {
+            if (wasRunning) startTimerInterval();
+            return;
+        }
+        const targetLap = currentLap - 1;
+        let nextTaskIndex = -1;
+        for (let i = 0; i < state.sessionCache.virtualSessionPlaylist.length; i++) {
+            if (state.sessionCache.virtualSessionPlaylist[i].lap === targetLap) {
+                nextTaskIndex = i;
+                break;
+            }
+        }
+        if (nextTaskIndex !== -1) {
+            loadTaskToRunner(nextTaskIndex);
+        }
     }
-    if (targetLap < 0) return;
 
-    let next = state.sessionCache.virtualSessionPlaylist.findIndex(
-        (t) => t.lap === targetLap
-    );
-
-    while (
-        next === -1 &&
-        targetLap < state.sessionCache.totalLaps &&
-        targetLap >= 0
-    ) {
-        targetLap += direction;
-        next = state.sessionCache.virtualSessionPlaylist.findIndex(
-            (t) => t.lap === targetLap
-        );
-    }
-
-    if (next !== -1) {
-        const wasRunning = state.runnerState === "RUNNING";
-        if (wasRunning) stopTimerInterval();
-        loadTaskToRunner(next);
-        if (wasRunning) startTimerInterval();
-    } else if (direction > 0) {
-        loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
-    }
+    if (wasRunning) startTimerInterval();
+    UI.updateTimerDisplay(runnerDOM, state);
 };
 
 export const nextTask = () => {
-    if (state.runnerState !== "STOPPED") handleTaskCompletion();
+    if (state.runnerState !== "STOPPED") {
+        handleTaskCompletion();
+        UI.updateTimerDisplay(runnerDOM, state);
+    }
 }
 
 export const prevTask = () => {
-    if (state.runnerState !== "STOPPED" && state.currentVirtualTaskIndex > 0)
+    if (state.runnerState !== "STOPPED" && state.currentVirtualTaskIndex > 0) {
         loadTaskToRunner(state.currentVirtualTaskIndex - 1);
+        UI.updateTimerDisplay(runnerDOM, state);
+    }
 }
 
 export function isSessionActive() {
     return state.runnerState !== "STOPPED";
 }
 
-export const initRunner = (mainState, mainDom) => {
+export const initRunner = (mainState, mainDom, mainModalDom) => {
     state = mainState;
     // Expect mainDom to contain the runner-related DOM refs (as provided by script.js)
     runnerDOM = mainDom;
+    modalDOM = mainModalDom;
     // Defensive defaults to prevent runtime errors if a field is missing
     runnerDOM.runnerTaskCategory = runnerDOM.runnerTaskCategory || document.createElement('div');
     runnerDOM.runnerTaskTitle = runnerDOM.runnerTaskTitle || document.createElement('div');

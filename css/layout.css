@@ -1,21 +1,82 @@
 /* css/layout.css */
 
 .container {
-  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  /* Use a readable measure but allow expansion on large screens */
+  max-width: clamp(1100px, 90%, 2200px);
+}
+
+/* Subtle page background so panels appear to float (light mode only) */
+body:not(.dark-theme) {
+  background: linear-gradient(180deg, #f7f9fb 0%, #f3f6f9 100%);
+  color: var(--text-primary);
+}
+
+/* Dark theme uses variables defined in `base.css` */
+body.dark-theme {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
 }
 
 .main-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) 1fr;
+  grid-template-columns: minmax(0, 1.5fr) 0.9fr;
   gap: 1.5rem;
   align-items: start;
+}
+
+@media (min-width: 1400px) {
+  .main-layout {
+    grid-template-columns: minmax(0, 1.7fr) 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Wide screens: make better use of space without stretching content */
+/* Ultra-wide screens: let the container expand closer to the viewport width
+   while still maintaining horizontal gutters for readability. */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 96vw;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .main-layout {
+    grid-template-columns: minmax(0, 1.8fr) 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* 4K / ultra-wide screens: use almost the full viewport width while keeping gutters */
+@media (min-width: 3200px) {
+  .container {
+    max-width: 98vw;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  .main-layout {
+    grid-template-columns: minmax(0, 2fr) 0.9fr;
+    gap: 3rem;
+  }
 }
 
 .left-column,
 .right-column {
   display: flex;
   flex-direction: column;
+    gap: 1.5rem;
+    /* add a little padding so shadows are not clipped on small viewports */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+/* Left grid used to show form and repository side-by-side */
+.left-grid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
@@ -48,4 +109,16 @@ body.runner-popped-out::before {
   background-color: rgba(17, 24, 39, 0.6);
   backdrop-filter: blur(4px);
   z-index: 990;
+}
+
+/* Two-up left column for medium and larger screens */
+@media (min-width: 1100px) {
+  .left-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .panel-divider {
+    display: none;
+  }
 }
