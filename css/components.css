@@ -499,7 +499,6 @@ textarea::placeholder {
   padding: 2.5rem;
   border-radius: 1rem;
   width: 90%;
-  max-width: 480px;
   text-align: center;
   border: 1px solid var(--border-color);
   background-color: var(--panel-bg);
@@ -519,6 +518,14 @@ textarea::placeholder {
   text-align: left;
   max-height: 80vh;
   overflow-y: auto;
+  width: 90%;
+  max-width: 960px;
+}
+
+@media (max-width: 1024px) {
+  .guide-modal-content {
+    max-width: 90vw;
+  }
 }
 
 .modal-close-btn {

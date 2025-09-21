@@ -413,37 +413,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     headerDOM.guideBtn.addEventListener("click", () => {
       const guideModal = $("#guide-modal");
-      if (!guideModal) return;
-      // Save previously focused element to restore later
-      const previouslyFocused = document.activeElement;
-      guideModal.style.display = "flex";
-      guideModal.classList.add("show");
-      const closeBtn = $("#guide-modal-close-btn");
-      if (closeBtn) closeBtn.focus();
+      if (guideModal) {
+        guideModal.style.display = "flex";
+        guideModal.classList.add("show");
+      }
+    });
 
-      // Focus trap
-      const handleKey = (e) => {
-        if (e.key === 'Escape') {
-          guideModal.classList.remove('show');
-          guideModal.style.display = 'none';
-          if (previouslyFocused) previouslyFocused.focus();
-          document.removeEventListener('keydown', handleKey);
-        }
-        if (e.key === 'Tab') {
-          const focusable = guideModal.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
-          if (focusable.length === 0) return;
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      };
-      document.addEventListener('keydown', handleKey);
+    guideModalDOM.guideModal.addEventListener("click", (e) => {
+      if (e.target === guideModalDOM.guideModal) {
+        guideModalDOM.guideModal.classList.remove("show");
+        setTimeout(() => {
+          guideModalDOM.guideModal.style.display = "none";
+        }, 300);
+      }
     });
 
     guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
@@ -451,18 +433,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       setTimeout(() => {
         guideModalDOM.guideModal.style.display = "none";
       }, 300);
-    });
-
-    headerDOM.guideBtn.addEventListener("click", () => {
-      const guideModal = $("#guide-modal");
-      if (guideModal) guideModal.style.display = "flex";
-    });
-
-    document.body.addEventListener("click", (e) => {
-      if (e.target.id === 'guide-modal-close-btn' || e.target.closest('#guide-modal-close-btn')) {
-        const guideModal = $("#guide-modal");
-        if (guideModal) guideModal.style.display = "none";
-      }
     });
 
     repoDOM.taskListEl.addEventListener("click", (e) => {
