@@ -1,8 +1,10 @@
 /** @jest-environment jsdom */
+import { jest } from '@jest/globals';
 import { showConfirmationModal, hideConfirmationModal, showAlert } from '../ui.js';
 
 describe('UI modal flows', () => {
   let modalRoot;
+  let state;
 
   beforeEach(() => {
     // Minimal modal DOM matching components/modal.html
@@ -25,18 +27,23 @@ describe('UI modal flows', () => {
       modalCancelBtn: document.getElementById('modal-cancel-btn'),
       modalConfirmBtn: document.getElementById('modal-confirm-btn'),
     };
+    state = {};
   });
 
-  test('showConfirmationModal displays modal with title and text and handles confirm', () => {
-    showConfirmationModal(modalRoot, 'Test Title', 'Hello world', true, () => {});
+  test('showConfirmationModal displays modal with title and text and registers callback', () => {
+    const onConfirm = jest.fn();
+    showConfirmationModal(modalRoot, state, 'Test Title', 'Hello world', onConfirm, 'confirm');
     expect(modalRoot.confirmModal.style.display).toBe('flex');
     expect(modalRoot.confirmModal.classList.contains('show')).toBe(true);
     expect(modalRoot.modalTitle.textContent).toBe('Test Title');
     expect(modalRoot.modalText.textContent).toBe('Hello world');
-
-    // simulate clicking confirm
-    modalRoot.modalConfirmBtn.click();
-    // After click modal should hide (animation timeout removed by code path)
+    // ensure callback stored on state
+    expect(typeof state.confirmCallback).toBe('function');
+    // simulate the app-level confirm click handler calling the callback
+    state.confirmCallback();
+    expect(onConfirm).toHaveBeenCalled();
+    // hide the modal and ensure it is not visible
+    hideConfirmationModal(modalRoot);
     expect(modalRoot.confirmModal.classList.contains('show')).toBe(false);
   });
 
