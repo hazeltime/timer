@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { initRunner, playPauseSession } from '../runner.js';
+import { jest } from '@jest/globals';
 
 describe('playPauseSession integration', () => {
   beforeEach(() => {

@@ -16,6 +16,11 @@ test('skipToLap moves forward to session end when beyond last lap', () => {
     }
   };
   const runnerDOM = { lapsInput: document.createElement('input'), lapsControls: document.createElement('div'), playPauseBtn: document.createElement('button'), lapListEl: document.createElement('div'), lapListDurationEl: document.createElement('div') };
+  const wrapper = document.createElement('div');
+  const stepper = document.createElement('button');
+  stepper.className = 'stepper-btn';
+  wrapper.appendChild(stepper);
+  wrapper.appendChild(runnerDOM.lapsInput);
   initRunner(state, runnerDOM, null);
   // skip forward beyond last lap
   skipToLap(1);
