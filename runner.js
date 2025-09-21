@@ -338,43 +338,46 @@ export const skipToLap = (direction) => {
     )
         return;
 
-    const currentLap =
-        state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex]
-            .lap;
-    let targetLap = currentLap + direction;
+    const wasRunning = state.runnerState === "RUNNING";
+    if (wasRunning) stopTimerInterval();
 
-    if (targetLap >= state.sessionCache.totalLaps) {
-        loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
-        UI.updateTimerDisplay(runnerDOM, state);
-        return;
+    const currentVirtualTask = state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
+    const elapsed = currentVirtualTask.calculatedDuration - state.currentTaskTimeLeft;
+
+    if (direction > 0) {
+        const currentLap = currentVirtualTask.lap;
+        let nextTaskIndex = state.currentVirtualTaskIndex;
+        // Find the beginning of the next lap
+        while (nextTaskIndex < state.sessionCache.virtualSessionPlaylist.length && state.sessionCache.virtualSessionPlaylist[nextTaskIndex].lap === currentLap) {
+            nextTaskIndex++;
+        }
+        // If we are already in the last lap, do nothing
+        if (nextTaskIndex >= state.sessionCache.virtualSessionPlaylist.length) {
+            if (wasRunning) startTimerInterval();
+            return;
+        }
+        loadTaskToRunner(nextTaskIndex);
+    } else { // direction < 0
+        const currentLap = currentVirtualTask.lap;
+        if (currentLap === 0) {
+            if (wasRunning) startTimerInterval();
+            return;
+        }
+        const targetLap = currentLap - 1;
+        let nextTaskIndex = -1;
+        for (let i = 0; i < state.sessionCache.virtualSessionPlaylist.length; i++) {
+            if (state.sessionCache.virtualSessionPlaylist[i].lap === targetLap) {
+                nextTaskIndex = i;
+                break;
+            }
+        }
+        if (nextTaskIndex !== -1) {
+            loadTaskToRunner(nextTaskIndex);
+        }
     }
-    if (targetLap < 0) return;
 
-    let next = state.sessionCache.virtualSessionPlaylist.findIndex(
-        (t) => t.lap === targetLap
-    );
-
-    while (
-        next === -1 &&
-        targetLap < state.sessionCache.totalLaps &&
-        targetLap >= 0
-    ) {
-        targetLap += direction;
-        next = state.sessionCache.virtualSessionPlaylist.findIndex(
-            (t) => t.lap === targetLap
-        );
-    }
-
-    if (next !== -1) {
-        const wasRunning = state.runnerState === "RUNNING";
-        if (wasRunning) stopTimerInterval();
-        loadTaskToRunner(next);
-        if (wasRunning) startTimerInterval();
-        UI.updateTimerDisplay(runnerDOM, state);
-    } else if (direction > 0) {
-        loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
-        UI.updateTimerDisplay(runnerDOM, state);
-    }
+    if (wasRunning) startTimerInterval();
+    UI.updateTimerDisplay(runnerDOM, state);
 };
 
 export const nextTask = () => {
