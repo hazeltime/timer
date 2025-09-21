@@ -25,4 +25,6 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm install
       - run: npm run lint
-      - run: npm test
+      - run: npm test -- --coverage --maxWorkers=50%
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
