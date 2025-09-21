@@ -90,10 +90,9 @@ fieldset {
 
 .duration-layout-grid {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   /* FIX: Adjusted gap for consistent alignment */
   gap: 1rem;
-  align-items: flex-end;
   background-color: var(--input-bg);
   border-radius: 0.75rem;
   padding: 1rem;
