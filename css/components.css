@@ -499,6 +499,7 @@ textarea::placeholder {
   padding: 2.5rem;
   border-radius: 1rem;
   width: 90%;
+  max-width: 760px; /* keep modals readable on large screens */
   text-align: center;
   border: 1px solid var(--border-color);
   background-color: var(--panel-bg);
@@ -520,6 +521,14 @@ textarea::placeholder {
   overflow-y: auto;
   width: 90%;
   max-width: 960px;
+}
+
+/* Make modal slightly wider on very large screens but still constrained */
+@media (min-width: 1400px) {
+  .modal-content {
+    max-width: 860px;
+    padding: 3rem;
+  }
 }
 
 @media (max-width: 1024px) {
