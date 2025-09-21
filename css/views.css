@@ -331,7 +331,7 @@ fieldset {
 
 /* --- Task Runner View --- */
 .task-runner-panel {
-  transition: all 0.3s ease-in-out;
+  transition: box-shadow 0.18s, border-color 0.18s;
 }
 #task-runner-panel.task-runner-popout {
   position: fixed;
@@ -408,6 +408,7 @@ fieldset {
   font-size: 1.5rem;
   text-align: left;
 }
+
 /* IMPROVEMENT: Streamlined runner/display labels */
 .progress-section-label,
 .runner-detail-label,

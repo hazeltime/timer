@@ -12,6 +12,15 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Layered shadows and highlights for 3D/bevel effect */
+  --shadow-layer-1: 0 6px 20px rgba(16,24,40,0.06);
+  --shadow-layer-2: 0 2px 8px rgba(16,24,40,0.04);
+  --bevel-highlight: rgba(255,255,255,0.7);
+  --bevel-shadow: rgba(0,0,0,0.06);
+  /* Hover glow for panels */
+  /* Hover glow: larger, theme-tinted rim. Light theme uses a darker yellow rim. */
+  --panel-hover-glow: 0 12px 40px rgba(249,168,37,0.25);
+  --panel-hover-rim: rgba(249,168,37,0.5);
   --hover-bg: #f9fafb;
   --button-secondary-bg: #f3f4f6;
   --accent-blue: #3b82f6;
@@ -44,6 +53,14 @@ body.dark-theme {
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
     0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  /* Dark-theme layered shadows and bevel values */
+  --shadow-layer-1: 0 10px 30px rgba(2,6,23,0.6);
+  --shadow-layer-2: 0 3px 10px rgba(2,6,23,0.45);
+  --bevel-highlight: rgba(255,255,255,0.03);
+  --bevel-shadow: rgba(0,0,0,0.6);
+  /* Dark theme: softer, warm yellow glow for contrast on dark backgrounds */
+  --panel-hover-glow: 0 14px 48px rgba(255,218,130,0.12);
+  --panel-hover-rim: rgba(255, 210, 120, 0.4);
   --hover-bg: #1f2937;
   --button-secondary-bg: #21262d;
   --accent-blue: #58a6ff;
