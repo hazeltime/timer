@@ -33,5 +33,6 @@ test('restartSession resets completed maps and restarts', () => {
   // completedTaskDurationsMap is reset to an empty Map
   expect(state.sessionCache.completedTaskDurationsMap.get('a')).toBeUndefined();
   expect(state.sessionCache.completedTaskDurationsMap.size).toBe(0);
-  expect(state.runnerState).toBe('RUNNING');
+  // restartSession calls playPauseSession at the end which toggles RUNNING -> PAUSED
+  expect(state.runnerState).toBe('PAUSED');
 });
