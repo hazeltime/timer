@@ -9,6 +9,18 @@
   max-width: clamp(1100px, 90%, 2200px);
 }
 
+/* Subtle page background so panels appear to float (light mode only) */
+body:not(.dark-theme) {
+  background: linear-gradient(180deg, #f7f9fb 0%, #f3f6f9 100%);
+  color: var(--text-primary);
+}
+
+/* Dark theme uses variables defined in `base.css` */
+body.dark-theme {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
 .main-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) 0.9fr;
@@ -55,7 +67,10 @@
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+    gap: 1.5rem;
+    /* add a little padding so shadows are not clipped on small viewports */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
 }
 
 /* Left grid used to show form and repository side-by-side */
