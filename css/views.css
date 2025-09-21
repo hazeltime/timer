@@ -331,7 +331,7 @@ fieldset {
 
 /* --- Task Runner View --- */
 .task-runner-panel {
-  transition: box-shadow 0.18s, border-color 0.18s;
+  
 }
 #task-runner-panel.task-runner-popout {
   position: fixed;
