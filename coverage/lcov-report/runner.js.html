@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.77% </span>
+                <span class="strong">26.97% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/239</span>
+                <span class='fraction'>65/241</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.05% </span>
+                <span class="strong">28.25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>62/221</span>
+                <span class='fraction'>63/223</span>
             </div>
         
             
@@ -481,7 +481,8 @@
 <a name='L416'></a><a href='#L416'>416</a>
 <a name='L417'></a><a href='#L417'>417</a>
 <a name='L418'></a><a href='#L418'>418</a>
-<a name='L419'></a><a href='#L419'>419</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -490,6 +491,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -867,29 +869,29 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -910,6 +912,7 @@ import { clamp, createIconElement } from "./utils.js";
 &nbsp;
 let state = null;
 let runnerDOM = null;
+let modalDOM = null;
 &nbsp;
 const stopTimerInterval = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >    clearInterval(state.sessionInterval);</span>
@@ -1186,7 +1189,7 @@ export const stopSession = <span class="fstat-no" title="function not covered" >
 <span class="cstat-no" title="statement not covered" >        runnerDOM.lapsProgressLabel.textContent = `Session Complete! (${state.sessionCache.totalLaps || 0</span>
             } laps)`;
 <span class="cstat-no" title="statement not covered" >        UI.showConfirmationModal(</span>
-            runnerDOM,
+            modalDOM,
             state,
             "🎉 Congratulations! 🎉",
             `Session Complete! You finished ${state.sessionCache.totalLaps || 0
@@ -1281,10 +1284,11 @@ export function <span class="fstat-no" title="function not covered" >isSessionAc
 <span class="cstat-no" title="statement not covered" >    return state.runnerState !== "STOPPED";</span>
 }
 &nbsp;
-export const initRunner = <span class="fstat-no" title="function not covered" >(m</span>ainState, mainDom) =&gt; {
+export const initRunner = <span class="fstat-no" title="function not covered" >(m</span>ainState, mainDom, mainModalDom) =&gt; {
 <span class="cstat-no" title="statement not covered" >    state = mainState;</span>
     // Expect mainDom to contain the runner-related DOM refs (as provided by script.js)
 <span class="cstat-no" title="statement not covered" >    runnerDOM = mainDom;</span>
+<span class="cstat-no" title="statement not covered" >    modalDOM = mainModalDom;</span>
     // Defensive defaults to prevent runtime errors if a field is missing
 <span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskCategory = runnerDOM.runnerTaskCategory || document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >    runnerDOM.runnerTaskTitle = runnerDOM.runnerTaskTitle || document.createElement('div');</span>
@@ -1316,15 +1320,14 @@ export const initRunner = <span class="fstat-no" title="function not covered" >(
     };
 };
 &nbsp;
-// clamp is provided from `utils.js` now
-&nbsp;</pre></td></tr></table></pre>
+// clamp is provided from `utils.js` now</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-21T00:15:23.774Z
+                at 2025-09-21T01:05:37.064Z
             </div>
         <script src="prettify.js"></script>
         <script>
