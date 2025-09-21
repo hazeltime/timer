@@ -59,8 +59,8 @@ body.dark-theme {
   --bevel-highlight: rgba(255,255,255,0.03);
   --bevel-shadow: rgba(0,0,0,0.6);
   /* Dark theme: softer, warm yellow glow for contrast on dark backgrounds */
-  --panel-hover-glow: 0 14px 48px rgba(255,218,130,0.12);
-  --panel-hover-rim: rgba(255, 210, 120, 0.4);
+    --panel-hover-glow: 0 14px 56px rgba(255, 228, 150, 0.3);
+  --panel-hover-rim: rgba(255, 228, 150, 0.7);
   --hover-bg: #1f2937;
   --button-secondary-bg: #21262d;
   --accent-blue: #58a6ff;
