@@ -351,8 +351,9 @@ export const skipToLap = (direction) => {
         while (nextTaskIndex < state.sessionCache.virtualSessionPlaylist.length && state.sessionCache.virtualSessionPlaylist[nextTaskIndex].lap === currentLap) {
             nextTaskIndex++;
         }
-        // If we are already in the last lap, do nothing
+        // If we are already in the last lap, move to the end of the playlist
         if (nextTaskIndex >= state.sessionCache.virtualSessionPlaylist.length) {
+            loadTaskToRunner(state.sessionCache.virtualSessionPlaylist.length);
             if (wasRunning) startTimerInterval();
             return;
         }

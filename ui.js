@@ -597,7 +597,13 @@ export const showAlert = (modalDOM, title, text) => {
   }
   if (!m || !m.confirmModal) {
     // Fallback to native alert if no modal is available
-    try { window.alert(text || title || ""); } catch (e) { /* noop */ }
+    try {
+      if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert(text || title || "");
+      }
+    } catch (e) {
+      /* noop */
+    }
     return;
   }
   // Use the same modal but hide the cancel button and set a one-time callback
