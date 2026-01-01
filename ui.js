@@ -174,7 +174,7 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
       intervalCol.innerHTML =
         task.lapInterval === 1
           ? "Always"
-          : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
+          : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
 
       const limitCol = document.createElement("div");
       limitCol.className = "task-cell task-limit-col";
