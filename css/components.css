@@ -348,10 +348,22 @@ body.dark-theme .theme-btn .fa-moon {
 .btn-icon:hover {
   background-color: var(--btn-ghost-hover);
   color: var(--text-primary);
-  transform: translateY(-1px);
+  transform: trans  line-height: 1;
 }
-.btn-icon:active {
-  transform: scale(0.95);
+
+.btn-primary {
+  background-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-text) !important;
+  border: 1px solid transparent;
+}
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 /* Shapes */

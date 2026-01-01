@@ -207,7 +207,7 @@ body {
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
-  z-index: var(--z-header); /* 100 */
+  z-index: var(--z-header);
 }
 
 .header-controls {
@@ -216,17 +216,10 @@ body {
   align-items: center;
 }
 
-.divider-vertical {
-  width: 1px;
-  height: 24px;
-  background-color: var(--border-color); /* Separator color */
-  margin: 0 0.5rem;
-}
-
 .theme-btn {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--text-secondary); /* Default icon color */
+  color: var(--text-secondary);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -234,25 +227,32 @@ body {
   transition: all 0.2s var(--ease-smooth);
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Space between icon and label */
+  gap: 0.5rem;
+  position: relative; /* For tooltip positioning */
 }
 
+/* Label handling - Hide on smaller screens */
 .theme-btn .btn-label {
   font-size: 0.875rem;
   font-weight: 500;
-  display: none; /* Hidden by default on mobile */
+  display: none; 
 }
 
-@media (min-width: 600px) {
+@media (min-width: 900px) { /* Increased breakpoint to prevent overlap */
   .theme-btn .btn-label {
-    display: inline-block; /* Show on desktop */
+    display: inline-block;
   }
 }
 
 .theme-btn:hover {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  transform: translateY(-1px);
+  background  --btn-bg: var(--bg-secondary);
+  --btn-hover: var(--bg-tertiary);
+  --btn-active: var(--bg-primary);
+
+  /* Primary Action (Blue) */
+  --btn-primary-bg: var(--primary-color);
+  --btn-primary-hover: #2563eb; /* Darker blue */
+  --btn-primary-text: #ffffff;
 }
 
 /* Specific button colors */

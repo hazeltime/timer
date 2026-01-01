@@ -3,6 +3,8 @@
 import { CATEGORIES, categoryMap, ICONS } from "./constants.js";
 import { createIconElement } from "./utils.js";
 
+import { DomBuilder, TimeUtils, DataFormatter } from "./core.js";
+
 // Utility helpers
 /**
  * Select single element
@@ -18,46 +20,21 @@ export const $ = (sel) => document.querySelector(sel);
  */
 export const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-/**
- * Formats seconds into h m s string (e.g. "1h 30m 10s")
- * @param {number} totalSeconds
- * @returns {string}
- */
-export const formatTime = (totalSeconds) => {
-  const n = Number(totalSeconds);
-  if (!Number.isFinite(n) || Number.isNaN(n)) return "0s";
-  if (n === 0) return "0s";
-  const isNegative = n < 0;
-  const absSeconds = Math.abs(Math.floor(n));
-  const hours = Math.floor(absSeconds / 3600);
-  const minutes = Math.floor((absSeconds % 3600) / 60);
-  const seconds = absSeconds % 60;
-  const parts = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0 || (hours === 0 && minutes === 0)) parts.push(`${seconds}s`);
-  const formatted = parts.join(" ");
-  return isNegative ? `-${formatted}` : formatted;
-  return isNegative ? `-${formatted}` : formatted;
-};
+// Re-export formatTime for convenience, or alias it
+export const formatTime = TimeUtils.format;
 
 /**
  * Creates a consistent action button
  * @param {string} iconClass - FontAwesome class
  * @param {string} tooltip - Tooltip text
  * @param {string} cssClass - Additional CSS classes
- * @param {Function} [onClick] - Optional click handler (usually handled by delegation, but supported)
- * @returns {HTMLButtonElement}
  */
 export const createActionButton = (iconClass, tooltip, cssClass = "") => {
-  const btn = document.createElement("button");
-  btn.className = cssClass; // e.g., "edit-btn btn-ghost"
-  if (tooltip) {
-    btn.dataset.tooltip = tooltip;
-    btn.setAttribute("aria-label", tooltip);
-  }
-  btn.innerHTML = `<i class="${iconClass}"></i>`;
-  return btn;
+  return DomBuilder.button({
+      className: cssClass,
+      icon: iconClass,
+      tooltip: tooltip
+  });
 };
 
 /**
@@ -128,10 +105,12 @@ export const renderTaskSummary = (repoDOM, tasks) => {
 /**
  * Creates a DOM element for a Task in the Repository Grid
  */
+/**
+ * Creates a DOM element for a Task in the Repository Grid
+ */
 export const createTaskRepoRow = (task, category) => {
-  const item = document.createElement("div");
-  item.className = "task-item";
-  item.dataset.id = task.id;
+  const item = DomBuilder.div("task-item", [], { dataset: { id: task.id } });
+  item.dataset.id = task.id; // Explicit for safety
 
   const cells = [
     { cls: "task-id-col", content: `#${task.id}` },
@@ -142,51 +121,35 @@ export const createTaskRepoRow = (task, category) => {
     {
       cls: "task-category-col",
       html: `<span class="task-category-badge" style="background-color: ${category.color}"><i class="${category.icon}"></i> ${category.name}</span>`,
-    }, // Note: using innerHTML for badge simplicity here, or could use helper
-    { cls: "task-duration-col", content: formatTime(task.duration) },
+    },
+    { cls: "task-duration-col", content: TimeUtils.format(task.duration) },
     {
       cls: "task-interval-col",
-      html:
-        task.lapInterval === 1
-          ? "Always"
-          : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`,
+      html: task.lapInterval === 1 ? "Always" : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`,
     },
     {
       cls: "task-limit-col",
-      content: task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences),
+      content: DataFormatter.formatLimit(task.maxOccurrences),
     },
-    { cls: "task-growth-col", content: `${task.growthFactor || 0}%` },
+    { cls: "task-growth-col", content: DataFormatter.formatGrowth(task.growthFactor) },
   ];
 
   cells.forEach((c) => {
-    const div = document.createElement("div");
-    div.className = `task-cell ${c.cls}`;
+    const div = DomBuilder.div(`task-cell ${c.cls}`);
     if (c.html) div.innerHTML = c.html;
     else div.textContent = c.content;
     item.appendChild(div);
   });
 
   // Actions
-  const actionsCol = document.createElement("div");
-  actionsCol.className = "task-cell task-actions-col";
-  actionsCol.appendChild(
-    createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon"),
-  );
-  actionsCol.appendChild(
-    createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon"),
-  );
-  actionsCol.appendChild(
-    createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon"),
-  );
-  actionsCol.appendChild(
-    createActionButton(
-      ICONS.DELETE,
-      "Delete",
-      "delete-btn btn-icon danger",
-    ),
-  );
+  const actionsCol = DomBuilder.div("task-cell task-actions-col", [
+      createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon"),
+      createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon"),
+      createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon"),
+      createActionButton(ICONS.DELETE, "Delete", "delete-btn btn-icon danger")
+  ]);
+  
   item.appendChild(actionsCol);
-
   return item;
 };
 
