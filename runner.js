@@ -370,8 +370,6 @@ export const skipToLap = (direction) => {
 
   const currentVirtualTask =
     state.sessionCache.virtualSessionPlaylist[state.currentVirtualTaskIndex];
-  const elapsed =
-    currentVirtualTask.calculatedDuration - state.currentTaskTimeLeft;
 
   if (direction > 0) {
     const currentLap = currentVirtualTask.lap;
