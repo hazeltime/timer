@@ -460,6 +460,11 @@ export const scrollToRunningTask = (playlistDOM) => {
   }
 };
 
+/**
+ * Updates the Runner Timer display with current task and lap progress
+ * @param {Object} runnerDOM
+ * @param {Object} state
+ */
 export const updateTimerDisplay = (runnerDOM, state) => {
   if (state.currentVirtualTaskIndex === -1) return;
 
@@ -523,6 +528,15 @@ export const updateTimerDisplay = (runnerDOM, state) => {
   )}`;
 };
 
+/**
+ * Shows a customizable confirmation modal
+ * @param {Object} modalDOM
+ * @param {Object} state
+ * @param {string} title
+ * @param {string} text
+ * @param {Function} onConfirm
+ * @param {string} type - 'confirm' or 'alert'
+ */
 export const showConfirmationModal = (
   modalDOM,
   state,
@@ -570,6 +584,11 @@ export const hideConfirmationModal = (modalDOM) => {
   }, 300);
 };
 
+/**
+ * Collapses or expands all collapsible panels
+ * @param {Object} state
+ * @param {boolean} collapse - true to collapse, false to expand
+ */
 export const toggleAllPanels = (state, collapse) => {
   const panels = $$(".panel[id]");
   panels.forEach((panel) => {
@@ -591,6 +610,11 @@ export const toggleAllPanels = (state, collapse) => {
   );
 };
 
+/**
+ * Toggles the runner popout (focus mode)
+ * @param {Object} runnerDOM
+ * @param {Object} state
+ */
 export const toggleRunnerPopout = (runnerDOM, state) => {
   const panel = $("#task-runner-panel");
   const body = document.body;
@@ -617,6 +641,10 @@ export const toggleRunnerPopout = (runnerDOM, state) => {
   }
 };
 
+/**
+ * Applies color theme to body
+ * @param {string} theme - 'dark' or 'light'
+ */
 export const applyTheme = (theme) => {
   document.body.className = `${theme}-theme`;
   localStorage.setItem("theme", theme);
