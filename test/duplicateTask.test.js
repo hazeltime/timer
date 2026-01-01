@@ -23,7 +23,15 @@ describe("duplicateTask", () => {
   });
 
   test("creates a copy with new ID", () => {
-    const DOM = { repoDOM: {}, playlistDOM: {}, formDOM: {} };
+    const DOM = {
+      repoDOM: {
+        taskListEl: { children: [] },
+        noTasksMessage: { style: {} },
+        taskSummaryEl: {},
+      },
+      playlistDOM: { lapListEl: { children: [] }, lapListDurationEl: {} },
+      formDOM: { categoryGrid: {} },
+    };
     duplicateTask(1, DOM);
     expect(state.tasks).toHaveLength(2);
     expect(state.tasks[1].title).toBe("Original");
