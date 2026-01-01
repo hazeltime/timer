@@ -155,7 +155,11 @@ export const duplicateTask = (id, DOM) => {
   const original = state.tasks.find((t) => t.id === id);
   if (!original) return;
   state.lastId++;
-  const copy = { ...original, id: state.lastId };
+  const copy = {
+    ...original,
+    id: state.lastId,
+    title: original.title + " (Copy)",
+  };
   if (!copy.lapInterval) copy.lapInterval = 1;
   if (copy.growthFactor === undefined) copy.growthFactor = 0;
   if (copy.maxOccurrences === undefined) copy.maxOccurrences = 0;

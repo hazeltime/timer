@@ -347,8 +347,28 @@ export const setupEventListeners = (DOM) => {
       update();
       interval = setInterval(update, 120);
     });
-    btn.addEventListener("mouseup", stopInterval);
     btn.addEventListener("mouseleave", stopInterval);
+  });
+
+  document.querySelectorAll("input[type='number']").forEach((input) => {
+    input.addEventListener("input", () => {
+      let val = parseInt(input.value, 10);
+      const min = parseInt(input.min, 10);
+      const max = parseInt(input.max, 10) || Infinity;
+      if (!isNaN(val) && !isNaN(min) && val < min) input.value = min;
+      // We don't strictly clamp max on input while typing to allow large numbers,
+      // but min should be enforced to prevent negatives.
+      // Actually, standard behavior is usually clamp on blur, but user asked for "Manual input... allows negatives. Add input listener to clamp."
+      // So immediate clamp:
+      if (!isNaN(val) && val < min) input.value = min;
+    });
+    // Ensure strict clamp on blur
+    input.addEventListener("blur", () => {
+      let val = parseInt(input.value, 10) || 0;
+      const min = parseInt(input.min, 10) || 0;
+      const max = parseInt(input.max, 10) || Infinity;
+      input.value = Math.max(min, Math.min(max, val));
+    });
   });
 
   document.addEventListener("click", (e) => {
