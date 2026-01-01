@@ -6,13 +6,11 @@ import { duplicateTask } from "../actions.js";
 import { state } from "../state.js";
 import * as UI from "../ui.js";
 
-// Mock UI
-jest.mock("../ui.js", () => ({
-  renderAll: jest.fn(),
-  resetTaskForm: jest.fn(),
-  renderCategoryButtons: jest.fn(),
-  resetTaskFormUI: jest.fn(),
-}));
+// Partial mock or spy
+// We will spy on specific UI methods instead of full module mock if possible,
+// or let the real UI run but with detached DOM (which is fine in JSDOM).
+// But renderTasks touches DOM heavily.
+// Let's try to just spy on the methods being called.
 
 describe("duplicateTask", () => {
   beforeEach(() => {
@@ -20,6 +18,14 @@ describe("duplicateTask", () => {
       { id: 1, title: "Original", duration: 60, categoryId: "cat-0" },
     ];
     state.lastId = 1;
+    // Spy on UI methods called by action
+    jest.spyOn(UI, "renderTasks").mockImplementation(() => {});
+    jest.spyOn(UI, "renderLapList").mockImplementation(() => {});
+    jest.spyOn(UI, "renderCategoryButtons").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   test("creates a copy with new ID", () => {
