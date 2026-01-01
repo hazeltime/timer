@@ -33,6 +33,21 @@ export const setupEventListeners = (DOM) => {
   // Auto-focus title on load
   setTimeout(() => formDOM.taskInput.focus(), 100);
 
+  // Auto-clear 0 on focus
+  const zeroInputs = [
+    formDOM.durationMinutesInput,
+    formDOM.durationSecondsInput,
+    formDOM.maxOccurrencesInput,
+  ];
+  zeroInputs.forEach((input) => {
+    input.addEventListener("focus", () => {
+      if (input.value === "0") input.value = "";
+    });
+    input.addEventListener("blur", () => {
+      if (input.value === "") input.value = "0";
+    });
+  });
+
   // Allow Enter to submit
   formDOM.taskInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") formDOM.addTaskBtn.click();
