@@ -2,7 +2,7 @@
 .panel {
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   overflow: hidden;
   width: 100%;
 }
@@ -19,7 +19,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 
 @media (max-width: 768px) {
@@ -62,7 +62,7 @@ fieldset {
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 0.75rem;
+  gap: var(--space-sm);
   padding: 2px;
   margin: -2px;
 }
@@ -73,8 +73,8 @@ fieldset {
   outline-offset: -2px;
   color: var(--text-primary);
   background-color: var(--input-bg);
-  border-radius: 0.75rem;
-  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
   font-size: 0.8125rem;
   cursor: pointer;
   text-align: center;
@@ -99,9 +99,9 @@ fieldset {
   display: grid;
   grid-template-columns: 1fr;
   /* FIX: Adjusted gap for consistent alignment */
-  gap: 1rem;
+  gap: var(--space-md);
   background-color: var(--input-bg);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   padding: 1rem;
 }
 
@@ -163,7 +163,7 @@ fieldset {
 
 .repo-controls {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .task-list-container {
@@ -176,9 +176,9 @@ fieldset {
   display: grid;
   grid-template-columns: var(--task-grid-columns);
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-color);
-  gap: 1.25rem;
+  gap: var(--space-md);
 }
 
 .task-list-header {
@@ -282,7 +282,7 @@ fieldset {
   color: var(--accent-red);
 }
 
-#task-list {
+.task-list {
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -305,7 +305,7 @@ fieldset {
 }
 #task-summary {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-lg);
   margin-left: auto;
 }
 
@@ -429,10 +429,10 @@ fieldset {
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: var(--space-md);
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
 }
 .runner-detail {
   display: flex;
@@ -457,7 +457,7 @@ fieldset {
 .laps-controls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-sm);
 }
 .runner-progress-details .divider {
   height: 1px;
@@ -522,9 +522,9 @@ fieldset {
 .lap-list-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
-  border-radius: 0.75rem;
+  gap: var(--space-sm);
+  padding: 0.625rem var(--space-sm);
+  border-radius: var(--radius-md);
   margin-bottom: 0.5rem;
   background-color: var(--input-bg);
   position: relative;
