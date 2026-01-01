@@ -40,7 +40,7 @@ describe("duplicateTask", () => {
     };
     duplicateTask(1, DOM);
     expect(state.tasks).toHaveLength(2);
-    expect(state.tasks[1].title).toBe("Original");
+    expect(state.tasks[1].title).toBe("Original (Copy)");
     expect(state.tasks[1].id).not.toBe(1);
     expect(state.lastId).toBeGreaterThan(1);
   });

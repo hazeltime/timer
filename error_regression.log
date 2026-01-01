@@ -1,0 +1,74 @@
+
+> timer@1.0.0 test
+> node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage
+
+(node:19252) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL test/duplicateTask.test.js
+  ΓùÅ duplicateTask ΓÇ║ creates a copy with new ID
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Original"
+    Received: "Original (Copy)"
+
+      41 |     duplicateTask(1, DOM);
+      42 |     expect(state.tasks).toHaveLength(2);
+    > 43 |     expect(state.tasks[1].title).toBe("Original");
+         |                                  ^
+      44 |     expect(state.tasks[1].id).not.toBe(1);
+      45 |     expect(state.lastId).toBeGreaterThan(1);
+      46 |   });
+
+      at Object.<anonymous> (test/duplicateTask.test.js:43:34)
+
+PASS test/playPauseSession.test.js
+  ΓùÅ Console
+
+    console.warn
+      Add tasks to the Lap Playlist before starting.
+
+      680 |         typeof console.warn === "function"
+      681 |       ) {
+    > 682 |         console.warn(text || title || "");
+          |                 ^
+      683 |       }
+      684 |     } catch (e) {
+      685 |       /* noop */
+
+      at Module.warn (ui.js:682:17)
+      at showAlert (runner.js:276:8)
+      at Object.<anonymous> (test/playPauseSession.test.js:101:5)
+
+PASS test/ui.modal.test.js
+PASS test/renderTasks.test.js
+PASS test/buildVirtualPlaylist.extra.test.js
+PASS test/state.test.js
+PASS test/restartSession.test.js
+PASS test/skipToLap.test.js
+PASS test/demoData.test.js
+PASS test/updateTimerDisplay.test.js
+PASS test/runner.test.js
+PASS test/laplist.test.js
+PASS test/formatTime.test.js
+PASS test/ui.test.js
+PASS test/validation.test.js
+PASS test/utils.test.js
+--------------|---------|----------|---------|---------|-----------------------------------------------------------------------------------------------------------------------
+File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                                     
+--------------|---------|----------|---------|---------|-----------------------------------------------------------------------------------------------------------------------
+All files     |   68.58 |    52.44 |   55.68 |   69.41 |                                                                                                                       
+ actions.js   |   27.61 |     8.21 |   31.81 |   25.61 | 16-30,45-52,56-61,65-119,123-136,140-151,172-183,188-198,202-206,210-219                                              
+ constants.js |     100 |      100 |     100 |     100 |                                                                                                                       
+ demo-data.js |     100 |      100 |     100 |     100 |                                                                                                                       
+ runner.js    |   83.01 |    69.87 |   78.57 |   84.73 | 20-31,37-39,243-248,290,322-329,391-413,417-419,424-431                                                               
+ state.js     |      75 |     12.5 |   66.66 |      75 | 9-10,15                                                                                                               
+ ui.js        |   70.32 |    54.97 |   39.28 |   70.93 | 50-67,228,255,283-299,375,383-390,401-411,415-424,428-447,460-463,562,574-575,584,591,601-615,627-648,657-658,697-699 
+ utils.js     |   95.65 |    72.72 |     100 |     100 | 15,29-64                                                                                                              
+--------------|---------|----------|---------|---------|-----------------------------------------------------------------------------------------------------------------------
+
+Test Suites: 1 failed, 15 passed, 16 total
+Tests:       1 failed, 40 passed, 41 total
+Snapshots:   1 passed, 1 total
+Time:        1.958 s
+Ran all test suites.
