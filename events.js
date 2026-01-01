@@ -4,6 +4,9 @@ import * as UI from "./ui.js";
 import * as Runner from "./runner.js";
 import { state, saveState } from "./state.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
+import { ModalManager } from "./modal.js";
+
+let modalManager;
 import {
   handleTaskFormSubmit,
   resetTaskForm,
@@ -30,6 +33,9 @@ export const setupEventListeners = (DOM) => {
     guideModalDOM,
   } = DOM;
 
+  // Init Modal Manager
+  modalManager = new ModalManager(DOM);
+
   // Auto-focus title on load
   setTimeout(() => formDOM.taskInput.focus(), 100);
 
@@ -54,17 +60,17 @@ export const setupEventListeners = (DOM) => {
   });
 
   formDOM.addTaskBtn.addEventListener("click", () =>
-    handleTaskFormSubmit(formDOM, DOM)
+    handleTaskFormSubmit(formDOM, DOM),
   );
   formDOM.cancelEditBtn.addEventListener("click", () => resetTaskForm(formDOM));
   headerDOM.globalCollapseBtn.addEventListener("click", () =>
-    UI.toggleAllPanels(state, true)
+    UI.toggleAllPanels(state, true),
   );
   headerDOM.globalExpandBtn.addEventListener("click", () =>
-    UI.toggleAllPanels(state, false)
+    UI.toggleAllPanels(state, false),
   );
   runnerDOM.popoutRunnerBtn.addEventListener("click", () =>
-    UI.toggleRunnerPopout(runnerDOM, state)
+    UI.toggleRunnerPopout(runnerDOM, state),
   );
 
   document.addEventListener("mousedown", (e) => {
@@ -77,11 +83,7 @@ export const setupEventListeners = (DOM) => {
   });
 
   headerDOM.guideBtn.addEventListener("click", () => {
-    const guideModal = guideModalDOM.guideModal;
-    if (guideModal) {
-      guideModal.style.display = "flex";
-      guideModal.classList.add("show");
-    }
+    modalManager.openGuide();
   });
 
   guideModalDOM.guideModal.addEventListener("click", (e) => {
@@ -161,7 +163,7 @@ export const setupEventListeners = (DOM) => {
     document
       .querySelectorAll(".drag-over-top, .drag-over-bottom")
       .forEach((el) =>
-        el.classList.remove("drag-over-top", "drag-over-bottom")
+        el.classList.remove("drag-over-top", "drag-over-bottom"),
       );
     if (after) after.classList.add("drag-over-top");
     else {
@@ -177,7 +179,7 @@ export const setupEventListeners = (DOM) => {
     document
       .querySelectorAll(".drag-over-top, .drag-over-bottom")
       .forEach((el) =>
-        el.classList.remove("drag-over-top", "drag-over-bottom")
+        el.classList.remove("drag-over-top", "drag-over-bottom"),
       );
     if (state.draggedItemId === null) return;
     const after = getDragAfterElement(playlistDOM.lapListEl, e.clientY);
@@ -203,16 +205,14 @@ export const setupEventListeners = (DOM) => {
   runnerDOM.nextTaskBtn.addEventListener("click", Runner.nextTask);
   runnerDOM.prevTaskBtn.addEventListener("click", Runner.prevTask);
   runnerDOM.stopLapsBtn.addEventListener("click", () =>
-    Runner.stopSession(false)
+    Runner.stopSession(false),
   );
   runnerDOM.restartLapsBtn.addEventListener("click", () => {
     if (!Runner.isSessionActive()) return;
-    UI.showConfirmationModal(
-      modalDOM,
-      state,
+    modalManager.openConfirm(
       "Restart Session?",
       "This will restart the current session from the beginning. Are you sure?",
-      () => Runner.restartSession()
+      () => Runner.restartSession(),
     );
   });
   runnerDOM.nextLapBtn.addEventListener("click", () => Runner.skipToLap(1));
@@ -220,21 +220,19 @@ export const setupEventListeners = (DOM) => {
 
   headerDOM.themeToggleBtn.addEventListener("click", () =>
     UI.applyTheme(
-      document.body.classList.contains("dark-theme") ? "light" : "dark"
-    )
+      document.body.classList.contains("dark-theme") ? "light" : "dark",
+    ),
   );
 
   repoDOM.deleteAllBtn.addEventListener("click", () => {
     if (
       !isModificationAllowed(
         "Please stop the session to delete all tasks.",
-        DOM
+        DOM,
       )
     )
       return;
-    UI.showConfirmationModal(
-      modalDOM,
-      state,
+    modalManager.openConfirm(
       "Delete All Tasks?",
       "This will permanently delete all tasks from the repository. Are you sure?",
       () => {
@@ -243,7 +241,7 @@ export const setupEventListeners = (DOM) => {
         state.lastId = 0;
         saveState();
         renderAll(DOM);
-      }
+      },
     );
   });
 
@@ -259,27 +257,23 @@ export const setupEventListeners = (DOM) => {
     if (
       !isModificationAllowed(
         "Please stop the session to clear the playlist.",
-        DOM
+        DOM,
       )
     )
       return;
-    UI.showConfirmationModal(
-      modalDOM,
-      state,
+    modalManager.openConfirm(
       "Clear Playlist?",
       "This will remove all tasks from the current playlist. Are you sure?",
       () => {
         state.lapList = [];
         saveState();
         UI.renderLapList(playlistDOM, state, getTaskMap());
-      }
+      },
     );
   });
 
   headerDOM.resetAppBtn.addEventListener("click", () => {
-    UI.showConfirmationModal(
-      modalDOM,
-      state,
+    modalManager.openConfirm(
       "Reset Application?",
       "This will clear all data and load demo tasks. Are you sure?",
       () => {
@@ -288,16 +282,16 @@ export const setupEventListeners = (DOM) => {
         state.lapList = [...DEMO_LAP_LIST];
         state.lastId = DEMO_TASKS.reduce(
           (max, task) => Math.max(max, task.id),
-          0
+          0,
         );
         saveState();
         renderAll(DOM);
-      }
+      },
     );
   });
 
   modalDOM.modalCancelBtn.addEventListener("click", () =>
-    UI.hideConfirmationModal(modalDOM)
+    UI.hideConfirmationModal(modalDOM),
   );
   modalDOM.modalConfirmBtn.addEventListener("click", () => {
     if (state.confirmCallback) state.confirmCallback();
@@ -308,8 +302,8 @@ export const setupEventListeners = (DOM) => {
     .querySelectorAll(".sort-header")
     .forEach((h) =>
       h.addEventListener("click", () =>
-        updateSort(h.id.replace("sort-by-", "").replace("-btn", ""), DOM)
-      )
+        updateSort(h.id.replace("sort-by-", "").replace("-btn", ""), DOM),
+      ),
     );
 
   document.querySelectorAll(".preset-btn").forEach((btn) =>
@@ -317,7 +311,7 @@ export const setupEventListeners = (DOM) => {
       const totalSeconds = parseInt(btn.dataset.duration, 10);
       formDOM.durationMinutesInput.value = Math.floor(totalSeconds / 60);
       formDOM.durationSecondsInput.value = totalSeconds % 60;
-    })
+    }),
   );
 
   document.querySelectorAll(".stepper-btn").forEach((btn) => {
@@ -328,14 +322,14 @@ export const setupEventListeners = (DOM) => {
       field === "laps"
         ? runnerDOM.lapsInput
         : field === "minutes"
-        ? formDOM.durationMinutesInput
-        : field === "lapInterval"
-        ? formDOM.lapIntervalInput
-        : field === "growthFactor"
-        ? formDOM.growthFactorInput
-        : field === "maxOccurrences"
-        ? formDOM.maxOccurrencesInput
-        : formDOM.durationSecondsInput;
+          ? formDOM.durationMinutesInput
+          : field === "lapInterval"
+            ? formDOM.lapIntervalInput
+            : field === "growthFactor"
+              ? formDOM.growthFactorInput
+              : field === "maxOccurrences"
+                ? formDOM.maxOccurrencesInput
+                : formDOM.durationSecondsInput;
     const update = () => {
       let val = parseInt(input.value, 10) || 0;
       const min = parseInt(input.min, 10) || 0;
@@ -383,7 +377,7 @@ export const setupEventListeners = (DOM) => {
       state.panelCollapseState[panel.id] = isCollapsed;
       localStorage.setItem(
         "panelCollapseState",
-        JSON.stringify(state.panelCollapseState)
+        JSON.stringify(state.panelCollapseState),
       );
     }
   });

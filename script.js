@@ -22,7 +22,7 @@ const loadHTMLComponents = async () => {
 
   try {
     const responses = await Promise.all(
-      components.map((comp) => fetch(comp.url).then((res) => res.text()))
+      components.map((comp) => fetch(comp.url).then((res) => res.text())),
     );
 
     responses.forEach((html, index) => {
@@ -38,7 +38,7 @@ const loadHTMLComponents = async () => {
         return;
       }
       // Insert into a temporary container to avoid replacing the placeholder element itself
-      const wrapper = document.createElement('div');
+      const wrapper = document.createElement("div");
       wrapper.innerHTML = html;
       // Move children out of wrapper into DOM where placeholder was
       while (wrapper.firstChild) {
@@ -151,7 +151,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     guideModalCloseBtn: $("#guide-modal-close-btn"),
   };
 
-  const DOM = { formDOM, repoDOM, playlistDOM, runnerDOM, headerDOM, modalDOM, guideModalDOM };
+  const DOM = {
+    formDOM,
+    repoDOM,
+    playlistDOM,
+    runnerDOM,
+    headerDOM,
+    modalDOM,
+    guideModalDOM,
+  };
 
   // Initialization
   const init = () => {
@@ -190,7 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     Runner.initRunner(state, runnerDOMForInit, modalDOM);
     UI.applyTheme(localStorage.getItem("theme") || "dark");
     $$(
-      "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel"
+      "#create-task-panel, #task-repository-panel, #lap-list-panel, #task-runner-panel",
     ).forEach((section) => {
       if (state.panelCollapseState[section.id]) {
         section.classList.add("collapsed");

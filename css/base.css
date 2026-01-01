@@ -10,8 +10,8 @@
   --input-bg: #f9fafb;
   --input-border: #ced4da;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   /* Layered shadows and highlights for 3D/bevel effect */
   --shadow-layer-1: 0 6px 20px rgba(16, 24, 40, 0.06);
   --shadow-layer-2: 0 2px 8px rgba(16, 24, 40, 0.04);
@@ -45,15 +45,15 @@
   --btn-ghost-hover: rgba(0, 0, 0, 0.05);
 
   /* Type Scale */
-  --text-2xs: 0.625rem;  /* 10px */
-  --text-xs:  0.75rem;   /* 12px */
-  --text-sm:  0.875rem;  /* 14px */
-  --text-base: 1rem;     /* 16px */
-  --text-lg:  1.125rem;  /* 18px */
-  --text-xl:  1.25rem;   /* 20px */
-  --text-2xl: 1.5rem;    /* 24px */
-  --text-3xl: 2rem;      /* 32px */
-  --text-4xl: 2.5rem;    /* 40px */
+  --text-2xs: 0.625rem; /* 10px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 2rem; /* 32px */
+  --text-4xl: 2.5rem; /* 40px */
 
   /* Line Heights */
   --leading-tight: 1.15;
@@ -61,7 +61,9 @@
   --leading-loose: 1.7;
 
   /* Fonts */
-  --font-sans: "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans:
+    "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
   /* Spacing Scale */
@@ -72,7 +74,7 @@
   --space-lg: 1.5rem; /* 24px */
   --space-xl: 2rem; /* 32px */
   --space-2xl: 3rem; /* 48px */
-  
+
   --panel-padding: var(--space-lg); /* Standardized Panel Padding */
 
   /* Radius Scale */
@@ -83,12 +85,14 @@
 
   /* Grid Layouts */
   /* Expanded minmax values to prevent header clipping on smaller screens */
-  --task-grid-columns: 40px minmax(180px, 3fr) minmax(90px, 1.25fr) minmax(80px, 1fr) minmax(70px, 1fr) minmax(90px, 1fr) minmax(70px, 1fr) 1.5fr;
+  --task-grid-columns: 40px minmax(180px, 3fr) minmax(90px, 1.25fr)
+    minmax(80px, 1fr) minmax(70px, 1fr) minmax(90px, 1fr) minmax(70px, 1fr)
+    1.5fr;
 
   /* Animation & Easing */
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
+
   /* Z-Layer System */
   --z-base: 0;
   --z-sticky: 100;
@@ -96,17 +100,17 @@
   --z-modal: 1000;
   --z-toast: 2000;
   --z-tooltip: 3000;
-  
+
   --input-inner-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 body.dark-theme {
-  --bg-color: #0d1117;     /* Surface 0 */
-  --panel-bg: #161b22;     /* Surface 1 */
-  --input-bg: #21262d;     /* Surface 2 (Adjusted for better depth) */
-  
+  --bg-color: #0d1117; /* Surface 0 */
+  --panel-bg: #161b22; /* Surface 1 */
+  --input-bg: #21262d; /* Surface 2 (Adjusted for better depth) */
+
   --input-inner-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  
+
   /* Semantic Surfaces */
   --surface-0: #0d1117;
   --surface-1: #161b22;
@@ -117,10 +121,10 @@ body.dark-theme {
   --text-secondary: #9ea7b3; /* Increased contrast from 8b949e (WCAG AA check) */
   --border-color: #30363d;
   --input-border: #30363d;
-  
+
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
-  
+
   /* Dark-theme layered shadows */
   --shadow-layer-1: 0 10px 30px rgba(0, 0, 0, 0.5);
   --shadow-layer-2: 0 3px 10px rgba(0, 0, 0, 0.3);
@@ -128,10 +132,10 @@ body.dark-theme {
   --bevel-shadow: rgba(0, 0, 0, 0.8);
 
   /* Hover glow: softer */
-  --panel-hover-glow: 0 0 0 1px #8b949e; 
+  --panel-hover-glow: 0 0 0 1px #8b949e;
   /* Switched to outline glow for dark mode cleanliness instead of yellow haze */
-  --panel-hover-rim: transparent; 
-  
+  --panel-hover-rim: transparent;
+
   --focus-glow: 0 0 0 3px rgba(88, 166, 255, 0.4);
 
   --hover-bg: #30363d; /* Lighter than panel */
@@ -139,28 +143,28 @@ body.dark-theme {
 
   /* Accents - Adjusted for Dark Mode Eye Comfort */
   --accent-blue: #58a6ff;
-  --accent-green: #3fb950;  /* Slightly muted green */
+  --accent-green: #3fb950; /* Slightly muted green */
   --accent-green-dark: #238636;
-  --accent-red: #f85149;    /* Less neon red */
+  --accent-red: #f85149; /* Less neon red */
   --accent-purple: #bc8cff;
   --accent-orange: #d29922;
-  
+
   --accent-blue-focus-shadow: rgba(88, 166, 255, 0.4);
-  
+
   --progress-container-bg: #21262d;
   --stepper-increment-bg: rgba(63, 185, 80, 0.15);
   --stepper-increment-text: #7ee787;
   --stepper-decrement-bg: rgba(248, 81, 73, 0.15);
   --stepper-decrement-text: #ff7b72;
-  
+
   --preset-btn-bg: #161b22;
   --preset-btn-text: #58a6ff;
   --preset-btn-border: #30363d;
-  
+
   --focus-ring-color: var(--accent-blue);
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
-  
+
   --btn-ghost-hover: rgba(255, 255, 255, 0.1);
 }
 
@@ -174,7 +178,9 @@ body {
   font-family: var(--font-sans);
   font-weight: 400;
   line-height: var(--leading-normal);
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   margin: 0;
   padding: 1rem 0; /* use vertical padding only; container handles horizontal gutters */
   background-color: var(--bg-color);

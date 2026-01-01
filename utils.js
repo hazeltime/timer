@@ -15,7 +15,7 @@ export const validateTaskInput = (title, duration) => {
   if (duration <= 0) errors.push("Duration must be greater than 0 seconds.");
   if (duration < MIN_DURATION_SECONDS)
     errors.push(
-      `Task duration must be at least ${MIN_DURATION_SECONDS} seconds.`
+      `Task duration must be at least ${MIN_DURATION_SECONDS} seconds.`,
     );
   return errors;
 };
@@ -49,7 +49,7 @@ export const escapeHTML = (s) =>
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;",
-      }[c])
+      })[c],
   );
 
 /**

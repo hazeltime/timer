@@ -250,11 +250,21 @@ fieldset {
   color: white;
   white-space: nowrap;
 }
-.task-duration-col { grid-area: duration; }
-.task-interval-col { grid-area: interval; }
-.task-limit-col    { grid-area: limit; }
-.task-category-col { grid-area: category; }
-.task-growth-col   { grid-area: growth; }
+.task-duration-col {
+  grid-area: duration;
+}
+.task-interval-col {
+  grid-area: interval;
+}
+.task-limit-col {
+  grid-area: limit;
+}
+.task-category-col {
+  grid-area: category;
+}
+.task-growth-col {
+  grid-area: growth;
+}
 
 .task-duration-col,
 .task-interval-col,
@@ -622,7 +632,9 @@ fieldset {
 
 /* 2. Hover Lift for Tasks */
 .task-item {
-  transition: transform 0.2s ease, background-color 0.2s;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s;
 }
 .task-item:hover {
   transform: translateY(-2px);

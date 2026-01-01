@@ -67,10 +67,10 @@ body.dark-theme {
 .right-column {
   display: flex;
   flex-direction: column;
-    gap: 1.5rem;
-    /* add a little padding so shadows are not clipped on small viewports */
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+  gap: 1.5rem;
+  /* add a little padding so shadows are not clipped on small viewports */
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 /* Left grid used to show form and repository side-by-side */

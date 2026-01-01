@@ -25,7 +25,7 @@ const handleTaskCompletion = () => {
       state.sessionCache.completedTaskDurationsMap.get(taskId) || 0;
     state.sessionCache.completedTaskDurationsMap.set(
       taskId,
-      currentTotal + calculatedDuration
+      currentTotal + calculatedDuration,
     );
   }
   loadTaskToRunner(state.currentVirtualTaskIndex + 1);
@@ -89,7 +89,7 @@ const loadTaskToRunner = (virtualIndex) => {
   const catIcon = createIconElement(category.icon);
   runnerDOM.runnerTaskCategory.appendChild(catIcon);
   runnerDOM.runnerTaskCategory.appendChild(
-    document.createTextNode(" " + category.name)
+    document.createTextNode(" " + category.name),
   );
   runnerDOM.runnerTaskTitle.textContent = task.title;
   runnerDOM.runnerTaskDescription.textContent = task.description;
@@ -115,14 +115,14 @@ const loadTaskToRunner = (virtualIndex) => {
     changePercentage > 0
       ? "var(--accent-green)"
       : changePercentage < 0
-      ? "var(--accent-red)"
-      : "var(--text-secondary)";
+        ? "var(--accent-red)"
+        : "var(--text-secondary)";
   runnerDOM.runnerDetails.changeDelta.style.color =
     changeDelta > 0
       ? "var(--accent-green)"
       : changeDelta < 0
-      ? "var(--accent-red)"
-      : "var(--text-secondary)";
+        ? "var(--accent-red)"
+        : "var(--text-secondary)";
 
   UI.updateTimerDisplay(runnerDOM, state);
   const playlistTarget = {
@@ -132,7 +132,7 @@ const loadTaskToRunner = (virtualIndex) => {
   UI.renderLapList(
     playlistTarget,
     state,
-    new Map(state.tasks.map((t) => [t.id, t]))
+    new Map(state.tasks.map((t) => [t.id, t])),
   );
   UI.scrollToRunningTask(playlistTarget);
 };
@@ -171,12 +171,12 @@ export const buildVirtualPlaylist = (taskMap, totalLaps, lapList) => {
         if (task.growthFactor !== 0) {
           calculatedDuration = Math.round(
             baseDuration *
-              Math.pow(1 + task.growthFactor / 100, occurrences - 1)
+              Math.pow(1 + task.growthFactor / 100, occurrences - 1),
           );
           calculatedDuration = clamp(
             calculatedDuration,
             MIN_DURATION_SECONDS,
-            MAX_DURATION_SECONDS
+            MAX_DURATION_SECONDS,
           );
         }
         tasksByLap[lap].push({
@@ -243,7 +243,7 @@ const startSession = () => {
     UI.showAlert(
       runnerDOM,
       "No Tasks",
-      "No tasks are scheduled to run in this session with the current intervals and limits."
+      "No tasks are scheduled to run in this session with the current intervals and limits.",
     );
     return false;
   }
@@ -276,7 +276,7 @@ export const playPauseSession = () => {
     UI.showAlert(
       runnerDOM,
       "Empty Playlist",
-      "Add tasks to the Lap Playlist before starting."
+      "Add tasks to the Lap Playlist before starting.",
     );
     return;
   }
@@ -322,7 +322,7 @@ export const stopSession = (finished = false) => {
         runnerDOM.lapsProgressContainer.style.display = "none";
         UI.resetRunnerDisplay(runnerDOM);
       },
-      "alert"
+      "alert",
     );
   } else {
     runnerDOM.lapsProgressContainer.style.display = "none";
@@ -337,7 +337,7 @@ export const stopSession = (finished = false) => {
   UI.renderLapList(
     playlistTargetStop,
     state,
-    new Map(state.tasks.map((t) => [t.id, t]))
+    new Map(state.tasks.map((t) => [t.id, t])),
   );
 };
 
@@ -350,7 +350,7 @@ export const restartSession = () => {
   state.sessionCache.completedOccurrencesMap = new Map(); // Reset on restart
   const playlistData = buildVirtualPlaylist(
     state.sessionCache.taskMap,
-    state.sessionCache.totalLaps
+    state.sessionCache.totalLaps,
   );
   state.sessionCache = { ...state.sessionCache, ...playlistData };
   loadTaskToRunner(0);

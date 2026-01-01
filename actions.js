@@ -73,17 +73,17 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
   const lapInterval = clamp(
     parseInt(formDOM.lapIntervalInput.value, 10) || 1,
     1,
-    99
+    99,
   );
   const growthFactor = clamp(
     parseInt(formDOM.growthFactorInput.value, 10) || 0,
     -99,
-    99
+    99,
   );
   const maxOccurrences = clamp(
     parseInt(formDOM.maxOccurrencesInput.value, 10) || 0,
     0,
-    999
+    999,
   );
   const errors = validateTaskInput(title, totalDuration);
   if (errors.length > 0) {
@@ -177,7 +177,7 @@ export const addTaskToLap = (id, playlistDOM, DOM) => {
     UI.renderLapList(playlistDOM, state, getTaskMap());
     UI.showToast("Added to playlist.", "success");
   } else {
-      UI.showToast("Task already in playlist.", "info");
+    UI.showToast("Task already in playlist.", "info");
   }
 };
 
@@ -212,6 +212,6 @@ export const getDragAfterElement = (container, y) => {
         return { offset, element: child };
       return closest;
     },
-    { offset: Number.NEGATIVE_INFINITY }
+    { offset: Number.NEGATIVE_INFINITY },
   ).element;
 };

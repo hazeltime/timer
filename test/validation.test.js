@@ -10,7 +10,7 @@ describe("validateTaskInput", () => {
 
   test("returns error for short duration", () => {
     expect(validateTaskInput("Title", 2)).toContain(
-      "Task duration must be at least 5 seconds."
+      "Task duration must be at least 5 seconds.",
     );
   });
 

@@ -119,7 +119,7 @@ export const renderTaskSummary = (repoDOM, tasks) => {
   const right = document.createElement("span");
   right.innerHTML = `<strong>Total Duration:</strong> `;
   right.appendChild(
-    document.createTextNode(formatTime(totalDurationInSeconds))
+    document.createTextNode(formatTime(totalDurationInSeconds)),
   );
   repoDOM.taskSummaryEl.appendChild(left);
   repoDOM.taskSummaryEl.appendChild(right);
@@ -135,15 +135,30 @@ export const createTaskRepoRow = (task, category) => {
 
   const cells = [
     { cls: "task-id-col", content: `#${task.id}` },
-    { cls: "task-title-col", html: `<span class="task-title">${task.title}</span><span class="task-description">${task.description || ""}</span>` },
-    { cls: "task-category-col", html: `<span class="task-category-badge" style="background-color: ${category.color}"><i class="${category.icon}"></i> ${category.name}</span>` }, // Note: using innerHTML for badge simplicity here, or could use helper
+    {
+      cls: "task-title-col",
+      html: `<span class="task-title">${task.title}</span><span class="task-description">${task.description || ""}</span>`,
+    },
+    {
+      cls: "task-category-col",
+      html: `<span class="task-category-badge" style="background-color: ${category.color}"><i class="${category.icon}"></i> ${category.name}</span>`,
+    }, // Note: using innerHTML for badge simplicity here, or could use helper
     { cls: "task-duration-col", content: formatTime(task.duration) },
-    { cls: "task-interval-col", html: task.lapInterval === 1 ? "Always" : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}` },
-    { cls: "task-limit-col", content: task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences) },
-    { cls: "task-growth-col", content: `${task.growthFactor || 0}%` }
+    {
+      cls: "task-interval-col",
+      html:
+        task.lapInterval === 1
+          ? "Always"
+          : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`,
+    },
+    {
+      cls: "task-limit-col",
+      content: task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences),
+    },
+    { cls: "task-growth-col", content: `${task.growthFactor || 0}%` },
   ];
 
-  cells.forEach(c => {
+  cells.forEach((c) => {
     const div = document.createElement("div");
     div.className = `task-cell ${c.cls}`;
     if (c.html) div.innerHTML = c.html;
@@ -154,10 +169,22 @@ export const createTaskRepoRow = (task, category) => {
   // Actions
   const actionsCol = document.createElement("div");
   actionsCol.className = "task-cell task-actions-col";
-  actionsCol.appendChild(createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon"));
-  actionsCol.appendChild(createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon"));
-  actionsCol.appendChild(createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon"));
-  actionsCol.appendChild(createActionButton(ICONS.DELETE, "Delete", "delete-btn btn-icon btn-icon-danger"));
+  actionsCol.appendChild(
+    createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon"),
+  );
+  actionsCol.appendChild(
+    createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon"),
+  );
+  actionsCol.appendChild(
+    createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon"),
+  );
+  actionsCol.appendChild(
+    createActionButton(
+      ICONS.DELETE,
+      "Delete",
+      "delete-btn btn-icon btn-icon-danger",
+    ),
+  );
   item.appendChild(actionsCol);
 
   return item;
@@ -166,18 +193,28 @@ export const createTaskRepoRow = (task, category) => {
 /**
  * Creates a DOM element for a Task in the Playlist
  */
-export const createPlaylistRow = (task, category, state, sessionInactive, runningTaskId) => {
+export const createPlaylistRow = (
+  task,
+  category,
+  state,
+  sessionInactive,
+  runningTaskId,
+) => {
   const isRunning = runningTaskId === task.id;
   const item = document.createElement("div");
   item.className = "lap-list-item" + (isRunning ? " running" : "");
   item.dataset.id = task.id;
-  
+
   if (sessionInactive) {
     item.setAttribute("draggable", "true");
-    
+
     // Maxed out check
-    const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-    if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+    const completedOccurrences =
+      state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+    if (
+      task.maxOccurrences > 0 &&
+      completedOccurrences >= task.maxOccurrences
+    ) {
       item.classList.add("maxed-out");
     }
   }
@@ -197,22 +234,39 @@ export const createPlaylistRow = (task, category, state, sessionInactive, runnin
   // Duration
   const duration = document.createElement("span");
   duration.className = "duration";
-  duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, "$1 $2");
+  duration.textContent = formatTime(task.duration).replace(
+    /(\d+)([a-z]+)/g,
+    "$1 $2",
+  );
   item.appendChild(duration);
 
   // Actions
   const actions = document.createElement("div");
   actions.className = "lap-item-actions";
   if (sessionInactive) {
-    const upBtn = createActionButton(ICONS.CHEVRON_UP, "Move Up", "move-btn btn-icon top-btn");
+    const upBtn = createActionButton(
+      ICONS.CHEVRON_UP,
+      "Move Up",
+      "move-btn btn-icon top-btn",
+    );
     upBtn.dataset.action = "up";
     actions.appendChild(upBtn);
 
-    const downBtn = createActionButton(ICONS.CHEVRON_DOWN, "Move Down", "move-btn btn-icon bottom-btn");
+    const downBtn = createActionButton(
+      ICONS.CHEVRON_DOWN,
+      "Move Down",
+      "move-btn btn-icon bottom-btn",
+    );
     downBtn.dataset.action = "down";
     actions.appendChild(downBtn);
   }
-  actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
+  actions.appendChild(
+    createActionButton(
+      ICONS.DELETE,
+      "Remove from Lap",
+      "remove-btn btn-icon btn-icon-danger",
+    ),
+  );
   item.appendChild(actions);
 
   return item;
@@ -231,7 +285,9 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
   if (tasks.length === 0) {
     taskListEl.innerHTML = "";
     // repoDOM.noTasksMessage.style.display = "block"; // Revert to using the element if helper fails? No, helper works.
-    repoDOM.taskListEl.appendChild(renderEmptyState("No tasks found. Create a new task to get started!")); 
+    repoDOM.taskListEl.appendChild(
+      renderEmptyState("No tasks found. Create a new task to get started!"),
+    );
     renderTaskSummary(repoDOM, tasks);
     return;
   }
@@ -259,11 +315,10 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
       badge.appendChild(catIconEl);
       badge.appendChild(document.createTextNode(" " + category.name));
       item.querySelector(".task-duration-col").textContent = formatTime(
-        task.duration
+        task.duration,
       );
       item.querySelector(".task-interval-col").innerHTML =
         task.lapInterval === 1
-          ? "Always"
           ? "Always"
           : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`;
       item.querySelector(".task-limit-col").textContent =
@@ -325,12 +380,28 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
 
       const actionsCol = document.createElement("div");
       actionsCol.className = "task-cell task-actions-col";
-      
-      const addBtn = createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon");
-      const editBtn = createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon");
-      const copyBtn = createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon");
-      const deleteBtn = createActionButton(ICONS.DELETE, "Delete", "delete-btn btn-icon btn-icon-danger");
-      
+
+      const addBtn = createActionButton(
+        ICONS.ADD,
+        "Add to Lap",
+        "add-to-lap-btn btn-icon",
+      );
+      const editBtn = createActionButton(
+        ICONS.EDIT,
+        "Edit Task",
+        "edit-btn btn-icon",
+      );
+      const copyBtn = createActionButton(
+        ICONS.COPY,
+        "Duplicate",
+        "copy-btn btn-icon",
+      );
+      const deleteBtn = createActionButton(
+        ICONS.DELETE,
+        "Delete",
+        "delete-btn btn-icon btn-icon-danger",
+      );
+
       actionsCol.appendChild(addBtn);
       actionsCol.appendChild(editBtn);
       actionsCol.appendChild(copyBtn);
@@ -366,10 +437,10 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
 export const renderLapList = (playlistDOM, state, taskMap) => {
   const lapDuration = state.lapList.reduce(
     (s, id) => s + (taskMap.get(id)?.duration || 0),
-    0
+    0,
   );
   playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(
-    lapDuration
+    lapDuration,
   )}`;
   const sessionInactive = state.runnerState === "STOPPED";
 
@@ -383,18 +454,30 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
   /* Simplified Rebuild Strategy for consistency */
   lapListEl.innerHTML = ""; // Clear
-  
+
   if (state.lapList.length === 0) {
-    lapListEl.appendChild(renderEmptyState("Add tasks from the repository to create a playlist."));
+    lapListEl.appendChild(
+      renderEmptyState("Add tasks from the repository to create a playlist."),
+    );
   } else {
-    const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
-    
+    const runningTaskId =
+      state.sessionCache?.virtualSessionPlaylist?.[
+        state.currentVirtualTaskIndex
+      ]?.taskId;
+
     for (const id of state.lapList) {
       const task = taskMap.get(id);
       if (!task) continue;
-      const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-      
-      const item = createPlaylistRow(task, category, state, sessionInactive, runningTaskId);
+      const category =
+        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+
+      const item = createPlaylistRow(
+        task,
+        category,
+        state,
+        sessionInactive,
+        runningTaskId,
+      );
       newFragment.appendChild(item);
     }
     lapListEl.appendChild(newFragment);
@@ -412,7 +495,7 @@ export const updateSortHeaders = (sortState) => {
     active
       .querySelector("i")
       .classList.add(
-        sortState.order === "asc" ? "fa-arrow-up" : "fa-arrow-down"
+        sortState.order === "asc" ? "fa-arrow-up" : "fa-arrow-down",
       );
   }
 };
@@ -554,7 +637,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
   runnerDOM.sessionPercentage.textContent = `${sessionPercent}%`;
   runnerDOM.sessionTimeElapsedEl.textContent = formatTime(sessionTimeElapsed);
   runnerDOM.sessionTimeRemainingEl.textContent = `-${formatTime(
-    sessionTimeRemaining
+    sessionTimeRemaining,
   )}`;
 };
 
@@ -573,7 +656,7 @@ export const showConfirmationModal = (
   title,
   text,
   onConfirm,
-  type = "confirm"
+  type = "confirm",
 ) => {
   // Accept both the `modalDOM` object constructed in `script.js` or the
   // raw DOM node if that's passed; normalize to an object with expected fields.
@@ -632,7 +715,7 @@ export const toggleAllPanels = (state, collapse) => {
       panel.classList.remove("collapsed");
       if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "true");
       state.panelCollapseState[panel.id] = false;
-      
+
       // Auto-Focus Logic: Focus first input if expanding a form panel
       if (panel.id === "create-task-panel") {
         setTimeout(() => {
@@ -644,7 +727,7 @@ export const toggleAllPanels = (state, collapse) => {
   });
   localStorage.setItem(
     "panelCollapseState",
-    JSON.stringify(state.panelCollapseState)
+    JSON.stringify(state.panelCollapseState),
   );
 };
 
@@ -668,7 +751,7 @@ export const toggleRunnerPopout = (runnerDOM, state) => {
       state.panelCollapseState[panel.id] = false;
       localStorage.setItem(
         "panelCollapseState",
-        JSON.stringify(state.panelCollapseState)
+        JSON.stringify(state.panelCollapseState),
       );
     }
     icon.className = "fas fa-compress-arrows-alt";
