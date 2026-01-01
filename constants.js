@@ -16,4 +16,4 @@ export const CATEGORIES = [
 export const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
 
 export const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
-export const MIN_DURATION_SECONDS = 1;
+export const MIN_DURATION_SECONDS = 5;

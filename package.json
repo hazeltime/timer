@@ -37,8 +37,14 @@
     "type": "git",
     "url": "git+https://github.com/hazeltime/timer.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "timer",
+    "task",
+    "agile",
+    "intervals",
+    "productivity"
+  ],
+  "author": "behro",
   "license": "ISC",
   "type": "module",
   "jest": {

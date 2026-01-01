@@ -1,3 +1,5 @@
+import { MIN_DURATION_SECONDS } from "./constants.js";
+
 /**
  * Clamps a value between a minimum and maximum value.
  * @param {number} v The value to clamp.
@@ -11,7 +13,10 @@ export const validateTaskInput = (title, duration) => {
   const errors = [];
   if (!title || !title.trim()) errors.push("Task title cannot be empty.");
   if (duration <= 0) errors.push("Duration must be greater than 0 seconds.");
-  if (duration < 5) errors.push("Task duration must be at least 5 seconds.");
+  if (duration < MIN_DURATION_SECONDS)
+    errors.push(
+      `Task duration must be at least ${MIN_DURATION_SECONDS} seconds.`
+    );
   return errors;
 };
 
