@@ -57,7 +57,8 @@
   --radius-full: 9999px;
 
   /* Grid Layouts */
-  --task-grid-columns: 40px minmax(150px, 3fr) 1.5fr 1fr 1fr 1fr 1fr 1.5fr;
+  /* Expanded minmax values to prevent header clipping on smaller screens */
+  --task-grid-columns: 40px minmax(180px, 3fr) minmax(90px, 1.25fr) minmax(80px, 1fr) minmax(70px, 1fr) minmax(90px, 1fr) minmax(70px, 1fr) 1.5fr;
 }
 
 body.dark-theme {

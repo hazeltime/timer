@@ -10,6 +10,36 @@
   /* Layered shadows provide depth; values theme-aware in base.css */
   box-shadow: var(--shadow-layer-1), var(--shadow-layer-2);
   position: relative;
+  animation: fade-in-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered Delays for Main Layout Areas (approximate based on common order) */
+.left-grid > div:nth-child(1) .panel { animation-delay: 0.1s; }
+.left-grid > div:nth-child(2) .panel { animation-delay: 0.15s; }
+.right-column > div:nth-child(1) .panel { animation-delay: 0.2s; }
+.right-column > div:nth-child(3) .panel { animation-delay: 0.25s; }
+
+/* Wrapper for loading state */
+.skeleton {
+  background: linear-gradient(90deg, var(--input-bg) 25%, var(--panel-bg) 50%, var(--input-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .panel-header {
