@@ -191,9 +191,19 @@ fieldset {
 
 .task-item {
   transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border-color); /* Ensure border is explicit */
 }
+/* Zebra Striping */
+.task-item:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+body.dark-theme .task-item:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+/* Hover Highlight */
 .task-item:hover {
   background-color: var(--hover-bg);
+  z-index: 1; /* Ensure tooltips/shadows pop */
 }
 .task-cell {
   display: flex;
@@ -269,10 +279,35 @@ fieldset {
 .task-duration-col,
 .task-interval-col,
 .task-limit-col,
-.task-category-col,
-.task-growth-col {
+.task-growth-col,
+.task-category-col {
   font-weight: 500;
-  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+/* Numeric Columns: Right Aligned & Monospace */
+.task-duration-col,
+.task-interval-col,
+.task-limit-col,
+.task-growth-col {
+  justify-content: flex-end;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  padding-right: var(--space-xs);
+}
+.task-list-header .task-duration-col,
+.task-list-header .task-interval-col,
+.task-list-header .task-limit-col,
+.task-list-header .task-growth-col {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: var(--space-xs);
+}
+
+.task-category-col {
+  justify-content: center; /* Categories centered */
 }
 .task-interval-col .fa-redo-alt {
   margin-right: 0.25rem;

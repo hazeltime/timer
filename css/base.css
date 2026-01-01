@@ -83,11 +83,18 @@
   --radius-lg: 1rem; /* 16px */
   --radius-full: 9999px;
 
-  /* Grid Layouts */
-  /* Expanded minmax values to prevent header clipping on smaller screens */
-  --task-grid-columns: 40px minmax(180px, 3fr) minmax(90px, 1.25fr)
-    minmax(80px, 1fr) minmax(70px, 1fr) minmax(90px, 1fr) minmax(70px, 1fr)
-    1.5fr;
+  /* Grid Layouts - Unified Column Widths */
+  --col-id-width: 40px;
+  --col-duration-width: 90px;
+  --col-interval-width: 80px;
+  --col-limit-width: 70px;
+  --col-cat-width: 90px;
+  --col-growth-width: 70px;
+  --col-actions-width: 1.5fr;
+
+  --task-grid-columns: var(--col-id-width) minmax(180px, 3fr)
+    var(--col-duration-width) var(--col-interval-width) var(--col-limit-width)
+    var(--col-cat-width) var(--col-growth-width) var(--col-actions-width);
 
   /* Animation & Easing */
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -223,4 +230,30 @@ h4 {
   background-color: var(--border-color);
   border: none;
   margin: 1.5rem 0;
+}
+
+/* --- Global Scrollbar Styling --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d1d5db; /* Light theme thumb */
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* Dark Theme Scrollbar */
+body.dark-theme ::-webkit-scrollbar-thumb {
+  background-color: #30363d;
+}
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background-color: #8b949e;
 }

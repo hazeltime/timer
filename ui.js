@@ -182,7 +182,7 @@ export const createTaskRepoRow = (task, category) => {
     createActionButton(
       ICONS.DELETE,
       "Delete",
-      "delete-btn btn-icon btn-icon-danger",
+      "delete-btn btn-icon danger",
     ),
   );
   item.appendChild(actionsCol);
@@ -264,7 +264,7 @@ export const createPlaylistRow = (
     createActionButton(
       ICONS.DELETE,
       "Remove from Lap",
-      "remove-btn btn-icon btn-icon-danger",
+      "remove-btn btn-icon danger",
     ),
   );
   item.appendChild(actions);
@@ -329,92 +329,7 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
       existingTaskElements.delete(String(task.id));
     } else {
       // Create new element
-      item = document.createElement("div");
-      item.className = "task-item";
-      item.dataset.id = task.id;
-
-      const idCol = document.createElement("div");
-      idCol.className = "task-cell task-id-col";
-      idCol.textContent = `#${task.id}`;
-
-      const titleCol = document.createElement("div");
-      titleCol.className = "task-cell task-title-col";
-      const titleSpan = document.createElement("span");
-      titleSpan.className = "task-title";
-      titleSpan.textContent = task.title;
-      const descSpan = document.createElement("span");
-      descSpan.className = "task-description";
-      descSpan.textContent = task.description || "";
-      titleCol.appendChild(titleSpan);
-      titleCol.appendChild(descSpan);
-
-      const categoryCol = document.createElement("div");
-      categoryCol.className = "task-cell task-category-col";
-      const badge = document.createElement("span");
-      badge.className = "task-category-badge";
-      badge.style.backgroundColor = category.color;
-      const catIconEl = createIconElement(category.icon);
-      badge.appendChild(catIconEl);
-      badge.appendChild(document.createTextNode(" " + category.name));
-      categoryCol.appendChild(badge);
-
-      const durationCol = document.createElement("div");
-      durationCol.className = "task-cell task-duration-col";
-      durationCol.textContent = formatTime(task.duration);
-
-      const intervalCol = document.createElement("div");
-      intervalCol.className = "task-cell task-interval-col";
-      intervalCol.innerHTML =
-        task.lapInterval === 1
-          ? "Always"
-          : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
-
-      const limitCol = document.createElement("div");
-      limitCol.className = "task-cell task-limit-col";
-      limitCol.textContent =
-        task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
-
-      const growthCol = document.createElement("div");
-      growthCol.className = "task-cell task-growth-col";
-      growthCol.textContent = `${task.growthFactor || 0}%`;
-
-      const actionsCol = document.createElement("div");
-      actionsCol.className = "task-cell task-actions-col";
-
-      const addBtn = createActionButton(
-        ICONS.ADD,
-        "Add to Lap",
-        "add-to-lap-btn btn-icon",
-      );
-      const editBtn = createActionButton(
-        ICONS.EDIT,
-        "Edit Task",
-        "edit-btn btn-icon",
-      );
-      const copyBtn = createActionButton(
-        ICONS.COPY,
-        "Duplicate",
-        "copy-btn btn-icon",
-      );
-      const deleteBtn = createActionButton(
-        ICONS.DELETE,
-        "Delete",
-        "delete-btn btn-icon btn-icon-danger",
-      );
-
-      actionsCol.appendChild(addBtn);
-      actionsCol.appendChild(editBtn);
-      actionsCol.appendChild(copyBtn);
-      actionsCol.appendChild(deleteBtn);
-
-      item.appendChild(idCol);
-      item.appendChild(titleCol);
-      item.appendChild(categoryCol);
-      item.appendChild(durationCol);
-      item.appendChild(intervalCol);
-      item.appendChild(limitCol);
-      item.appendChild(growthCol);
-      item.appendChild(actionsCol);
+      item = createTaskRepoRow(task, category);
     }
     newFragment.appendChild(item);
   }

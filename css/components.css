@@ -54,8 +54,16 @@
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
 }
-@keyframes shimmer {
-  0% {
+
+/* --- Standardized Divider --- */
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  border: none;
+  margin: 1.5rem 0;
+  width: 100%;
+  display: block;
+}
     background-position: 200% 0;
   }
   100% {
@@ -321,20 +329,46 @@ body.dark-theme .theme-btn .fa-moon {
   /* stronger colored rim spread for visibility against backgrounds */
 }
 
-.btn-icon-danger {
-  background-color: var(--accent-red);
-  color: white;
-  border: none;
-  width: 2rem; /* 32px */
-  height: 2rem;
-  border-radius: 50%;
+/* --- Icon Button Utility --- */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md); /* Consistent with other inputs/buttons */
+  padding: 0;
+  border: 1px solid transparent; /* Prevent layout shift if border added later */
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.2s var(--ease-smooth);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1rem;
 }
-.btn-icon-danger:hover {
-  opacity: 0.9;
-  transform: scale(1.1);
+.btn-icon:hover {
+  background-color: var(--btn-ghost-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* Shapes */
+.btn-icon.circle {
+  border-radius: 50%;
+}
+
+/* Danger Variant */
+.btn-danger,
+.btn-icon.danger {
+  color: var(--accent-red);
+}
+/* Replaces old .btn-icon-danger behavior with a unified approach */
+.btn-danger:hover,
+.btn-icon.danger:hover {
+  background-color: color-mix(in srgb, var(--accent-red) 10%, transparent);
+  color: var(--accent-red);
+  opacity: 1; /* Reset opacity if previously set */
 }
 
 .runner-btn {
