@@ -1,5 +1,6 @@
 // UI helpers and render functions
-import { CATEGORIES, categoryMap } from "./constants.js";
+// UI helpers and render functions
+import { CATEGORIES, categoryMap, ICONS } from "./constants.js";
 import { createIconElement } from "./utils.js";
 
 // Utility helpers
@@ -37,6 +38,42 @@ export const formatTime = (totalSeconds) => {
   if (seconds > 0 || (hours === 0 && minutes === 0)) parts.push(`${seconds}s`);
   const formatted = parts.join(" ");
   return isNegative ? `-${formatted}` : formatted;
+  return isNegative ? `-${formatted}` : formatted;
+};
+
+/**
+ * Creates a consistent action button
+ * @param {string} iconClass - FontAwesome class
+ * @param {string} tooltip - Tooltip text
+ * @param {string} cssClass - Additional CSS classes
+ * @param {Function} [onClick] - Optional click handler (usually handled by delegation, but supported)
+ * @returns {HTMLButtonElement}
+ */
+export const createActionButton = (iconClass, tooltip, cssClass = "") => {
+  const btn = document.createElement("button");
+  btn.className = cssClass; // e.g., "edit-btn btn-ghost"
+  if (tooltip) {
+    btn.dataset.tooltip = tooltip;
+    btn.setAttribute("aria-label", tooltip);
+  }
+  btn.innerHTML = `<i class="${iconClass}"></i>`;
+  return btn;
+};
+
+/**
+ * Creates a consistent Task Row element (for Repo or Playlist) from a template or generator
+ * (Currently keeping logic inline but refined, future TODO: fully abstract entire row)
+ */
+export const renderEmptyState = (message) => {
+  const container = document.createElement("div");
+  container.className = "empty-state";
+  // Fix: Ensure ICONS.ADD is used or valid
+  const iconClass = ICONS.ADD || "fas fa-plus-circle";
+  container.innerHTML = `
+    <i class="${iconClass}" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+    <span>${message}</span>
+  `;
+  return container;
 };
 
 // Render functions
@@ -95,9 +132,16 @@ export const renderTaskSummary = (repoDOM, tasks) => {
  * @param {Object} _sortState
  */
 export const renderTasks = (repoDOM, tasks, _sortState) => {
-  repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
+  repoDOM.noTasksMessage.style.display = "none"; // Handled by empty state injection if needed, or keeping it as fallback
 
   const taskListEl = repoDOM.taskListEl;
+  if (tasks.length === 0) {
+    taskListEl.innerHTML = "";
+    // repoDOM.noTasksMessage.style.display = "block"; // Revert to using the element if helper fails? No, helper works.
+    repoDOM.taskListEl.appendChild(renderEmptyState("No tasks found. Create a new task to get started!")); 
+    renderTaskSummary(repoDOM, tasks);
+    return;
+  }
   const existingTaskElements = new Map();
   for (const child of taskListEl.children) {
     existingTaskElements.set(child.dataset.id, child);
@@ -127,7 +171,8 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
       item.querySelector(".task-interval-col").innerHTML =
         task.lapInterval === 1
           ? "Always"
-          : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
+          ? "Always"
+          : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`;
       item.querySelector(".task-limit-col").textContent =
         task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
       item.querySelector(".task-growth-col").textContent = `${
@@ -187,26 +232,12 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
 
       const actionsCol = document.createElement("div");
       actionsCol.className = "task-cell task-actions-col";
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-to-lap-btn";
-      addBtn.dataset.tooltip = "Add to Lap";
-      addBtn.setAttribute("aria-label", "Add to Lap");
-      addBtn.innerHTML = '<i class="fas fa-plus-circle"></i>';
-      const editBtn = document.createElement("button");
-      editBtn.className = "edit-btn";
-      editBtn.dataset.tooltip = "Edit Task";
-      editBtn.setAttribute("aria-label", "Edit Task");
-      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "copy-btn";
-      copyBtn.dataset.tooltip = "Duplicate";
-      copyBtn.setAttribute("aria-label", "Duplicate Task");
-      copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "delete-btn";
-      deleteBtn.dataset.tooltip = "Delete";
-      deleteBtn.setAttribute("aria-label", "Delete Task");
-      deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      
+      const addBtn = createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon");
+      const editBtn = createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon");
+      const copyBtn = createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon");
+      const deleteBtn = createActionButton(ICONS.DELETE, "Delete", "delete-btn btn-icon btn-icon-danger");
+      
       actionsCol.appendChild(addBtn);
       actionsCol.appendChild(editBtn);
       actionsCol.appendChild(copyBtn);
@@ -259,10 +290,8 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
   if (state.lapList.length === 0) {
     lapListEl.innerHTML = "";
-    const empty = document.createElement("div");
-    empty.className = "lap-list-item";
-    empty.textContent = "Add tasks from the repository to create a playlist.";
-    newFragment.appendChild(empty);
+    lapListEl.appendChild(renderEmptyState("Add tasks from the repository to create a playlist."));
+    newFragment.appendChild(document.createComment("Empty state rendered")); // Placeholder to match logic structure if needed
   } else {
     const runningTaskId =
       state.sessionCache?.virtualSessionPlaylist?.[
@@ -333,33 +362,17 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
         const actions = document.createElement("div");
         actions.className = "lap-item-actions";
         if (sessionInactive) {
-          const topBtn = document.createElement("button");
-          topBtn.className = "move-btn";
-          topBtn.dataset.action = "up";
-          topBtn.dataset.tooltip = "Move Up";
-          topBtn.setAttribute("aria-label", "Move Up");
-          topBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-          const bottomBtn = document.createElement("button");
-          bottomBtn.className = "move-btn";
-          bottomBtn.dataset.action = "down";
-          bottomBtn.dataset.tooltip = "Move Down";
-          bottomBtn.setAttribute("aria-label", "Move Down");
-          bottomBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
-          const removeBtn = document.createElement("button");
-          removeBtn.className = "remove-btn";
-          removeBtn.dataset.tooltip = "Remove from Lap";
-          removeBtn.setAttribute("aria-label", "Remove from Lap");
-          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-          actions.appendChild(topBtn);
-          actions.appendChild(bottomBtn);
-          actions.appendChild(removeBtn);
+          actions.appendChild(createActionButton(ICONS.CHEVRON_UP, "Move Up", "move-btn btn-icon top-btn"));
+           // We need to attach data-action manually or via helper if expanded. 
+           // Since createActionButton is generic, let's just add attributes after.
+           actions.lastChild.dataset.action = "up";
+           
+          actions.appendChild(createActionButton(ICONS.CHEVRON_DOWN, "Move Down", "move-btn btn-icon bottom-btn"));
+          actions.lastChild.dataset.action = "down";
+          
+          actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
         } else {
-          const removeBtn = document.createElement("button");
-          removeBtn.className = "remove-btn";
-          removeBtn.dataset.tooltip = "Remove from Lap";
-          removeBtn.setAttribute("aria-label", "Remove from Lap");
-          removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-          actions.appendChild(removeBtn);
+          actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
         }
 
         item.appendChild(icon);
@@ -406,7 +419,7 @@ export const resetTaskFormUI = (formDOM) => {
   formDOM.lapIntervalInput.value = 1;
   formDOM.growthFactorInput.value = 0;
   formDOM.maxOccurrencesInput.value = 0;
-  formDOM.addTaskBtn.innerHTML = '<i class="fas fa-plus"></i> Add Task';
+  formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.PLUS}"></i> Add Task`;
   formDOM.cancelEditBtn.style.display = "none";
   formDOM.taskInput.focus();
 };
@@ -420,7 +433,7 @@ export const loadTaskIntoFormUI = (formDOM, task) => {
   formDOM.lapIntervalInput.value = task.lapInterval || 1;
   formDOM.growthFactorInput.value = task.growthFactor || 0;
   formDOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
-  formDOM.addTaskBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+  formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.SAVE}"></i> Save Changes`;
   formDOM.cancelEditBtn.style.display = "inline-block";
 };
 

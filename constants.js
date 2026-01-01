@@ -17,3 +17,24 @@ export const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
 
 export const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
 export const MIN_DURATION_SECONDS = 5;
+
+export const ICONS = {
+  // Actions
+  ADD: "fas fa-plus-circle",
+  EDIT: "fas fa-edit",
+  COPY: "fas fa-copy",
+  DELETE: "fas fa-trash-alt",
+  PLAY: "fas fa-play",
+  PAUSE: "fas fa-pause",
+  STOP: "fas fa-stop",
+  RESTART: "fas fa-redo",
+  EXPAND: "fas fa-expand-arrows-alt",
+  COMPRESS: "fas fa-compress-arrows-alt",
+  CHEVRON_UP: "fas fa-chevron-up",
+  CHEVRON_DOWN: "fas fa-chevron-down",
+  SUN: "fas fa-sun",
+  MOON: "fas fa-moon",
+  PLUS: "fas fa-plus",
+  SAVE: "fas fa-save",
+  REDO: "fas fa-redo-alt",
+};
