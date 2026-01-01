@@ -204,7 +204,7 @@ body.dark-theme .theme-btn .fa-moon {
   border: none;
   color: white;
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -390,7 +390,7 @@ textarea {
   width: 100%;
   padding: 0.625rem 0.875rem;
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: var(--text-base);
   border: 1px solid var(--input-border);
   background-color: var(--input-bg);
   color: var(--text-primary);
@@ -565,7 +565,7 @@ textarea::placeholder {
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-md);
   border: none;
-  font-size: 1rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   font-weight: 600;
 }

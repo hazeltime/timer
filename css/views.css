@@ -231,7 +231,8 @@ fieldset {
 }
 .task-title {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-base);
+  line-height: var(--leading-tight);
 }
 .task-description {
   font-size: 0.875rem;
@@ -244,7 +245,7 @@ fieldset {
 .task-category-badge {
   padding: 0.25rem 0.6rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: var(--text-2xs);
   font-weight: 600;
   color: white;
   white-space: nowrap;
@@ -405,7 +406,7 @@ fieldset {
 .progress-section-label,
 .runner-detail-label,
 .timer-display .timer-label {
-  font-size: 0.8125rem;
+  font-size: var(--text-2xs);
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -610,11 +611,13 @@ fieldset {
 /* Layout Sprint Fixes */
 
 /* 1. Monospace for Timers */
+/* 1. Monospace for Timers */
 .timer-display,
 .runner-detail-value,
 .task-duration-col {
-  font-family: "Courier New", Courier, monospace; /* Or user requested font */
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 /* 2. Hover Lift for Tasks */
