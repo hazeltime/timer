@@ -582,3 +582,37 @@ textarea::placeholder {
 .modal-content:hover {
   box-shadow: var(--shadow-lg, var(--shadow-layer-1), var(--shadow-layer-2)), var(--panel-hover-glow), 0 0 0 8px var(--panel-hover-rim);
 }
+
+/* --- Toast Notifications --- */
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999; /* Force high z-index */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+/* ... existing toast styles ... */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+  height: 100%;
+  min-height: 200px; /* Ensure height for centering */
+  gap: var(--space-sm);
+  font-style: italic;
+  width: 100%; /* Ensure full width */
+}
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
+  opacity: 0.5;
+}
