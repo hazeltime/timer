@@ -2,7 +2,7 @@
 
 import * as UI from "./ui.js";
 import { state, saveState } from "./state.js";
-import { clamp } from "./utils.js";
+import { clamp, validateTaskInput } from "./utils.js";
 import * as Runner from "./runner.js";
 import { categoryMap } from "./constants.js";
 
@@ -85,8 +85,9 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
     0,
     999
   );
-  if (totalDuration <= 0) {
-    UI.showAlert(DOM, "Validation", "Duration must be greater than 0 seconds.");
+  const errors = validateTaskInput(title, totalDuration);
+  if (errors.length > 0) {
+    UI.showAlert(DOM, "Validation", errors[0]);
     return;
   }
   if (state.editingTaskId !== null) {
