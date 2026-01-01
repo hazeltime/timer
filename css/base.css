@@ -61,41 +61,62 @@
 }
 
 body.dark-theme {
-  --bg-color: #0d1117;
-  --panel-bg: #161b22;
-  --text-primary: #c9d1d9;
-  --text-secondary: #8b949e;
+  --bg-color: #0d1117;     /* Surface 0 */
+  --panel-bg: #161b22;     /* Surface 1 */
+  --input-bg: #21262d;     /* Surface 2 (Adjusted for better depth) */
+  
+  /* Semantic Surfaces */
+  --surface-0: #0d1117;
+  --surface-1: #161b22;
+  --surface-2: #21262d;
+  --surface-3: #30363d; /* Borders/Separators */
+
+  --text-primary: #e6edf3; /* Increased contrast from c9d1d9 */
+  --text-secondary: #9ea7b3; /* Increased contrast from 8b949e (WCAG AA check) */
   --border-color: #30363d;
-  --input-bg: #0d1117;
   --input-border: #30363d;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  /* Dark-theme layered shadows and bevel values */
-  --shadow-layer-1: 0 10px 30px rgba(2, 6, 23, 0.6);
-  --shadow-layer-2: 0 3px 10px rgba(2, 6, 23, 0.45);
-  --bevel-highlight: rgba(255, 255, 255, 0.03);
-  --bevel-shadow: rgba(0, 0, 0, 0.6);
-  /* Dark theme: softer, warm yellow glow for contrast on dark backgrounds */
-  --panel-hover-glow: 0 14px 56px rgba(255, 228, 150, 0.3);
-  --panel-hover-rim: rgba(255, 228, 150, 0.7);
-  --hover-bg: #1f2937;
+  
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+  
+  /* Dark-theme layered shadows */
+  --shadow-layer-1: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-layer-2: 0 3px 10px rgba(0, 0, 0, 0.3);
+  --bevel-highlight: rgba(255, 255, 255, 0.05);
+  --bevel-shadow: rgba(0, 0, 0, 0.8);
+
+  /* Hover glow: softer */
+  --panel-hover-glow: 0 0 0 1px #8b949e; 
+  /* Switched to outline glow for dark mode cleanliness instead of yellow haze */
+  --panel-hover-rim: transparent; 
+
+  --hover-bg: #30363d; /* Lighter than panel */
   --button-secondary-bg: #21262d;
+
+  /* Accents - Adjusted for Dark Mode Eye Comfort */
   --accent-blue: #58a6ff;
-  --accent-green: #56d364;
+  --accent-green: #3fb950;  /* Slightly muted green */
   --accent-green-dark: #238636;
-  --accent-red: #f87171;
-  --accent-purple: #a78bfa;
-  --accent-orange: #fbbf24;
-  --accent-blue-focus-shadow: rgba(88, 166, 255, 0.3);
+  --accent-red: #f85149;    /* Less neon red */
+  --accent-purple: #bc8cff;
+  --accent-orange: #d29922;
+  
+  --accent-blue-focus-shadow: rgba(88, 166, 255, 0.4);
+  
   --progress-container-bg: #21262d;
-  --stepper-increment-bg: #1f6feb;
-  --stepper-increment-text: #ffffff;
-  --stepper-decrement-bg: #da3633;
-  --stepper-decrement-text: #ffffff;
-  --preset-btn-bg: #1e293b;
-  --preset-btn-text: #93c5fd;
-  --preset-btn-border: #384253;
+  --stepper-increment-bg: rgba(63, 185, 80, 0.15);
+  --stepper-increment-text: #7ee787;
+  --stepper-decrement-bg: rgba(248, 81, 73, 0.15);
+  --stepper-decrement-text: #ff7b72;
+  
+  --preset-btn-bg: #161b22;
+  --preset-btn-text: #58a6ff;
+  --preset-btn-border: #30363d;
+  
+  /* Focus Ring Standard */
+  --focus-ring-color: var(--accent-blue);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
 }
 
 *,

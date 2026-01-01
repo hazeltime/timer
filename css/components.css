@@ -372,8 +372,8 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-blue-focus-shadow);
-  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-blue-focus-shadow);
+  border-color: var(--focus-ring-color);
 }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
