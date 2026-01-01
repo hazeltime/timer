@@ -331,13 +331,14 @@ body.dark-theme .theme-btn .fa-moon {
 
 /* --- Icon Button Utility --- */
 .btn-icon {
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: var(--radius-md); /* Consistent with other inputs/buttons */
-  padding: 0;
+  flex-shrink: 0;
   border: 1px solid transparent; /* Prevent layout shift if border added later */
   background: transparent;
   color: var(--text-secondary);
@@ -450,14 +451,16 @@ body.dark-theme .theme-btn .fa-moon {
 }
 
 .stepper-btn {
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 600;
-  display: flex;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+  display: flex; /* Fix vertical centering */
   align-items: center;
   justify-content: center;
-  width: 60px; /* Keep fixed width for stepper */
-  height: var(--control-height);
+  background-color: var(--btn-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
   font-size: 1.25rem;
 }
 .stepper-btn:active {
@@ -773,36 +776,77 @@ textarea::placeholder {
   pointer-events: none;
 }
 
-/* --- Navigation & Tooltips --- */
+/* --- Tooltips --- */
 [data-tooltip] {
   position: relative;
 }
+
 [data-tooltip]::before {
   content: attr(data-tooltip);
   position: absolute;
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background-color: var(--text-primary);
-  color: var(--bg-color); /* Inverted contrast */
-  padding: 0.25rem 0.5rem;
+  transform: translateX(-50%) translateY(0);
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 0.5rem 0.75rem;
   border-radius: var(--radius-sm);
-  font-size: var(--text-2xs);
+  font-size: 0.75rem;
+  font-weight: 500;
   white-space: nowrap;
+  pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: var(--z-tooltip);
-  box-shadow: var(--shadow);
-  font-weight: 500;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
 }
+
 [data-tooltip]:hover::before {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(-4px);
+}
+
+/* Tooltip arrow/triangle */
+[data-tooltip]::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+  z-index: var(--z-tooltip);
+  margin-bottom: -2px; /* Pull it down slightly to touch */
+  pointer-events: none;
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Header tooltips (display below) */
+.header-controls [data-tooltip]::before {
+  bottom: auto;
+  top: 100%;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+.header-controls [data-tooltip]:hover::before {
+  transform: translateX(-50%) translateY(4px);
+}
+.header-controls [data-tooltip]::after {
+  bottom: auto;
+  top: 100%;
+  border-color: transparent transparent var(--tooltip-bg) transparent;
+  margin-top: -2px;
 }
 
 .empty-state {

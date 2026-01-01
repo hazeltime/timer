@@ -196,6 +196,76 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Header Specifics */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--panel-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header); /* 100 */
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-color); /* Separator color */
+  margin: 0 0.5rem;
+}
+
+.theme-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary); /* Default icon color */
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and label */
+}
+
+.theme-btn .btn-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: none; /* Hidden by default on mobile */
+}
+
+@media (min-width: 600px) {
+  .theme-btn .btn-label {
+    display: inline-block; /* Show on desktop */
+  }
+}
+
+.theme-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+/* Specific button colors */
+#guide-btn:hover {
+  color: var(--primary-color);
+  background-color: rgba(59, 130, 246, 0.1); /* Subtle blue tint */
+}
+
+.theme-btn.danger-hover:hover {
+  color: var(--danger-color);
+  background-color: rgba(239, 68, 68, 0.1); /* Subtle red tint */
+}
+
 h1,
 h2,
 h3,
