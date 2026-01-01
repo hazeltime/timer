@@ -175,6 +175,7 @@ fieldset {
 .task-item {
   display: grid;
   grid-template-columns: var(--task-grid-columns);
+  grid-template-areas: "id title duration interval limit category growth actions";
   align-items: center;
   padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-color);
@@ -216,11 +217,13 @@ fieldset {
 }
 
 .task-id-col {
+  grid-area: id;
   font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
 .task-title-col {
+  grid-area: title;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.125rem;
@@ -245,6 +248,12 @@ fieldset {
   color: white;
   white-space: nowrap;
 }
+.task-duration-col { grid-area: duration; }
+.task-interval-col { grid-area: interval; }
+.task-limit-col    { grid-area: limit; }
+.task-category-col { grid-area: category; }
+.task-growth-col   { grid-area: growth; }
+
 .task-duration-col,
 .task-interval-col,
 .task-limit-col,
@@ -258,6 +267,7 @@ fieldset {
   color: var(--text-secondary);
 }
 .task-actions-col {
+  grid-area: actions;
   display: flex;
   justify-content: flex-end;
   gap: 0.25rem;
