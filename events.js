@@ -30,6 +30,14 @@ export const setupEventListeners = (DOM) => {
     guideModalDOM,
   } = DOM;
 
+  // Auto-focus title on load
+  setTimeout(() => formDOM.taskInput.focus(), 100);
+
+  // Allow Enter to submit
+  formDOM.taskInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") formDOM.addTaskBtn.click();
+  });
+
   formDOM.addTaskBtn.addEventListener("click", () =>
     handleTaskFormSubmit(formDOM, DOM)
   );
