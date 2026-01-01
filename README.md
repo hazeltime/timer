@@ -1,5 +1,7 @@
 # Todo Task Timer (TTT)
 
+![CI Status](https://github.com/behro/timers/actions/workflows/ci.yml/badge.svg)
+
 A robust, interval-based task timer for focused work sessions.
 
 ## Features
