@@ -30,9 +30,9 @@
 }
 
 .input-lg {
-  font-size: 1.125rem;
+  font-size: 1rem; /* Standard readable size */
   font-weight: 500;
-  height: 3.25rem; /* Slightly taller than standard */
+  height: 2.75rem; /* Comfortable touch target but not huge */
 }
 
 .form-row-split {
@@ -87,43 +87,40 @@ fieldset {
 }
 
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); /* Wider for text safety */
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 2px; /* Prevent focus ring clip */
+  padding: 2px;
 }
 
 .category-btn {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: center; /* Horizontal alignment */
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem; /* More internal breathing room */
-  min-height: 5rem;  /* Taller touch target */
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
-  background-color: var(--input-bg);
+  padding: 0.5rem 1rem; /* Pill shape padding */
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full); /* Pill shape */
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-align: center;
+  transition: all 0.2s var(--ease-smooth);
+  font-size: 0.9rem;
+  min-height: auto; /* Remove fixed height */
+  flex: 0 0 auto; /* Don't stretch */
 }
-.category-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent-blue);
+
+.category-btn i {
+  font-size: 1.1rem; /* Smaller icon */
+  margin-bottom: 0;
 }
+
 .category-btn.active {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  border-color: transparent;
-}
-.category-btn .icon {
-  font-size: 1.125rem;
-  display: block;
-  margin-bottom: 0.25rem;
+  background-color: var(--bg-category-active, var(--bg-tertiary));
+  color: var(--text-primary);
+  border-color: currentColor; /* Use outline color set in JS */
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
 }
 
 .duration-layout-grid {

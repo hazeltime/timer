@@ -109,8 +109,11 @@ export const renderTaskSummary = (repoDOM, tasks) => {
  * Creates a DOM element for a Task in the Repository Grid
  */
 export const createTaskRepoRow = (task, category) => {
-  const item = DomBuilder.div("task-item", [], { dataset: { id: task.id } });
-  item.dataset.id = task.id; // Explicit for safety
+  // Fix: Use create() to pass dataset props, as div() shortcut doesn't support 3rd arg
+  const item = DomBuilder.create("div", {
+      className: "task-item",
+      dataset: { id: task.id }
+  });
 
   const cells = [
     { cls: "task-id-col", content: `#${task.id}` },
