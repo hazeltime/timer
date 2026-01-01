@@ -322,7 +322,7 @@ body.dark-theme .theme-btn .fa-moon {
   background-color: var(--preset-btn-bg);
   color: var(--preset-btn-text);
   border: 1px solid var(--preset-btn-border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -438,7 +438,7 @@ textarea::placeholder {
   filter: brightness(0.95);
 }
 .stepper-input .stepper-btn:first-child {
-  border-radius: 0.75rem 0 0 0.75rem;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
 }
 .stepper-input input {
   border-radius: 0;
@@ -449,7 +449,7 @@ textarea::placeholder {
   width: 60px;
 }
 .stepper-input .stepper-btn:last-child {
-  border-radius: 0 0.75rem 0.75rem 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 /* --- Progress Bars --- */
@@ -457,7 +457,7 @@ textarea::placeholder {
   position: relative;
   width: 100%;
   height: 24px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 0.5rem;
   background-color: var(--progress-container-bg);
   overflow: hidden;
@@ -477,7 +477,7 @@ textarea::placeholder {
 #session-progress-bar {
   width: 0%;
   height: 100%;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   /* IMPROVEMENT: Smoother, more pleasing animation for progress bars */
   transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -527,7 +527,7 @@ textarea::placeholder {
 }
 .modal-content {
   padding: 2.5rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 760px; /* keep modals readable on large screens */
   text-align: center;
@@ -538,7 +538,7 @@ textarea::placeholder {
 }
 .modal-actions button {
   padding: 0.625rem 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   border: none;
   font-size: 1rem;
   cursor: pointer;
@@ -615,4 +615,21 @@ textarea::placeholder {
   font-size: 2rem;
   margin-bottom: var(--space-sm);
   opacity: 0.5;
+}
+
+/* --- Global Active States & Icons --- */
+button:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}
+button i {
+  font-size: 1.1em; 
+  vertical-align: middle;
+}
+
+.panel-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: var(--space-lg) 0;
+  border: none;
 }
