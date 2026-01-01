@@ -676,7 +676,35 @@ textarea::placeholder {
   pointer-events: none;
 }
 
-/* ... existing toast styles ... */
+/* --- Navigation & Tooltips --- */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background-color: var(--text-primary);
+  color: var(--bg-color); /* Inverted contrast */
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-2xs);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  z-index: var(--z-tooltip);
+  box-shadow: var(--shadow);
+  font-weight: 500;
+}
+[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-4px);
+}
 
 .empty-state {
   display: flex;
