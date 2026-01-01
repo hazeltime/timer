@@ -127,7 +127,7 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
       item.querySelector(".task-interval-col").innerHTML =
         task.lapInterval === 1
           ? "Always"
-          : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
+          : `<i class="fas fa-redo-alt"></i> ${task.lapInterval}`;
       item.querySelector(".task-limit-col").textContent =
         task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
       item.querySelector(".task-growth-col").textContent = `${

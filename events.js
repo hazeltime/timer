@@ -118,7 +118,7 @@ export const setupEventListeners = (DOM) => {
     const item = e.target.closest(".lap-list-item");
     const id = Number(item.dataset.id);
     if (btn.classList.contains("remove-btn"))
-      removeTaskFromLap(id, playlistDOM);
+      removeTaskFromLap(id, playlistDOM, DOM);
     else if (btn.classList.contains("move-btn")) {
       const { action } = btn.dataset;
       const idx = state.lapList.indexOf(id);

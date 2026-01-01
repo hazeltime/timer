@@ -179,7 +179,7 @@ export const addTaskToLap = (id, playlistDOM, DOM) => {
   }
 };
 
-export const removeTaskFromLap = (id, playlistDOM) => {
+export const removeTaskFromLap = (id, playlistDOM, DOM) => {
   if (Runner.isSessionActive()) {
     UI.showAlert(
       DOM,
