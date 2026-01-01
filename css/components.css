@@ -439,6 +439,7 @@ textarea {
   font-size: var(--text-base);
   border: 1px solid var(--input-border);
   background-color: var(--input-bg);
+  box-shadow: var(--input-inner-shadow);
   color: var(--text-primary);
   transition: all 0.2s ease;
   font-family: inherit;
@@ -448,7 +449,9 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  box-shadow: var(--focus-glow);
+  box-shadow: var(--focus-glow); /* focus glow overrides inner shadow or layers with it? box-shadow handles multiple! */
+  /* We want to remove the inner shadow on focus, or keep it? Usually remove to look "active/raised". */
+  box-shadow: var(--focus-glow); 
   border-color: var(--accent-blue);
 }
 input[type="number"]::-webkit-inner-spin-button,
@@ -528,8 +531,12 @@ textarea::placeholder {
   transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 #task-progress-bar {
-  background-color: var(--accent-blue);
+  background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-orange) 50%, var(--accent-red) 100%);
+  background-size: 200% 100%;
+  animation: bg-shift 3s ease infinite alternate; /* Subtle pulse */
 }
+@keyframes bg-shift { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
 #lap-progress-bar {
   background-color: var(--accent-green);
 }

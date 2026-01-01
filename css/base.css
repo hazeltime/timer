@@ -96,12 +96,16 @@
   --z-modal: 1000;
   --z-toast: 2000;
   --z-tooltip: 3000;
+  
+  --input-inner-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 body.dark-theme {
   --bg-color: #0d1117;     /* Surface 0 */
   --panel-bg: #161b22;     /* Surface 1 */
   --input-bg: #21262d;     /* Surface 2 (Adjusted for better depth) */
+  
+  --input-inner-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
   
   /* Semantic Surfaces */
   --surface-0: #0d1117;
