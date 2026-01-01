@@ -3,9 +3,25 @@ import { CATEGORIES, categoryMap } from "./constants.js";
 import { createIconElement } from "./utils.js";
 
 // Utility helpers
+/**
+ * Select single element
+ * @param {string} sel
+ * @returns {Element}
+ */
 export const $ = (sel) => document.querySelector(sel);
+
+/**
+ * Select all elements as array
+ * @param {string} sel
+ * @returns {Element[]}
+ */
 export const $$ = (sel) => [...document.querySelectorAll(sel)];
 
+/**
+ * Formats seconds into h m s string (e.g. "1h 30m 10s")
+ * @param {number} totalSeconds
+ * @returns {string}
+ */
 export const formatTime = (totalSeconds) => {
   const n = Number(totalSeconds);
   if (!Number.isFinite(n) || Number.isNaN(n)) return "0s";
@@ -24,6 +40,11 @@ export const formatTime = (totalSeconds) => {
 };
 
 // Render functions
+/**
+ * Renders category selection buttons
+ * @param {Object} formDOM
+ * @param {string} selectedCategoryId
+ */
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   // Clear existing
   formDOM.categoryGrid.innerHTML = "";
@@ -46,6 +67,11 @@ export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   formDOM.categoryGrid.appendChild(frag);
 };
 
+/**
+ * Updates summary stats (Total tasks, Total duration) in Repo Panel
+ * @param {Object} repoDOM
+ * @param {Array} tasks
+ */
 export const renderTaskSummary = (repoDOM, tasks) => {
   const totalTasks = tasks.length;
   const totalDurationInSeconds = tasks.reduce((s, t) => s + t.duration, 0);
@@ -62,6 +88,12 @@ export const renderTaskSummary = (repoDOM, tasks) => {
   repoDOM.taskSummaryEl.appendChild(right);
 };
 
+/**
+ * Renders the main task repository list
+ * @param {Object} repoDOM
+ * @param {Array} tasks
+ * @param {Object} _sortState
+ */
 export const renderTasks = (repoDOM, tasks, _sortState) => {
   repoDOM.noTasksMessage.style.display = tasks.length === 0 ? "block" : "none";
 
@@ -197,6 +229,12 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
   renderTaskSummary(repoDOM, tasks);
 };
 
+/**
+ * Renders the playlist (lap list)
+ * @param {Object} playlistDOM
+ * @param {Object} state
+ * @param {Map} taskMap
+ */
 export const renderLapList = (playlistDOM, state, taskMap) => {
   const lapDuration = state.lapList.reduce(
     (s, id) => s + (taskMap.get(id)?.duration || 0),
