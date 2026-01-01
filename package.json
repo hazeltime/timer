@@ -7,7 +7,8 @@
     "start": "live-server",
     "dev": "live-server",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "precommit": "npm run lint && npm test"
   },
   "eslintConfig": {
     "env": {
