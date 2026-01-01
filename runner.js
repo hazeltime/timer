@@ -289,6 +289,7 @@ export const playPauseSession = () => {
   )
     return;
   state.runnerState = "RUNNING";
+  updateBodyState(true);
   runnerDOM.playPauseBtn.innerHTML =
     '<i class="fas fa-pause"></i><span>Pause</span>';
   startTimerInterval();
@@ -297,6 +298,7 @@ export const playPauseSession = () => {
 export const stopSession = (finished = false) => {
   stopTimerInterval();
   state.runnerState = "STOPPED";
+  updateBodyState(false);
   runnerDOM.playPauseBtn.innerHTML =
     '<i class="fas fa-play"></i><span>Play</span>';
   runnerDOM.lapsControls.style.display = "flex";
