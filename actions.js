@@ -55,6 +55,8 @@ export const updateSort = (field, DOM) => {
 export const resetTaskForm = (formDOM) => {
   state.editingTaskId = null;
   state.selectedCategoryId = "cat-0";
+  state.selectedCategoryId = "cat-0";
+  UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
   UI.resetTaskFormUI(formDOM);
   UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
 };
@@ -118,7 +120,11 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
 
 export const loadTaskIntoForm = (id, formDOM, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showAlert(DOM, "Action blocked", "Cannot edit a task that is part of an active lap session.");
+    UI.showAlert(
+      DOM,
+      "Action blocked",
+      "Cannot edit a task that is part of an active lap session."
+    );
     return;
   }
   const task = state.tasks.find((t) => t.id === id);
@@ -131,7 +137,11 @@ export const loadTaskIntoForm = (id, formDOM, DOM) => {
 
 export const deleteTask = (id, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showAlert(DOM, "Action blocked", "Cannot delete a task that is part of an active lap session.");
+    UI.showAlert(
+      DOM,
+      "Action blocked",
+      "Cannot delete a task that is part of an active lap session."
+    );
     return;
   }
   state.tasks = state.tasks.filter((t) => t.id !== id);
@@ -155,7 +165,11 @@ export const duplicateTask = (id, DOM) => {
 
 export const addTaskToLap = (id, playlistDOM, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showAlert(DOM, "Action blocked", "Please stop the lap session to modify the playlist.");
+    UI.showAlert(
+      DOM,
+      "Action blocked",
+      "Please stop the lap session to modify the playlist."
+    );
     return;
   }
   if (!state.lapList.includes(id)) {
@@ -167,7 +181,11 @@ export const addTaskToLap = (id, playlistDOM, DOM) => {
 
 export const removeTaskFromLap = (id, playlistDOM) => {
   if (Runner.isSessionActive()) {
-    UI.showAlert(DOM, "Action blocked", "Please stop the lap session to modify the playlist.");
+    UI.showAlert(
+      DOM,
+      "Action blocked",
+      "Please stop the lap session to modify the playlist."
+    );
     return;
   }
   state.lapList = state.lapList.filter((l) => l !== id);

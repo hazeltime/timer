@@ -329,6 +329,7 @@ export const stopSession = (finished = false) => {
     UI.resetRunnerDisplay(runnerDOM);
   }
   state.currentVirtualTaskIndex = -1;
+  state.currentTaskTimeLeft = 0;
   const playlistTargetStop = {
     lapListEl: runnerDOM.lapListEl,
     lapListDurationEl: runnerDOM.lapListDurationEl,
