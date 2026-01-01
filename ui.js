@@ -126,6 +126,99 @@ export const renderTaskSummary = (repoDOM, tasks) => {
 };
 
 /**
+ * Creates a DOM element for a Task in the Repository Grid
+ */
+export const createTaskRepoRow = (task, category) => {
+  const item = document.createElement("div");
+  item.className = "task-item";
+  item.dataset.id = task.id;
+
+  const cells = [
+    { cls: "task-id-col", content: `#${task.id}` },
+    { cls: "task-title-col", html: `<span class="task-title">${task.title}</span><span class="task-description">${task.description || ""}</span>` },
+    { cls: "task-category-col", html: `<span class="task-category-badge" style="background-color: ${category.color}"><i class="${category.icon}"></i> ${category.name}</span>` }, // Note: using innerHTML for badge simplicity here, or could use helper
+    { cls: "task-duration-col", content: formatTime(task.duration) },
+    { cls: "task-interval-col", html: task.lapInterval === 1 ? "Always" : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}` },
+    { cls: "task-limit-col", content: task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences) },
+    { cls: "task-growth-col", content: `${task.growthFactor || 0}%` }
+  ];
+
+  cells.forEach(c => {
+    const div = document.createElement("div");
+    div.className = `task-cell ${c.cls}`;
+    if (c.html) div.innerHTML = c.html;
+    else div.textContent = c.content;
+    item.appendChild(div);
+  });
+
+  // Actions
+  const actionsCol = document.createElement("div");
+  actionsCol.className = "task-cell task-actions-col";
+  actionsCol.appendChild(createActionButton(ICONS.ADD, "Add to Lap", "add-to-lap-btn btn-icon"));
+  actionsCol.appendChild(createActionButton(ICONS.EDIT, "Edit Task", "edit-btn btn-icon"));
+  actionsCol.appendChild(createActionButton(ICONS.COPY, "Duplicate", "copy-btn btn-icon"));
+  actionsCol.appendChild(createActionButton(ICONS.DELETE, "Delete", "delete-btn btn-icon btn-icon-danger"));
+  item.appendChild(actionsCol);
+
+  return item;
+};
+
+/**
+ * Creates a DOM element for a Task in the Playlist
+ */
+export const createPlaylistRow = (task, category, state, sessionInactive, runningTaskId) => {
+  const isRunning = runningTaskId === task.id;
+  const item = document.createElement("div");
+  item.className = "lap-list-item" + (isRunning ? " running" : "");
+  item.dataset.id = task.id;
+  
+  if (sessionInactive) {
+    item.setAttribute("draggable", "true");
+    
+    // Maxed out check
+    const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+    if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+      item.classList.add("maxed-out");
+    }
+  }
+
+  // Icon
+  const icon = createIconElement(category.icon);
+  icon.classList.add("lap-category-icon");
+  icon.title = category.name;
+  item.appendChild(icon);
+
+  // Title
+  const title = document.createElement("div");
+  title.className = "title";
+  title.textContent = task.title;
+  item.appendChild(title);
+
+  // Duration
+  const duration = document.createElement("span");
+  duration.className = "duration";
+  duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, "$1 $2");
+  item.appendChild(duration);
+
+  // Actions
+  const actions = document.createElement("div");
+  actions.className = "lap-item-actions";
+  if (sessionInactive) {
+    const upBtn = createActionButton(ICONS.CHEVRON_UP, "Move Up", "move-btn btn-icon top-btn");
+    upBtn.dataset.action = "up";
+    actions.appendChild(upBtn);
+
+    const downBtn = createActionButton(ICONS.CHEVRON_DOWN, "Move Down", "move-btn btn-icon bottom-btn");
+    downBtn.dataset.action = "down";
+    actions.appendChild(downBtn);
+  }
+  actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
+  item.appendChild(actions);
+
+  return item;
+};
+
+/**
  * Renders the main task repository list
  * @param {Object} repoDOM
  * @param {Array} tasks
@@ -288,108 +381,24 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
   const newFragment = document.createDocumentFragment();
 
+  /* Simplified Rebuild Strategy for consistency */
+  lapListEl.innerHTML = ""; // Clear
+  
   if (state.lapList.length === 0) {
-    lapListEl.innerHTML = "";
     lapListEl.appendChild(renderEmptyState("Add tasks from the repository to create a playlist."));
-    newFragment.appendChild(document.createComment("Empty state rendered")); // Placeholder to match logic structure if needed
   } else {
-    const runningTaskId =
-      state.sessionCache?.virtualSessionPlaylist?.[
-        state.currentVirtualTaskIndex
-      ]?.taskId;
-
+    const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
+    
     for (const id of state.lapList) {
       const task = taskMap.get(id);
       if (!task) continue;
-
-      const category =
-        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-      const isRunning = runningTaskId === task.id;
-      let item = existingLapElements.get(String(task.id));
-
-      if (item) {
-        // Update existing element
-        item.className = "lap-list-item" + (isRunning ? " running" : "");
-        if (sessionInactive) item.setAttribute("draggable", "true");
-        else item.removeAttribute("draggable");
-
-        if (!sessionInactive) {
-          const completedOccurrences =
-            state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-          if (
-            task.maxOccurrences > 0 &&
-            completedOccurrences >= task.maxOccurrences
-          ) {
-            item.classList.add("maxed-out");
-          } else {
-            item.classList.remove("maxed-out");
-          }
-        }
-        existingLapElements.delete(String(task.id));
-      } else {
-        // Create new element
-        item = document.createElement("div");
-        item.className = "lap-list-item" + (isRunning ? " running" : "");
-        item.dataset.id = task.id;
-        if (sessionInactive) item.setAttribute("draggable", "true");
-
-        if (!sessionInactive) {
-          const completedOccurrences =
-            state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-          if (
-            task.maxOccurrences > 0 &&
-            completedOccurrences >= task.maxOccurrences
-          ) {
-            item.classList.add("maxed-out");
-          }
-        }
-
-        const icon = createIconElement(category.icon);
-        icon.classList.add("lap-category-icon");
-        icon.title = category.name;
-
-        const title = document.createElement("div");
-        title.className = "title";
-        title.textContent = task.title;
-
-        const duration = document.createElement("span");
-        duration.className = "duration";
-        duration.textContent = formatTime(task.duration).replace(
-          /(\d+)([a-z]+)/g,
-          "$1 $2"
-        );
-
-        const actions = document.createElement("div");
-        actions.className = "lap-item-actions";
-        if (sessionInactive) {
-          actions.appendChild(createActionButton(ICONS.CHEVRON_UP, "Move Up", "move-btn btn-icon top-btn"));
-           // We need to attach data-action manually or via helper if expanded. 
-           // Since createActionButton is generic, let's just add attributes after.
-           actions.lastChild.dataset.action = "up";
-           
-          actions.appendChild(createActionButton(ICONS.CHEVRON_DOWN, "Move Down", "move-btn btn-icon bottom-btn"));
-          actions.lastChild.dataset.action = "down";
-          
-          actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
-        } else {
-          actions.appendChild(createActionButton(ICONS.DELETE, "Remove from Lap", "remove-btn btn-icon btn-icon-danger"));
-        }
-
-        item.appendChild(icon);
-        item.appendChild(title);
-        item.appendChild(duration);
-        item.appendChild(actions);
-      }
+      const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+      
+      const item = createPlaylistRow(task, category, state, sessionInactive, runningTaskId);
       newFragment.appendChild(item);
     }
+    lapListEl.appendChild(newFragment);
   }
-
-  for (const child of existingLapElements.values()) {
-    child.remove();
-  }
-
-  lapListEl.innerHTML = "";
-  lapListEl.appendChild(newFragment);
 };
 
 export const updateSortHeaders = (sortState) => {
