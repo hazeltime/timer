@@ -12,7 +12,6 @@ function makeRunnerDOM() {
       occurrenceCount: document.createElement("div"),
       changePercentage: document.createElement("div"),
       changeDelta: document.createElement("div"),
-      sessionTotal: document.createElement("div"),
     },
     timeElapsedEl: document.createElement("div"),
     timeRemainingEl: document.createElement("div"),
