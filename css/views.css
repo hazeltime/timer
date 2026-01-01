@@ -20,13 +20,19 @@
 .form-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .form-main-info {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+}
+
+.input-lg {
+  font-size: 1.125rem;
+  font-weight: 500;
+  height: 3.25rem; /* Slightly taller than standard */
 }
 
 .form-row-split {
@@ -82,24 +88,28 @@ fieldset {
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); /* Increased from 5rem */
-  gap: var(--space-xs);
-  padding: 4px; /* Slight padding to avoid outline clipping */
-  margin: 0;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); /* Wider for text safety */
+  gap: 0.5rem;
+  padding: 2px; /* Prevent focus ring clip */
 }
 
 .category-btn {
-  border: 1px solid var(--input-border);
-  outline: 2px solid transparent;
-  outline-offset: -2px;
-  color: var(--text-primary);
-  background-color: var(--input-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem; /* More internal breathing room */
+  min-height: 5rem;  /* Taller touch target */
+  border: 2px solid transparent;
   border-radius: var(--radius-md);
-  padding: var(--space-xs);
-  font-size: 0.8125rem;
+  background-color: var(--input-bg);
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.875rem;
+  font-weight: 500;
   text-align: center;
-  transition: all 0.2s ease;
 }
 .category-btn:hover {
   transform: translateY(-2px);
@@ -135,12 +145,17 @@ fieldset {
 /* Align labels in duration steppers */
 .duration-input-group {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 .duration-input-group label {
   font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: 0.25rem;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .preset-group > label {
@@ -495,6 +510,42 @@ body.dark-theme .task-item:nth-child(even) {
   justify-content: center;
   gap: 1rem;
   margin-top: 1.5rem;
+}
+.runner-detail.preset-durations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.preset-btn {
+  flex: 1 1 auto; /* Grow to fill */
+  min-width: 3.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  background-color: var(--bg-tertiary); /* Distinct from inputs */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  height: auto; /* Allow height to adapt */
+  min-height: 2.5rem; /* Minimum touch target */
+}
+
+.preset-btn:hover {
+  background-color: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+}
+
+.lap-interval-controls,
+.growth-factor-controls,
+.max-occurrences-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Better spacing between input and description */
 }
 .runner-details-grid {
   display: grid;

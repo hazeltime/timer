@@ -14,21 +14,17 @@
       <div id="task-form">
         <div class="form-grid">
           
-          <!-- Top Section: Core Info & Category -->
+          <!-- Top Section: Core Info (Title & Desc) -->
           <div class="form-main-info">
-            <div class="form-row-split">
-              <div class="form-group" style="flex: 2">
-                <label for="task-input">Title</label>
-                <input
-                  type="text"
-                  id="task-input"
-                  placeholder="e.g., Finish project report"
-                />
-              </div>
-              <div class="form-group category-group" style="flex: 1">
-                <label>Category</label>
-                <div id="category-grid" class="category-grid"></div>
-              </div>
+            <div class="form-group">
+              <label for="task-input">Title</label>
+              <input
+                type="text"
+                id="task-input"
+                class="input-lg"
+                placeholder="e.g., Finish project report"
+                autofocus
+              />
             </div>
             
             <div class="form-group description-group">
@@ -39,6 +35,14 @@
                 style="height: 3.5rem; min-height: 3.5rem;"
               ></textarea>
             </div>
+          </div>
+
+          <!-- Middle Section: Category Grid -->
+          <div class="form-section">
+             <div class="form-group category-group">
+                <label>Category</label>
+                <div id="category-grid" class="category-grid"></div>
+             </div>
           </div>
 
           <!-- Bottom Section: Settings Grid -->
