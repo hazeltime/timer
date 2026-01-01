@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import { jest } from "@jest/globals";
 import { duplicateTask } from "../actions.js";
 import { state } from "../state.js";
 import * as UI from "../ui.js";
