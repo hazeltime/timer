@@ -7,6 +7,14 @@
  */
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
+export const validateTaskInput = (title, duration) => {
+  const errors = [];
+  if (!title || !title.trim()) errors.push("Task title cannot be empty.");
+  if (duration <= 0) errors.push("Duration must be greater than 0 seconds.");
+  if (duration < 5) errors.push("Task duration must be at least 5 seconds.");
+  return errors;
+};
+
 /**
  * Safely parses JSON from a string, returning a fallback on error.
  * @param {string} str The JSON string to parse.
@@ -14,11 +22,11 @@ export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
  * @returns {*} The parsed object or the fallback value.
  */
 export const safeParseJSON = (str, fallback = null) => {
-	try {
-		return JSON.parse(str);
-	} catch (e) {
-		return fallback;
-	}
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return fallback;
+  }
 };
 
 /**
@@ -26,13 +34,18 @@ export const safeParseJSON = (str, fallback = null) => {
  * @param {string} s The string to escape.
  * @returns {string} The escaped string.
  */
-export const escapeHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({
-	'&': '&amp;',
-	'<': '&lt;',
-	'>': '&gt;',
-	'"': '&quot;',
-	"'": '&#39;'
-}[c]));
+export const escapeHTML = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[c])
+  );
 
 /**
  * Create an icon element safely.
@@ -40,9 +53,9 @@ export const escapeHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({
  * @returns {HTMLElement} The icon element.
  */
 export const createIconElement = (icon) => {
-	const span = document.createElement('span');
-	span.className = 'icon';
-	// Icons in constants are small emoji strings; insert as textContent to avoid HTML parsing
-	span.textContent = icon == null ? '' : String(icon);
-	return span;
+  const span = document.createElement("span");
+  span.className = "icon";
+  // Icons in constants are small emoji strings; insert as textContent to avoid HTML parsing
+  span.textContent = icon == null ? "" : String(icon);
+  return span;
 };
