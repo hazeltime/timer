@@ -17,6 +17,7 @@
   --shadow-layer-2: 0 2px 8px rgba(16, 24, 40, 0.04);
   --bevel-highlight: rgba(255, 255, 255, 0.7);
   --bevel-shadow: rgba(0, 0, 0, 0.06);
+  --focus-glow: 0 0 0 3px rgba(59, 130, 246, 0.4);
   /* Hover glow for panels */
   /* Hover glow: larger, theme-tinted rim. Light theme uses a darker yellow rim. */
   --panel-hover-glow: 0 12px 40px rgba(249, 168, 37, 0.25);
@@ -87,8 +88,14 @@
   /* Animation & Easing */
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Z-Layer System */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-modal-backdrop: 900;
   --z-modal: 1000;
   --z-toast: 2000;
+  --z-tooltip: 3000;
 }
 
 body.dark-theme {
@@ -120,6 +127,8 @@ body.dark-theme {
   --panel-hover-glow: 0 0 0 1px #8b949e; 
   /* Switched to outline glow for dark mode cleanliness instead of yellow haze */
   --panel-hover-rim: transparent; 
+  
+  --focus-glow: 0 0 0 3px rgba(88, 166, 255, 0.4);
 
   --hover-bg: #30363d; /* Lighter than panel */
   --button-secondary-bg: #21262d;

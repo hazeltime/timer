@@ -610,6 +610,14 @@ export const toggleAllPanels = (state, collapse) => {
       panel.classList.remove("collapsed");
       if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "true");
       state.panelCollapseState[panel.id] = false;
+      
+      // Auto-Focus Logic: Focus first input if expanding a form panel
+      if (panel.id === "create-task-panel") {
+        setTimeout(() => {
+          const firstInput = panel.querySelector("input, button");
+          if (firstInput) firstInput.focus();
+        }, 300); // Wait for transition
+      }
     }
   });
   localStorage.setItem(
