@@ -17,11 +17,11 @@ export const sortTasks = (list) => {
       case "duration":
         return (a.duration - b.duration) * order;
       case "category":
-        return (
-          (categoryMap.get(a.categoryId)?.name || "").localeCompare(
-            categoryMap.get(b.categoryId)?.name || ""
-          ) * order
-        );
+        const catA = categoryMap.get(a.categoryId);
+        const nameA = catA ? catA.name : "";
+        const catB = categoryMap.get(b.categoryId);
+        const nameB = catB ? catB.name : "";
+        return nameA.localeCompare(nameB) * order;
       case "lapInterval":
         return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
       case "maxOccurrences":
