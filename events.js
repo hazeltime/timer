@@ -20,9 +20,19 @@ import {
 } from "./actions.js";
 
 export const setupEventListeners = (DOM) => {
-  const { formDOM, repoDOM, playlistDOM, runnerDOM, headerDOM, modalDOM, guideModalDOM } = DOM;
+  const {
+    formDOM,
+    repoDOM,
+    playlistDOM,
+    runnerDOM,
+    headerDOM,
+    modalDOM,
+    guideModalDOM,
+  } = DOM;
 
-  formDOM.addTaskBtn.addEventListener("click", () => handleTaskFormSubmit(formDOM, DOM));
+  formDOM.addTaskBtn.addEventListener("click", () =>
+    handleTaskFormSubmit(formDOM, DOM)
+  );
   formDOM.cancelEditBtn.addEventListener("click", () => resetTaskForm(formDOM));
   headerDOM.globalCollapseBtn.addEventListener("click", () =>
     UI.toggleAllPanels(state, true)
@@ -34,13 +44,13 @@ export const setupEventListeners = (DOM) => {
     UI.toggleRunnerPopout(runnerDOM, state)
   );
 
-  document.addEventListener('mousedown', (e) => {
-    const panel = document.getElementById('task-runner-panel');
+  document.addEventListener("mousedown", (e) => {
+    const panel = document.getElementById("task-runner-panel");
     if (!panel) return;
-    if (!panel.classList.contains('task-runner-popout')) return;
+    if (!panel.classList.contains("task-runner-popout")) return;
     if (panel.contains(e.target)) return;
-    panel.classList.remove('task-runner-popout');
-    document.body.classList.remove('runner-popped-out');
+    panel.classList.remove("task-runner-popout");
+    document.body.classList.remove("runner-popped-out");
   });
 
   headerDOM.guideBtn.addEventListener("click", () => {
@@ -74,7 +84,8 @@ export const setupEventListeners = (DOM) => {
     const id = Number(item.dataset.id);
     if (btn.classList.contains("delete-btn")) deleteTask(id, DOM);
     if (btn.classList.contains("copy-btn")) duplicateTask(id, DOM);
-    if (btn.classList.contains("add-to-lap-btn")) addTaskToLap(id, playlistDOM, DOM);
+    if (btn.classList.contains("add-to-lap-btn"))
+      addTaskToLap(id, playlistDOM, DOM);
     if (btn.classList.contains("edit-btn")) loadTaskIntoForm(id, formDOM, DOM);
   });
 
@@ -83,14 +94,24 @@ export const setupEventListeners = (DOM) => {
     if (!btn || Runner.isSessionActive()) return;
     const item = e.target.closest(".lap-list-item");
     const id = Number(item.dataset.id);
-    if (btn.classList.contains("remove-btn")) removeTaskFromLap(id, playlistDOM);
+    if (btn.classList.contains("remove-btn"))
+      removeTaskFromLap(id, playlistDOM);
     else if (btn.classList.contains("move-btn")) {
       const { action } = btn.dataset;
       const idx = state.lapList.indexOf(id);
       if (idx === -1) return;
       state.lapList.splice(idx, 1);
-      if (action === "top") state.lapList.unshift(id);
-      else if (action === "bottom") state.lapList.push(id);
+      if (action === "up") {
+        if (idx > 0) {
+          state.lapList.splice(idx, 1);
+          state.lapList.splice(idx - 1, 0, id);
+        }
+      } else if (action === "down") {
+        if (idx < state.lapList.length - 1) {
+          state.lapList.splice(idx, 1);
+          state.lapList.splice(idx + 1, 0, id);
+        }
+      }
       saveState();
       UI.renderLapList(playlistDOM, state, getTaskMap());
     }
@@ -114,9 +135,11 @@ export const setupEventListeners = (DOM) => {
     if (Runner.isSessionActive()) return;
     e.preventDefault();
     const after = getDragAfterElement(playlistDOM.lapListEl, e.clientY);
-    document.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) =>
-      el.classList.remove("drag-over-top", "drag-over-bottom")
-    );
+    document
+      .querySelectorAll(".drag-over-top, .drag-over-bottom")
+      .forEach((el) =>
+        el.classList.remove("drag-over-top", "drag-over-bottom")
+      );
     if (after) after.classList.add("drag-over-top");
     else {
       const last = playlistDOM.lapListEl.lastElementChild;
@@ -128,9 +151,11 @@ export const setupEventListeners = (DOM) => {
   playlistDOM.lapListEl.addEventListener("drop", (e) => {
     if (Runner.isSessionActive()) return;
     e.preventDefault();
-    document.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) =>
-      el.classList.remove("drag-over-top", "drag-over-bottom")
-    );
+    document
+      .querySelectorAll(".drag-over-top, .drag-over-bottom")
+      .forEach((el) =>
+        el.classList.remove("drag-over-top", "drag-over-bottom")
+      );
     if (state.draggedItemId === null) return;
     const after = getDragAfterElement(playlistDOM.lapListEl, e.clientY);
     const oldIndex = state.lapList.indexOf(state.draggedItemId);
@@ -154,7 +179,9 @@ export const setupEventListeners = (DOM) => {
   runnerDOM.playPauseBtn.addEventListener("click", Runner.playPauseSession);
   runnerDOM.nextTaskBtn.addEventListener("click", Runner.nextTask);
   runnerDOM.prevTaskBtn.addEventListener("click", Runner.prevTask);
-  runnerDOM.stopLapsBtn.addEventListener("click", () => Runner.stopSession(false));
+  runnerDOM.stopLapsBtn.addEventListener("click", () =>
+    Runner.stopSession(false)
+  );
   runnerDOM.restartLapsBtn.addEventListener("click", () => {
     if (!Runner.isSessionActive()) return;
     UI.showConfirmationModal(
@@ -176,7 +203,10 @@ export const setupEventListeners = (DOM) => {
 
   repoDOM.deleteAllBtn.addEventListener("click", () => {
     if (
-      !isModificationAllowed("Please stop the session to delete all tasks.", DOM)
+      !isModificationAllowed(
+        "Please stop the session to delete all tasks.",
+        DOM
+      )
     )
       return;
     UI.showConfirmationModal(
@@ -195,14 +225,19 @@ export const setupEventListeners = (DOM) => {
   });
 
   repoDOM.addAllBtn.addEventListener("click", () => {
-    if (!isModificationAllowed("Please stop the session to add all tasks.", DOM))
+    if (
+      !isModificationAllowed("Please stop the session to add all tasks.", DOM)
+    )
       return;
     state.tasks.forEach((t) => addTaskToLap(t.id, playlistDOM, DOM));
   });
 
   playlistDOM.clearLapListBtn.addEventListener("click", () => {
     if (
-      !isModificationAllowed("Please stop the session to clear the playlist.", DOM)
+      !isModificationAllowed(
+        "Please stop the session to clear the playlist.",
+        DOM
+      )
     )
       return;
     UI.showConfirmationModal(
@@ -246,11 +281,13 @@ export const setupEventListeners = (DOM) => {
     UI.hideConfirmationModal(modalDOM);
   });
 
-  document.querySelectorAll(".sort-header").forEach((h) =>
-    h.addEventListener("click", () =>
-      updateSort(h.id.replace("sort-by-", "").replace("-btn", ""), DOM)
-    )
-  );
+  document
+    .querySelectorAll(".sort-header")
+    .forEach((h) =>
+      h.addEventListener("click", () =>
+        updateSort(h.id.replace("sort-by-", "").replace("-btn", ""), DOM)
+      )
+    );
 
   document.querySelectorAll(".preset-btn").forEach((btn) =>
     btn.addEventListener("click", () => {

@@ -26,21 +26,21 @@ export const formatTime = (totalSeconds) => {
 // Render functions
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   // Clear existing
-  formDOM.categoryGrid.innerHTML = '';
+  formDOM.categoryGrid.innerHTML = "";
   const frag = document.createDocumentFragment();
   CATEGORIES.forEach((cat) => {
     const isActive = cat.id === selectedCategoryId;
-    const btn = document.createElement('button');
-    btn.className = `category-btn ${isActive ? 'active' : ''}`;
+    const btn = document.createElement("button");
+    btn.className = `category-btn ${isActive ? "active" : ""}`;
     btn.dataset.id = cat.id;
-    btn.style.outlineColor = isActive ? cat.color : 'transparent';
+    btn.style.outlineColor = isActive ? cat.color : "transparent";
 
-  const iconEl = createIconElement(cat.icon);
-  const name = document.createElement('span');
-  name.className = 'name';
-  name.textContent = cat.name;
-  btn.appendChild(iconEl);
-  btn.appendChild(name);
+    const iconEl = createIconElement(cat.icon);
+    const name = document.createElement("span");
+    name.className = "name";
+    name.textContent = cat.name;
+    btn.appendChild(iconEl);
+    btn.appendChild(name);
     frag.appendChild(btn);
   });
   formDOM.categoryGrid.appendChild(frag);
@@ -49,13 +49,15 @@ export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
 export const renderTaskSummary = (repoDOM, tasks) => {
   const totalTasks = tasks.length;
   const totalDurationInSeconds = tasks.reduce((s, t) => s + t.duration, 0);
-  repoDOM.taskSummaryEl.innerHTML = '';
-  const left = document.createElement('span');
-  left.innerHTML = `<strong>Total Tasks:</strong> `; 
+  repoDOM.taskSummaryEl.innerHTML = "";
+  const left = document.createElement("span");
+  left.innerHTML = `<strong>Total Tasks:</strong> `;
   left.appendChild(document.createTextNode(String(totalTasks)));
-  const right = document.createElement('span');
-  right.innerHTML = `<strong>Total Duration:</strong> `; 
-  right.appendChild(document.createTextNode(formatTime(totalDurationInSeconds)));
+  const right = document.createElement("span");
+  right.innerHTML = `<strong>Total Duration:</strong> `;
+  right.appendChild(
+    document.createTextNode(formatTime(totalDurationInSeconds))
+  );
   repoDOM.taskSummaryEl.appendChild(left);
   repoDOM.taskSummaryEl.appendChild(right);
 };
@@ -72,23 +74,33 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
   const newFragment = document.createDocumentFragment();
 
   for (const task of tasks) {
-    const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+    const category =
+      categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
     let item = existingTaskElements.get(String(task.id));
 
     if (item) {
       // Update existing element
       item.querySelector(".task-title").textContent = task.title;
-      item.querySelector(".task-description").textContent = task.description || "";
+      item.querySelector(".task-description").textContent =
+        task.description || "";
       const badge = item.querySelector(".task-category-badge");
       badge.style.backgroundColor = category.color;
       badge.innerHTML = "";
       const catIconEl = createIconElement(category.icon);
       badge.appendChild(catIconEl);
       badge.appendChild(document.createTextNode(" " + category.name));
-      item.querySelector(".task-duration-col").textContent = formatTime(task.duration);
-      item.querySelector(".task-interval-col").innerHTML = task.lapInterval === 1 ? "Always" : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
-      item.querySelector(".task-limit-col").textContent = task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
-      item.querySelector(".task-growth-col").textContent = `${task.growthFactor || 0}%`;
+      item.querySelector(".task-duration-col").textContent = formatTime(
+        task.duration
+      );
+      item.querySelector(".task-interval-col").innerHTML =
+        task.lapInterval === 1
+          ? "Always"
+          : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
+      item.querySelector(".task-limit-col").textContent =
+        task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
+      item.querySelector(".task-growth-col").textContent = `${
+        task.growthFactor || 0
+      }%`;
       existingTaskElements.delete(String(task.id));
     } else {
       // Create new element
@@ -127,11 +139,15 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
 
       const intervalCol = document.createElement("div");
       intervalCol.className = "task-cell task-interval-col";
-      intervalCol.innerHTML = task.lapInterval === 1 ? "Always" : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
+      intervalCol.innerHTML =
+        task.lapInterval === 1
+          ? "Always"
+          : `<i class=\"fas fa-redo-alt\"></i> ${task.lapInterval}`;
 
       const limitCol = document.createElement("div");
       limitCol.className = "task-cell task-limit-col";
-      limitCol.textContent = task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
+      limitCol.textContent =
+        task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
 
       const growthCol = document.createElement("div");
       growthCol.className = "task-cell task-growth-col";
@@ -186,7 +202,9 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
     (s, id) => s + (taskMap.get(id)?.duration || 0),
     0
   );
-  playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(lapDuration)}`;
+  playlistDOM.lapListDurationEl.textContent = `Total: ${formatTime(
+    lapDuration
+  )}`;
   const sessionInactive = state.runnerState === "STOPPED";
 
   const lapListEl = playlistDOM.lapListEl;
@@ -198,19 +216,23 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
   const newFragment = document.createDocumentFragment();
 
   if (state.lapList.length === 0) {
-    lapListEl.innerHTML = '';
-    const empty = document.createElement('div');
-    empty.className = 'lap-list-item';
-    empty.textContent = 'Add tasks from the repository to create a playlist.';
+    lapListEl.innerHTML = "";
+    const empty = document.createElement("div");
+    empty.className = "lap-list-item";
+    empty.textContent = "Add tasks from the repository to create a playlist.";
     newFragment.appendChild(empty);
   } else {
-    const runningTaskId = state.sessionCache?.virtualSessionPlaylist?.[state.currentVirtualTaskIndex]?.taskId;
+    const runningTaskId =
+      state.sessionCache?.virtualSessionPlaylist?.[
+        state.currentVirtualTaskIndex
+      ]?.taskId;
 
     for (const id of state.lapList) {
       const task = taskMap.get(id);
       if (!task) continue;
 
-      const category = categoryMap.get(task.categoryId) || categoryMap.get('cat-0');
+      const category =
+        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
       const isRunning = runningTaskId === task.id;
       let item = existingLapElements.get(String(task.id));
 
@@ -221,8 +243,12 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
         else item.removeAttribute("draggable");
 
         if (!sessionInactive) {
-          const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-          if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+          const completedOccurrences =
+            state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+          if (
+            task.maxOccurrences > 0 &&
+            completedOccurrences >= task.maxOccurrences
+          ) {
             item.classList.add("maxed-out");
           } else {
             item.classList.remove("maxed-out");
@@ -237,8 +263,12 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
         if (sessionInactive) item.setAttribute("draggable", "true");
 
         if (!sessionInactive) {
-          const completedOccurrences = state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-          if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+          const completedOccurrences =
+            state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
+          if (
+            task.maxOccurrences > 0 &&
+            completedOccurrences >= task.maxOccurrences
+          ) {
             item.classList.add("maxed-out");
           }
         }
@@ -253,21 +283,24 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
         const duration = document.createElement("span");
         duration.className = "duration";
-        duration.textContent = formatTime(task.duration).replace(/(\d+)([a-z]+)/g, "$1 $2");
+        duration.textContent = formatTime(task.duration).replace(
+          /(\d+)([a-z]+)/g,
+          "$1 $2"
+        );
 
         const actions = document.createElement("div");
         actions.className = "lap-item-actions";
         if (sessionInactive) {
           const topBtn = document.createElement("button");
           topBtn.className = "move-btn";
-          topBtn.dataset.action = "top";
-          topBtn.title = "Move to Top";
-          topBtn.innerHTML = '<i class="fas fa-angle-double-up"></i>';
+          topBtn.dataset.action = "up";
+          topBtn.title = "Move Up";
+          topBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
           const bottomBtn = document.createElement("button");
           bottomBtn.className = "move-btn";
-          bottomBtn.dataset.action = "bottom";
-          bottomBtn.title = "Move to Bottom";
-          bottomBtn.innerHTML = '<i class="fas fa-angle-double-down"></i>';
+          bottomBtn.dataset.action = "down";
+          bottomBtn.title = "Move Down";
+          bottomBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
           const removeBtn = document.createElement("button");
           removeBtn.className = "remove-btn";
           removeBtn.title = "Remove from Lap";
@@ -296,7 +329,7 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
     child.remove();
   }
 
-  lapListEl.innerHTML = '';
+  lapListEl.innerHTML = "";
   lapListEl.appendChild(newFragment);
 };
 
@@ -406,9 +439,10 @@ export const updateTimerDisplay = (runnerDOM, state) => {
   const sessionTotalTime =
     (state.sessionCache.completedTaskDurationsMap.get(taskId) || 0) + elapsed;
 
-  runnerDOM.runnerDetails.sessionTotal.textContent = formatTime(sessionTotalTime);
+  runnerDOM.runnerDetails.sessionTotal.textContent =
+    formatTime(sessionTotalTime);
   runnerDOM.timeElapsedEl.textContent = formatTime(elapsed);
-  runnerDOM.timeRemainingEl.textContent = `-${formatTime(state.currentTaskTimeLeft)}`;
+  runnerDOM.timeRemainingEl.textContent = formatTime(state.currentTaskTimeLeft);
   runnerDOM.taskProgressBar.style.width = `${taskPercent}%`;
   runnerDOM.taskPercentage.textContent = `${taskPercent}%`;
 
@@ -463,14 +497,14 @@ export const showConfirmationModal = (
   // raw DOM node if that's passed; normalize to an object with expected fields.
   let m = modalDOM;
   if (!m || !m.modalTitle) {
-    const node = document.getElementById('confirm-modal');
+    const node = document.getElementById("confirm-modal");
     if (!node) return;
     m = {
       confirmModal: node,
-      modalTitle: node.querySelector('#modal-title'),
-      modalText: node.querySelector('#modal-text'),
-      modalCancelBtn: node.querySelector('#modal-cancel-btn'),
-      modalConfirmBtn: node.querySelector('#modal-confirm-btn'),
+      modalTitle: node.querySelector("#modal-title"),
+      modalText: node.querySelector("#modal-text"),
+      modalCancelBtn: node.querySelector("#modal-cancel-btn"),
+      modalConfirmBtn: node.querySelector("#modal-confirm-btn"),
     };
   }
   m.modalTitle.textContent = title;
@@ -550,38 +584,6 @@ export const applyTheme = (theme) => {
   localStorage.setItem("theme", theme);
 };
 
-export const initializeStepper = (stepperEl) => {
-  const input = stepperEl.querySelector("input");
-  const stepDownBtn = stepperEl.querySelector('[data-step*="-"]');
-  const stepUpBtn = stepperEl.querySelector('[data-step*=":not(-)"]');
-  let interval;
-
-  const stopInterval = () => clearInterval(interval);
-
-  const update = (step) => {
-    let val = parseInt(input.value, 10) || 0;
-    const min = parseInt(input.min, 10) || 0;
-    const max = parseInt(input.max, 10) || Infinity;
-    val = Math.max(min, Math.min(max, val + step));
-    input.value = val;
-  };
-
-  stepDownBtn.addEventListener("mousedown", () => {
-    update(parseInt(stepDownBtn.dataset.step, 10));
-    interval = setInterval(() => update(parseInt(stepDownBtn.dataset.step, 10)), 120);
-  });
-
-  stepUpBtn.addEventListener("mousedown", () => {
-    update(parseInt(stepUpBtn.dataset.step, 10));
-    interval = setInterval(() => update(parseInt(stepUpBtn.dataset.step, 10)), 120);
-  });
-
-  stepDownBtn.addEventListener("mouseup", stopInterval);
-  stepDownBtn.addEventListener("mouseleave", stopInterval);
-  stepUpBtn.addEventListener("mouseup", stopInterval);
-  stepUpBtn.addEventListener("mouseleave", stopInterval);
-};
-
 // Reuse the confirmation modal for simple alert messages (single OK button)
 export const showAlert = (modalDOM, title, text) => {
   // Accept either a modal-like object or attempt to find modal elements in DOM
@@ -599,7 +601,10 @@ export const showAlert = (modalDOM, title, text) => {
     // Fallback to native alert if no modal is available
     // Avoid calling `window.alert` in test environments (jsdom's alert throws).
     try {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      if (
+        typeof console !== "undefined" &&
+        typeof console.warn === "function"
+      ) {
         console.warn(text || title || "");
       }
     } catch (e) {
@@ -620,5 +625,6 @@ export const showAlert = (modalDOM, title, text) => {
       m.confirmModal.style.display = "none";
     }, 300);
   };
-  if (m.modalConfirmBtn) m.modalConfirmBtn.addEventListener("click", onOk, { once: true });
+  if (m.modalConfirmBtn)
+    m.modalConfirmBtn.addEventListener("click", onOk, { once: true });
 };

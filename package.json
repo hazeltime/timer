@@ -4,7 +4,7 @@
   "description": "An advanced timer application designed for managing and executing task-based sessions. Built with vanilla HTML, CSS, and JavaScript, this tool helps you structure your work, breaks, and other activities into a configurable, multi-lap playlist.",
   "main": "constants.js",
   "scripts": {
-    "start": "http-server",
+    "start": "live-server",
     "dev": "live-server",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "lint": "eslint . --ext .js"
@@ -41,7 +41,7 @@
   "license": "ISC",
   "type": "module",
   "jest": {
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "transform": {}
   },
   "bugs": {
@@ -50,7 +50,6 @@
   "homepage": "https://github.com/hazeltime/timer#readme",
   "devDependencies": {
     "eslint": "^8.0.0",
-    "http-server": "^14.1.1",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "live-server": "^1.2.2"
