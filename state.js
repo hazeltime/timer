@@ -1,7 +1,5 @@
 // state.js
 
-import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
-
 // Helper to safely parse JSON with a default fallback
 const safeParse = (key, fallback) => {
   try {
