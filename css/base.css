@@ -40,6 +40,8 @@
   --preset-btn-border: #bae6fd;
   /* --- SIZES & SPACING --- */
   --control-height: 2.625rem; /* 42px */
+  --btn-icon-gap: 0.5rem; /* 8px */
+  --btn-ghost-hover: rgba(0, 0, 0, 0.05);
 
   /* Type Scale */
   --text-2xs: 0.625rem;  /* 10px */
@@ -142,10 +144,11 @@ body.dark-theme {
   --preset-btn-text: #58a6ff;
   --preset-btn-border: #30363d;
   
-  /* Focus Ring Standard */
   --focus-ring-color: var(--accent-blue);
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
+  
+  --btn-ghost-hover: rgba(255, 255, 255, 0.1);
 }
 
 *,
