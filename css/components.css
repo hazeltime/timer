@@ -351,6 +351,9 @@ body.dark-theme .theme-btn .fa-moon {
   transform: trans  line-height: 1;
 }
 
+  line-height: 1;
+}
+
 .btn-primary {
   background-color: var(--btn-primary-bg) !important;
   color: var(--btn-primary-text) !important;
@@ -358,6 +361,17 @@ body.dark-theme .theme-btn .fa-moon {
 }
 .btn-primary:hover {
   background-color: var(--btn-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+  background-color: #238636 !important;
+  color: #ffffff !important;
+  border: 1px solid transparent;
+}
+.btn-success:hover {
+  background-color: #2ea043 !important;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }

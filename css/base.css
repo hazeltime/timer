@@ -240,7 +240,7 @@ body {
 
 @media (min-width: 900px) { /* Increased breakpoint to prevent overlap */
   .theme-btn .btn-label {
-    display: inline-block;
+    display: none; /* Reverted to hidden for cleaner look */
   }
 }
 
