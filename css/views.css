@@ -5,6 +5,7 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   width: 100%;
+  padding: var(--panel-padding);
 }
 /* Ensure header titles wrap and don't push layout */
 .panel .panel-header h2,
@@ -25,7 +26,7 @@
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: var(--space-md);
   }
 }
 
@@ -41,7 +42,7 @@
 .form-group legend,
 .duration-input-group label,
 .preset-group label {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
   font-weight: 500;
   font-size: 0.875rem; /* Standardized size */
   color: var(--text-secondary);
@@ -61,7 +62,7 @@ fieldset {
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
   gap: var(--space-sm);
   padding: 2px;
   margin: -2px;
@@ -107,7 +108,7 @@ fieldset {
 
 .duration-inputs-wrapper {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   max-width: fit-content;
 }
 
@@ -533,7 +534,7 @@ fieldset {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: 0.625rem var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   margin-bottom: 0.5rem;
   background-color: var(--input-bg);
@@ -646,6 +647,6 @@ body.runner-active .form-panel {
 .lap-item-actions button,
 .collapse-btn,
 .panel-header-btn {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
 }

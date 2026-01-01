@@ -526,7 +526,7 @@ textarea::placeholder {
   animation: modal-fade-in-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .modal-content {
-  padding: 2.5rem;
+  padding: var(--panel-padding);
   border-radius: var(--radius-lg);
   width: 90%;
   max-width: 760px; /* keep modals readable on large screens */
@@ -535,6 +535,31 @@ textarea::placeholder {
   background-color: var(--panel-bg);
   box-shadow: var(--shadow-layer-1), var(--shadow-layer-2);
   transition: box-shadow 0.18s, transform 0.14s;
+}
+
+/* --- Mobile Bottom Sheet Modal --- */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-end; /* Align to bottom for sheet */
+  }
+  
+  .modal-overlay.show .modal-content {
+    animation: bottom-sheet-slide-up 0.4s var(--ease-spring) forwards;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin: 0;
+    padding: 2rem 1.5rem; /* Larger touch targets on mobile */
+  }
+
+  @keyframes bottom-sheet-slide-up {
+    from { transform: translateY(100%); opacity: 1; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 }
 .modal-actions button {
   padding: 0.625rem 1.25rem;
