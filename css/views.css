@@ -71,9 +71,9 @@
 
 .form-settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-lg);
-  padding-top: var(--space-md);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
   border-top: 1px solid var(--border-color); /* Visual separator */
 }
 
