@@ -810,11 +810,13 @@ body.runner-active #runner-task-title {
   padding-left: 2rem; /* Make space for grip */
 }
 .lap-list-item::before {
-  content: "⋮⋮"; /* Grip handle */
+  content: "\f58e"; /* Grip handle */
   position: absolute;
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
   color: var(--text-secondary);
   font-size: 1rem;
   opacity: 0.5;
