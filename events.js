@@ -88,6 +88,34 @@ export const setupEventListeners = (DOM) => {
     document.body.classList.remove("runner-popped-out");
   });
 
+    if (panel.contains(e.target)) return;
+    panel.classList.remove("task-runner-popout");
+    document.body.classList.remove("runner-popped-out");
+  });
+
+  // Global Shortcuts (Sprint 8: Jakob's Law)
+  document.addEventListener("keydown", (e) => {
+    // Ignore if typing in input/textarea
+    if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+
+    if (e.code === "Space") {
+      e.preventDefault(); // Prevent scroll
+      Runner.playPauseSession();
+    }
+    if (e.code === "Escape") {
+      // Close any open modals
+      if (modalManager) modalManager.closeAll(); // Assuming ModalManager has this or we need to access DOM directly
+      // Or manually trigger close buttons if method missing:
+      const openModals = document.querySelectorAll(".modal.show");
+      openModals.forEach(m => {
+        m.classList.remove("show");
+        setTimeout(() => m.style.display = "none", 300);
+      });
+      // Also close Guide
+      guideModalDOM.guideModalCloseBtn.click();
+    }
+  });
+
   headerDOM.guideBtn.addEventListener("click", () => {
     modalManager.openGuide();
   });

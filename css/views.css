@@ -653,6 +653,14 @@ body.dark-theme .task-item:nth-child(even) {
   .task-title-col { grid-area: title; margin-bottom: 0; }
   .task-actions-col { grid-area: actions; justify-self: end; margin-top: 0; }
   .task-category-col { grid-area: details; }
+
+  /* Fitts's Law: Enforce 44px touch targets on mobile */
+  .task-actions-col .btn,
+  .task-actions-col .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.2rem;
+  }
 }
 .runner-progress-details .divider {
   height: 1px;
