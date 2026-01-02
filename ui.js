@@ -411,15 +411,34 @@ export const updateSortHeaders = (sortState) => {
 
 // --- UI STATE MODIFICATION ---
 
+const applyTaskFormValues = (formDOM, values) => {
+  const {
+    title,
+    description,
+    durationSeconds,
+    lapInterval,
+    growthFactor,
+    maxOccurrences,
+  } = values;
+  formDOM.taskInput.value = title;
+  formDOM.taskDescriptionInput.value = description;
+  formDOM.durationMinutesInput.value = Math.floor(durationSeconds / 60);
+  formDOM.durationSecondsInput.value = durationSeconds % 60;
+  formDOM.lapIntervalInput.value = lapInterval;
+  formDOM.growthFactorInput.value = growthFactor;
+  formDOM.maxOccurrencesInput.value = maxOccurrences;
+};
+
 export const resetTaskFormUI = (formDOM) => {
   formDOM.formTitle.textContent = "Create New Task";
-  formDOM.taskInput.value = "";
-  formDOM.taskDescriptionInput.value = "";
-  formDOM.durationMinutesInput.value = 1;
-  formDOM.durationSecondsInput.value = 30;
-  formDOM.lapIntervalInput.value = 1;
-  formDOM.growthFactorInput.value = 0;
-  formDOM.maxOccurrencesInput.value = 0;
+  applyTaskFormValues(formDOM, {
+    title: "",
+    description: "",
+    durationSeconds: 90,
+    lapInterval: 1,
+    growthFactor: 0,
+    maxOccurrences: 0,
+  });
   formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.PLUS}"></i> Add Task`;
   formDOM.cancelEditBtn.style.display = "none";
   formDOM.taskInput.focus();
@@ -427,13 +446,14 @@ export const resetTaskFormUI = (formDOM) => {
 
 export const loadTaskIntoFormUI = (formDOM, task) => {
   formDOM.formTitle.textContent = `Editing Task #${task.id}`;
-  formDOM.taskInput.value = task.title;
-  formDOM.taskDescriptionInput.value = task.description;
-  formDOM.durationMinutesInput.value = Math.floor(task.duration / 60);
-  formDOM.durationSecondsInput.value = task.duration % 60;
-  formDOM.lapIntervalInput.value = task.lapInterval || 1;
-  formDOM.growthFactorInput.value = task.growthFactor || 0;
-  formDOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
+  applyTaskFormValues(formDOM, {
+    title: task.title,
+    description: task.description || "",
+    durationSeconds: task.duration,
+    lapInterval: task.lapInterval || 1,
+    growthFactor: task.growthFactor || 0,
+    maxOccurrences: task.maxOccurrences || 0,
+  });
   formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.SAVE}"></i> Save Changes`;
   formDOM.cancelEditBtn.style.display = "inline-block";
 };
