@@ -1,6 +1,6 @@
 // UI helpers and render functions
 // UI helpers and render functions
-import { CATEGORIES, categoryMap, ICONS } from "./constants.js";
+import { CATEGORIES, getCategory, ICONS } from "./constants.js";
 import { createIconElement } from "./utils.js";
 
 import { DomBuilder, TimeUtils, DataFormatter } from "./core.js";
@@ -287,51 +287,46 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
     return;
   }
   // Grouping Logic (Sprint 8: Miller's Law)
-  // We sort by Category first if the current sort is by ID (default) or by Category.
-  // Otherwise, we respect the user sort but might lose grouping visual cohesion.
-  // Let's enforce grouping if NOT sorting by a specific numeric field? 
-  // For now, let's just group them visually in the output if possible, or just render category headers.
-  
-  // Actually, to do visual grouping, the list MUST be sorted by category.
-  // Let's implement a "Grouped View" logic.
-  
+  // Visual grouping requires rendering by category.
   const groupedTasks = new Map();
-  // Ensure we consistently group, sorting tasks within category by ID or user sort
-  tasks.forEach(task => {
-    const catId = task.categoryId || 'cat-0';
+  tasks.forEach((task) => {
+    const catId = task.categoryId || "cat-0";
     if (!groupedTasks.has(catId)) groupedTasks.set(catId, []);
     groupedTasks.get(catId).push(task);
   });
-  
-  // Render groups
+
   const renderFragment = document.createDocumentFragment();
-  
-  // Iterate categories in defined order (from constants or map keys)
-  // We'll iterate the map keys we just built, or use CATEGORIES constant for order
-  const sortedCatIds = [...groupedTasks.keys()].sort(); // Simple sort or specific order
-  
-  sortedCatIds.forEach(catId => {
-    const cat = categoryMap.get(catId);
-    const groupTasks = groupedTasks.get(catId);
-    
-    // Group Header
-    const groupHeader = document.createElement('div');
-    groupHeader.className = 'repo-group-header';
-    groupHeader.style.color = cat ? cat.color : 'var(--text-secondary)';
-    groupHeader.style.borderLeft = `4px solid ${cat ? cat.color : 'gray'}`;
-    groupHeader.innerHTML = `<span>${cat ? cat.name : 'Uncategorized'}</span> <span class="badge">${groupTasks.length}</span>`;
+  const orderedCatIds = [
+    ...CATEGORIES.map((category) => category.id).filter((id) =>
+      groupedTasks.has(id),
+    ),
+    ...[...groupedTasks.keys()]
+      .filter((id) => !CATEGORIES.some((category) => category.id === id))
+      .sort(),
+  ];
+
+  orderedCatIds.forEach((catId) => {
+    const category = getCategory(catId);
+    const groupTasks = groupedTasks.get(catId) || [];
+
+    const groupHeader = document.createElement("div");
+    groupHeader.className = "repo-group-header";
+    groupHeader.style.color = category?.color || "var(--text-secondary)";
+    groupHeader.style.borderLeft = `4px solid ${
+      category?.color || "gray"
+    }`;
+    groupHeader.innerHTML = `<span>${
+      category?.name || "Uncategorized"
+    }</span> <span class="badge">${groupTasks.length}</span>`;
     renderFragment.appendChild(groupHeader);
-    
-    // Tasks
-    groupTasks.forEach(task => {
-       const category = cat || categoryMap.get("cat-0");
-       // Check existing (logic skipped for brevity, full rebuild is safer for grouping)
-       let item = createTaskRepoRow(task, category);
-       renderFragment.appendChild(item);
+
+    groupTasks.forEach((task) => {
+      const item = createTaskRepoRow(task, category);
+      renderFragment.appendChild(item);
     });
   });
-  
-  taskListEl.innerHTML = ""; // Full clear for grouping
+
+  taskListEl.innerHTML = "";
   taskListEl.appendChild(renderFragment);
 
   renderTaskSummary(repoDOM, tasks);
@@ -377,8 +372,7 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
     for (const id of state.lapList) {
       const task = taskMap.get(id);
       if (!task) continue;
-      const category =
-        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+      const category = getCategory(task.categoryId);
 
       const item = createPlaylistRow(
         task,

@@ -1,7 +1,7 @@
 // Task runner: builds virtual playlist and controls session timer
 import * as UI from "./ui.js";
 import {
-  categoryMap,
+  getCategory,
   MAX_DURATION_SECONDS,
   MIN_DURATION_SECONDS,
 } from "./constants.js";
@@ -103,7 +103,7 @@ const loadTaskToRunner = (virtualIndex) => {
   const task = state.sessionCache.taskMap.get(taskId);
   if (!task) return stopSession(true);
 
-  const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+  const category = getCategory(task.categoryId);
   // Render category icon and name using DOM APIs to avoid string-based HTML injection
   runnerDOM.runnerTaskCategory.textContent = "";
   const catIcon = createIconElement(category.icon);

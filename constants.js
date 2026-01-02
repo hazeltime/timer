@@ -15,6 +15,18 @@ export const CATEGORIES = [
 
 export const categoryMap = new Map(CATEGORIES.map((c) => [c.id, c]));
 
+export const getCategory = (id, fallbackId = "cat-0") => {
+  const category = categoryMap.get(id);
+  if (category) return category;
+  if (!fallbackId) return null;
+  return categoryMap.get(fallbackId) || null;
+};
+
+export const getCategoryName = (id) => {
+  const category = categoryMap.get(id);
+  return category ? category.name : "";
+};
+
 export const MAX_DURATION_SECONDS = 23 * 3600 + 59 * 60 + 59;
 export const MIN_DURATION_SECONDS = 5;
 

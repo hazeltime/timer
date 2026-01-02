@@ -4,7 +4,7 @@ import * as UI from "./ui.js";
 import { state, saveState } from "./state.js";
 import { clamp, validateTaskInput } from "./utils.js";
 import * as Runner from "./runner.js";
-import { categoryMap } from "./constants.js";
+import { getCategoryName } from "./constants.js";
 
 const notify = (message, type) => {
   if (typeof UI.showToast === "function") {
@@ -34,10 +34,8 @@ export const sortTasks = (list) => {
       case "duration":
         return (a.duration - b.duration) * order;
       case "category":
-        const catA = categoryMap.get(a.categoryId);
-        const nameA = catA ? catA.name : "";
-        const catB = categoryMap.get(b.categoryId);
-        const nameB = catB ? catB.name : "";
+        const nameA = getCategoryName(a.categoryId);
+        const nameB = getCategoryName(b.categoryId);
         return nameA.localeCompare(nameB) * order;
       case "lapInterval":
         return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
