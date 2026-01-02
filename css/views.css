@@ -616,6 +616,13 @@ body.dark-theme .task-item:nth-child(even) {
   flex-direction: column;
   text-align: center;
 }
+.runner-detail-label {
+  min-height: 2.25em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 .runner-detail-value {
   font-size: 1.25rem;
   font-weight: 600;
