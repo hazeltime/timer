@@ -160,20 +160,21 @@ export const setupEventListeners = (DOM) => {
     modalManager.openGuide();
   });
 
-  guideModalDOM.guideModal.addEventListener("click", (e) => {
-    if (e.target === guideModalDOM.guideModal) {
-      guideModalDOM.guideModal.classList.remove("show");
-      setTimeout(() => {
-        guideModalDOM.guideModal.style.display = "none";
-      }, 300);
-    }
-  });
-
-  guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
+  const closeGuideModal = () => {
     guideModalDOM.guideModal.classList.remove("show");
     setTimeout(() => {
       guideModalDOM.guideModal.style.display = "none";
     }, 300);
+  };
+
+  guideModalDOM.guideModal.addEventListener("click", (e) => {
+    if (e.target === guideModalDOM.guideModal) {
+      closeGuideModal();
+    }
+  });
+
+  guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
+    closeGuideModal();
   });
 
   repoDOM.taskListEl.addEventListener("click", (e) => {
