@@ -277,54 +277,53 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
     renderTaskSummary(repoDOM, tasks);
     return;
   }
-  const existingTaskElements = new Map();
-  for (const child of taskListEl.children) {
-    existingTaskElements.set(child.dataset.id, child);
-  }
-
-  const newFragment = document.createDocumentFragment();
-
-  for (const task of tasks) {
-    const category =
-      categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
-    let item = existingTaskElements.get(String(task.id));
-
-    if (item) {
-      // Update existing element
-      item.querySelector(".task-title").textContent = task.title;
-      item.querySelector(".task-description").textContent =
-        task.description || "";
-      const badge = item.querySelector(".task-category-badge");
-      badge.style.backgroundColor = category.color;
-      badge.innerHTML = "";
-      const catIconEl = createIconElement(category.icon);
-      badge.appendChild(catIconEl);
-      badge.appendChild(document.createTextNode(" " + category.name));
-      item.querySelector(".task-duration-col").textContent = formatTime(
-        task.duration,
-      );
-      item.querySelector(".task-interval-col").innerHTML =
-        task.lapInterval === 1
-          ? "Always"
-          : `<i class="${ICONS.REDO}"></i> ${task.lapInterval}`;
-      item.querySelector(".task-limit-col").textContent =
-        task.maxOccurrences === 0 ? "∞" : String(task.maxOccurrences);
-      item.querySelector(".task-growth-col").textContent = `${
-        task.growthFactor || 0
-      }%`;
-      existingTaskElements.delete(String(task.id));
-    } else {
-      // Create new element
-      item = createTaskRepoRow(task, category);
-    }
-    newFragment.appendChild(item);
-  }
-
-  for (const child of existingTaskElements.values()) {
-    child.remove();
-  }
-
-  taskListEl.appendChild(newFragment);
+  // Grouping Logic (Sprint 8: Miller's Law)
+  // We sort by Category first if the current sort is by ID (default) or by Category.
+  // Otherwise, we respect the user sort but might lose grouping visual cohesion.
+  // Let's enforce grouping if NOT sorting by a specific numeric field? 
+  // For now, let's just group them visually in the output if possible, or just render category headers.
+  
+  // Actually, to do visual grouping, the list MUST be sorted by category.
+  // Let's implement a "Grouped View" logic.
+  
+  const groupedTasks = new Map();
+  // Ensure we consistently group, sorting tasks within category by ID or user sort
+  tasks.forEach(task => {
+    const catId = task.categoryId || 'cat-0';
+    if (!groupedTasks.has(catId)) groupedTasks.set(catId, []);
+    groupedTasks.get(catId).push(task);
+  });
+  
+  // Render groups
+  const renderFragment = document.createDocumentFragment();
+  
+  // Iterate categories in defined order (from constants or map keys)
+  // We'll iterate the map keys we just built, or use CATEGORIES constant for order
+  const sortedCatIds = [...groupedTasks.keys()].sort(); // Simple sort or specific order
+  
+  sortedCatIds.forEach(catId => {
+    const cat = categoryMap.get(catId);
+    const groupTasks = groupedTasks.get(catId);
+    
+    // Group Header
+    const groupHeader = document.createElement('div');
+    groupHeader.className = 'repo-group-header';
+    groupHeader.style.color = cat ? cat.color : 'var(--text-secondary)';
+    groupHeader.style.borderLeft = `4px solid ${cat ? cat.color : 'gray'}`;
+    groupHeader.innerHTML = `<span>${cat ? cat.name : 'Uncategorized'}</span> <span class="badge">${groupTasks.length}</span>`;
+    renderFragment.appendChild(groupHeader);
+    
+    // Tasks
+    groupTasks.forEach(task => {
+       const category = cat || categoryMap.get("cat-0");
+       // Check existing (logic skipped for brevity, full rebuild is safer for grouping)
+       let item = createTaskRepoRow(task, category);
+       renderFragment.appendChild(item);
+    });
+  });
+  
+  taskListEl.innerHTML = ""; // Full clear for grouping
+  taskListEl.appendChild(renderFragment);
 
   renderTaskSummary(repoDOM, tasks);
 };
