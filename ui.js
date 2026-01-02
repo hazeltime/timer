@@ -388,14 +388,20 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 export const updateSortHeaders = (sortState) => {
   $$(".sort-header").forEach((h) => {
     h.classList.remove("active");
-    h.querySelector("i").className = "fas";
+    h.setAttribute("aria-sort", "none");
+    const icon = h.querySelector("i");
+    if (icon) icon.className = "fas";
   });
   const active = $("#sort-by-" + sortState.field + "-btn");
   if (active) {
     active.classList.add("active");
-    active
-      .querySelector("i")
-      .classList.add(
+    active.setAttribute(
+      "aria-sort",
+      sortState.order === "asc" ? "ascending" : "descending",
+    );
+    const icon = active.querySelector("i");
+    if (icon)
+      icon.classList.add(
         sortState.order === "asc" ? "fa-arrow-up" : "fa-arrow-down",
       );
   }

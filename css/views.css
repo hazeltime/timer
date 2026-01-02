@@ -40,10 +40,21 @@
   gap: var(--space-md);
 }
 
-.input-lg {
-  font-size: 1rem; /* Standard readable size */
+.left-column {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  scrollbar-width: thin; /* For Firefox */
+}
+/* Ensure standard height for inputs */
+.input-lg,
+.form-group select,
+.form-group textarea {
+  font-size: 1rem;
   font-weight: 500;
-  height: 2.75rem; /* Comfortable touch target but not huge */
+  min-height: 3rem; /* 48px Standard */
 }
 
 .form-row-split {
@@ -102,6 +113,7 @@ fieldset {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 2px;
+  justify-content: center; /* Balance Orphans (Item 8) */
 }
 
 .category-btn {
@@ -293,7 +305,7 @@ body.dark-theme .task-item:nth-child(even) {
 }
 .task-title {
   font-weight: 600;
-  font-size: var(--text-base);
+  font-size: 1rem; /* Fix Table Font Size (Item 4) */
   line-height: var(--leading-tight);
   /* Truncation / Wrap logic */
   display: -webkit-box;
@@ -558,8 +570,9 @@ body.dark-theme .task-item:nth-child(even) {
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
-  height: auto; /* Allow height to adapt */
-  min-height: 2.5rem; /* Minimum touch target */
+  height: auto;
+  min-height: 2.5rem;
+  font-size: 0.95rem; /* Fix Preset Font (Item 5) */
 }
 
 .preset-btn:hover {
@@ -578,12 +591,13 @@ body.dark-theme .task-item:nth-child(even) {
 .runner-details-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem; /* Compact Spacing */
   padding: var(--space-md);
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: var(--radius-md);
+  align-items: start; /* Fix Stats Alignment (Item 6) */
 }
 .runner-detail {
   display: flex;
@@ -652,6 +666,20 @@ body.dark-theme .task-item:nth-child(even) {
   gap: 1rem;
   margin-top: 1rem;
 }
+  gap: 1rem;
+}
+/* Item 3: Empty Runner State Muted */
+#runner-task-title {
+  color: var(--text-secondary);
+  font-style: italic;
+  opacity: 0.7;
+  transition: all 0.3s;
+}
+body.runner-active #runner-task-title {
+  color: var(--text-primary);
+  font-style: normal;
+  opacity: 1;
+}
 .stop-session-container {
   display: flex;
   justify-content: center;
@@ -671,18 +699,17 @@ body.dark-theme .task-item:nth-child(even) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--bg-tertiary); /* Pill container */
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-color);
   margin-left: auto;
 }
 #lap-list-duration {
   font-weight: 600;
   color: var(--text-primary);
+  background-color: var(--bg-tertiary); /* Restore Pill look */
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
   font-size: 0.875rem;
+  border: 1px solid var(--border-color);
   font-variant-numeric: tabular-nums;
-  padding: 0 0.5rem;
 }
 .lap-list {
   overflow-y: auto;
@@ -840,7 +867,10 @@ body.runner-active .form-panel {
   margin-bottom: 1rem;
 }
 
-/* 5. Touch Targets */
+/* Fix Dangerous Proximity */
+.task-actions-col {
+  gap: 0.5rem !important;
+}
 .task-actions-col button,
 .lap-item-actions button,
 .collapse-btn,

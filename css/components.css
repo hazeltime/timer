@@ -355,21 +355,39 @@ body.dark-theme .theme-btn .fa-moon {
 }
 
 /* Standardize Icon Buttons in Repo */
+/* Standardize Icon Buttons in Repo */
 .task-actions-col .btn-icon,
 .lap-list-item .btn-icon {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  color: white; /* Standardize text color for solid buttons */
   transition: all 0.2s;
-  background-color: var(--bg-secondary); /* Give them a 'button' look */
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.task-actions-col .btn-icon:hover,
-.lap-list-item .btn-icon:hover {
-  background-color: var(--hover-bg);
-  color: var(--text-primary);
-  border-color: var(--border-hover);
+/* Solid Colors for Actions */
+.task-actions-col .edit-btn,
+.task-actions-col .copy-btn {
+  background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+.task-actions-col .delete-btn {
+  background-color: var(--danger-custom) !important;
+  color: white !important;
+}
+.task-actions-col .add-to-lap-btn {
+  background-color: #238636 !important;
+  color: white !important;
+}
+
+.task-actions-col .btn-icon:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 .task-actions-col .delete-btn:hover {
   background-color: var(--danger-custom);
@@ -672,15 +690,21 @@ textarea::placeholder {
   display: flex;
 }
 .stepper-input .stepper-btn {
+  background-color: var(--bg-secondary);
   border: 1px solid var(--input-border);
+  color: var(--text-primary);
   position: relative;
   z-index: 2;
-  width: 36px; /* Larger tap target */
-  height: 36px;
-  padding: 0;
-  display: inline-flex;
+  height: 3rem; /* Force 48px height (Item B/2) */
+  width: 3rem;
+  display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+.stepper-input .stepper-btn:hover {
+  background-color: var(--hover-bg);
 }
 .stepper-input .stepper-btn:hover {
   filter: brightness(0.95);
