@@ -398,16 +398,19 @@ body {
 .theme-btn .btn-label {
   font-size: 0.875rem;
   font-weight: 500;
-  display: none; 
+  display: inline-block;
 }
 
 @media (min-width: 1100px) {
-  .theme-btn .btn-label {
-    display: inline-block;
-  }
   .header-controls .theme-btn {
     width: auto;
     padding-inline: 0.75rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .theme-btn .btn-label {
+    display: none;
   }
 }
 
