@@ -59,6 +59,14 @@
   .task-actions-col {
     grid-column: 2;
   }
+  .task-title {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: clip;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
   .task-id-col,
   .task-category-col,
   .task-duration-col,
