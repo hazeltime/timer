@@ -370,9 +370,12 @@ body.dark-theme .theme-btn .fa-moon {
   justify-content: center;
 }
 /* Solid Colors for Actions */
-.task-actions-col .edit-btn,
-.task-actions-col .copy-btn {
+.task-actions-col .edit-btn {
   background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+.task-actions-col .copy-btn {
+  background-color: var(--accent-purple) !important;
   color: white !important;
 }
 .task-actions-col .delete-btn {
@@ -394,11 +397,15 @@ body.dark-theme .theme-btn .fa-moon {
   color: white;
   border-color: var(--danger-custom);
 }
-.task-actions-col .copy-btn:hover,
 .task-actions-col .edit-btn:hover {
   background-color: var(--btn-primary-bg);
   color: white;
   border-color: var(--btn-primary-bg);
+}
+.task-actions-col .copy-btn:hover {
+  background-color: var(--accent-purple);
+  color: white;
+  border-color: var(--accent-purple);
 }
 .task-actions-col .add-to-lap-btn:hover {
   background-color: #238636;
@@ -425,11 +432,15 @@ body.dark-theme .theme-btn .fa-moon {
   background-color: var(--danger-custom);
   color: white;
 }
-.task-actions-col .copy-btn:hover,
 .task-actions-col .edit-btn:hover {
   background-color: var(--btn-primary-bg);
   color: white;
   border-color: var(--btn-primary-bg);
+}
+.task-actions-col .copy-btn:hover {
+  background-color: var(--accent-purple);
+  color: white;
+  border-color: var(--accent-purple);
 }
 .task-actions-col .add-to-lap-btn:hover {
   background-color: #238636;
