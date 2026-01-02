@@ -570,7 +570,7 @@ body.dark-theme .theme-btn .fa-moon {
 
 .preset-btn {
   padding: 0.25rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   height: auto;
   background-color: var(--preset-btn-bg);
   color: var(--preset-btn-text);
