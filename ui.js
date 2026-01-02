@@ -133,6 +133,13 @@ export const createTaskRepoRow = (task, category) => {
       dataset: { id: task.id }
   });
 
+  const categoryBadge = DomBuilder.create("span", {
+    className: "task-category-badge",
+    style: { backgroundColor: category.color },
+  });
+  categoryBadge.appendChild(createIconElement(category.icon));
+  categoryBadge.appendChild(document.createTextNode(" " + category.name));
+
   const cells = [
     { cls: "task-id-col", content: `#${task.id}` },
     {
@@ -141,7 +148,7 @@ export const createTaskRepoRow = (task, category) => {
     },
     {
       cls: "task-category-col",
-      html: `<span class="task-category-badge" style="background-color: ${category.color}"><i class="${category.icon}"></i> ${category.name}</span>`,
+      node: categoryBadge,
     },
     { cls: "task-duration-col", content: TimeUtils.format(task.duration) },
     {
@@ -157,7 +164,8 @@ export const createTaskRepoRow = (task, category) => {
 
   cells.forEach((c) => {
     const div = DomBuilder.div(`task-cell ${c.cls}`);
-    if (c.html) div.innerHTML = c.html;
+    if (c.node) div.appendChild(c.node);
+    else if (c.html) div.innerHTML = c.html;
     else div.textContent = c.content;
     item.appendChild(div);
   });
