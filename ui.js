@@ -43,6 +43,8 @@ export const showToast = (message, type = "info", timeout = 2400) => {
   if (!container) return;
   const toast = document.createElement("div");
   toast.className = `toast toast--${type}`;
+  toast.setAttribute("role", "alert"); // Sprint 8: Accessibility
+  toast.setAttribute("aria-live", "assertive");
   toast.textContent = message;
   container.appendChild(toast);
   const show = () => toast.classList.add("show");

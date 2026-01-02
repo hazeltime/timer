@@ -9,7 +9,26 @@ import { clamp, createIconElement } from "./utils.js";
 
 let state = null;
 let runnerDOM = null;
+let runnerDOM = null;
 let modalDOM = null;
+
+// Audio Context for Beep (Sprint 8: Accessibility)
+const playBeep = (freq = 880, dur = 0.1) => {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    gain.gain.value = 0.1; // Low volume
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch (e) { console.warn("Audio play failed", e); }
+};
 
 const stopTimerInterval = () => {
   clearInterval(state.sessionInterval);
@@ -29,6 +48,7 @@ const handleTaskCompletion = () => {
     );
   }
   loadTaskToRunner(state.currentVirtualTaskIndex + 1);
+  playBeep(440, 0.1); // Low beep for next task
 };
 
 const startTimerInterval = () => {
@@ -311,6 +331,10 @@ export const stopSession = (finished = false) => {
     runnerDOM.lapsProgressLabel.textContent = `Session Complete! (${
       state.sessionCache.totalLaps || 0
     } laps)`;
+    // Celebration Sound
+    playBeep(523.25, 0.1); // C5
+    setTimeout(() => playBeep(659.25, 0.1), 150); // E5
+    setTimeout(() => playBeep(783.99, 0.2), 300); // G5 
     UI.showConfirmationModal(
       modalDOM,
       state,

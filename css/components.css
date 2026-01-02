@@ -1097,3 +1097,25 @@ button i {
 .toast--success { border-left-color: var(--accent-green); }
 .toast--error { border-left-color: var(--accent-red); }
 .toast--info { border-left-color: var(--accent-blue); }
+
+/* --- Guide Modal Polish (Sprint 8: Whitespace) --- */
+.guide-modal-content {
+  text-align: left;
+  line-height: 1.7;
+}
+.guide-modal-content h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.guide-modal-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--accent-blue);
+}
+.guide-modal-content ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.guide-modal-content li {
+  margin-bottom: 0.5rem;
+}
