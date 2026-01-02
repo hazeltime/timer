@@ -239,7 +239,7 @@ button,
 }
 
 .theme-btn {
-  background-color: var(--panel-bg);
+  background-color: var(--button-secondary-bg);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: var(--radius-md);
