@@ -120,6 +120,9 @@ const loadTaskToRunner = (virtualIndex) => {
     document.createTextNode(" " + category.name),
   );
   runnerDOM.runnerTaskTitle.textContent = task.title;
+  if (runnerDOM.runnerTaskTitle?.classList) {
+    runnerDOM.runnerTaskTitle.classList.remove("is-empty");
+  }
   runnerDOM.runnerTaskDescription.textContent = task.description;
   state.currentTaskTimeLeft = calculatedDuration;
 

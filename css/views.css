@@ -524,6 +524,7 @@ body.dark-theme .task-item:nth-child(even) {
   margin: 0;
   font-size: 1.5rem;
   text-align: left;
+  color: var(--text-primary);
 }
 
 /* IMPROVEMENT: Streamlined runner/display labels */
@@ -689,7 +690,7 @@ body.dark-theme .task-item:nth-child(even) {
   gap: 1rem;
 }
 /* Item 3: Empty Runner State Muted */
-#runner-task-title {
+#runner-task-title.is-empty {
   color: var(--text-secondary);
   font-style: italic;
   opacity: 0.7;

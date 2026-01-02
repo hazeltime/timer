@@ -470,6 +470,9 @@ export const resetRunnerDisplay = (runnerDOM) => {
       <span style="font-size: 1rem; font-weight: 500;">No task selected</span>
     </div>
   `;
+  if (runnerDOM.runnerTaskTitle?.classList) {
+    runnerDOM.runnerTaskTitle.classList.add("is-empty");
+  }
   runnerDOM.taskProgressBar.style.width = "0%";
   runnerDOM.taskPercentage.textContent = "0%";
   runnerDOM.timeElapsedEl.textContent = "0s";
