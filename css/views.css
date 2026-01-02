@@ -544,7 +544,7 @@ body.dark-theme .task-item:nth-child(even) {
 .timer-display {
   display: flex;
   justify-content: space-between;
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem); /* RWD: Responsive scaling */
   margin-top: 0.5rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -809,10 +809,11 @@ body.runner-active #runner-task-title {
   cursor: grab;
 }
 .lap-list-item.running {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: 2px;
-  background-color: color-mix(in srgb, var(--accent-blue) 10%, transparent);
-  box-shadow: 0 0 10px var(--accent-blue-focus-shadow);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, var(--panel-bg) 100%);
+  border-left: 4px solid var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  transform: scale(1.005);
+  padding-left: calc(1rem - 3px); /* Adjust for border */
 }
 .lap-list-item.maxed-out {
   opacity: 0.5;
