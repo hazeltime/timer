@@ -59,6 +59,9 @@
   .task-actions-col {
     grid-column: 2;
   }
+  .task-description {
+    display: none;
+  }
   .task-title {
     white-space: normal;
     overflow: hidden;
