@@ -6,6 +6,7 @@ import { state, saveState } from "./state.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import { ModalManager } from "./modal.js";
 import { setupAdvancedModeToggle } from "./scripts/advanced-mode.js";
+import { setupLimitToggle } from "./scripts/limit-toggle.js";
 
 let modalManager;
 import {
@@ -39,6 +40,7 @@ export const setupEventListeners = (DOM) => {
 
   // Init Advanced Mode Toggle (Sprint 8)
   setupAdvancedModeToggle(formDOM);
+  setupLimitToggle(formDOM);
 
   // Auto-focus title on load
   setTimeout(() => formDOM.taskInput.focus(), 100);

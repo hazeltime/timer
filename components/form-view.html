@@ -111,12 +111,18 @@
               <fieldset class="form-group">
                 <legend>Max Occurrences</legend>
                 <div class="max-occurrences-controls">
-                  <div class="stepper-input">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <label class="checkbox-label" style="font-size: 0.85rem;">
+                       <input type="checkbox" id="infinite-runs-toggle" checked>
+                       <span>Infinite</span>
+                    </label>
+                  </div>
+                  <div class="stepper-input" id="max-occurrences-wrapper" style="opacity: 0.5; pointer-events: none;">
                     <button class="stepper-btn" data-field="maxOccurrences" data-step="-1">-</button>
-                    <input type="number" id="max-occurrences-input" value="0" min="0" max="999" />
+                    <input type="number" id="max-occurrences-input" value="0" min="0" max="999" disabled />
                     <button class="stepper-btn" data-field="maxOccurrences" data-step="1">+</button>
                   </div>
-                  <span class="field-description">Stops after N runs (0 for infinite)</span>
+                  <span class="field-description">Stops after N runs</span>
                 </div>
               </fieldset>
 
