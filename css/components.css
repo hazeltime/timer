@@ -632,23 +632,10 @@ body.dark-theme .theme-btn .fa-moon {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-}
-.lap-item-actions button:hover,
-.task-actions-col button:hover {
-  transform: scale(1.1);
-  background-color: var(--hover-bg);
-}
-
-/* --- Form Inputs --- */
-input,
-textarea {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border-radius: var(--radius-md);
   font-size: var(--text-base);
   border: 1px solid var(--input-border);
   background-color: var(--input-bg);
-  box-shadow: var(--input-inner-shadow);
+  box-shadow: var(--input-inner-shadow), var(--input-outer-shadow);
   color: var(--text-primary);
   transition: all 0.2s ease;
   font-family: inherit;
@@ -658,11 +645,7 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  box-shadow: var(
-    --focus-glow
-  ); /* focus glow overrides inner shadow or layers with it? box-shadow handles multiple! */
-  /* We want to remove the inner shadow on focus, or keep it? Usually remove to look "active/raised". */
-  box-shadow: var(--focus-glow);
+  box-shadow: var(--input-outer-shadow), var(--focus-glow);
   border-color: var(--accent-blue);
 }
 input[type="number"]::-webkit-inner-spin-button,

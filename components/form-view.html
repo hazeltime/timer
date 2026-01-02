@@ -88,14 +88,15 @@
 
             <!-- Advanced Column (Right Side) -->
             <div style="display: flex; flex-direction: column; gap: 1rem;">
-               <div class="form-group">
-                 <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+               <div class="form-group switch-group">
+                 <label class="switch">
                    <input type="checkbox" id="advanced-mode-toggle">
-                   <span style="font-weight: 500; color: var(--text-secondary);">Show Advanced Options</span>
+                   <span class="slider round"></span>
                  </label>
+                 <span class="toggle-label-text">Advanced Options</span>
                </div>
 
-               <div id="advanced-fields-wrapper" style="display: none; flex-direction: column; gap: 1rem;">
+                <div id="advanced-fields-wrapper">
                <fieldset class="form-group">
                 <legend>Lap Interval</legend>
                 <div class="lap-interval-controls">
@@ -112,10 +113,11 @@
                 <legend>Max Occurrences</legend>
                 <div class="max-occurrences-controls">
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <label class="checkbox-label" style="font-size: 0.85rem;">
+                    <label class="switch" style="width: 32px; height: 18px;">
                        <input type="checkbox" id="infinite-runs-toggle" checked>
-                       <span>Infinite</span>
+                       <span class="slider round"></span>
                     </label>
+                    <span style="font-size: 0.85rem; font-weight: 500;">Infinite Loop</span>
                   </div>
                   <div class="stepper-input" id="max-occurrences-wrapper" style="opacity: 0.5; pointer-events: none;">
                     <button class="stepper-btn" data-field="maxOccurrences" data-step="-1">-</button>

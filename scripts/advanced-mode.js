@@ -6,7 +6,12 @@ export const setupAdvancedModeToggle = (formDOM) => {
   if(!toggle || !wrapper) return;
 
   const updateVisibility = () => {
-    wrapper.style.display = toggle.checked ? "flex" : "none";
+    // Sprint 11: Use CSS transition class instead of display:none
+    if (toggle.checked) {
+      wrapper.classList.add("visible");
+    } else {
+      wrapper.classList.remove("visible");
+    }
   };
 
   // Restore state if needed, but default to simple (Hick's Law)
