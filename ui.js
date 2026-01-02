@@ -444,7 +444,16 @@ export const loadTaskIntoFormUI = (formDOM, task) => {
 
 export const resetRunnerDisplay = (runnerDOM) => {
   runnerDOM.runnerTaskCategory.textContent = "";
-  runnerDOM.runnerTaskTitle.textContent = "No task selected";
+  // Empty State Illustration (Sprint 8: Gestalt)
+  runnerDOM.runnerTaskTitle.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; opacity: 0.6; padding: 2rem 0;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-tertiary);">
+        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
+        <path d="M12 6V12L16 14"/>
+      </svg>
+      <span style="font-size: 1rem; font-weight: 500;">No task selected</span>
+    </div>
+  `;
   runnerDOM.taskProgressBar.style.width = "0%";
   runnerDOM.taskPercentage.textContent = "0%";
   runnerDOM.timeElapsedEl.textContent = "0s";
