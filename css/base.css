@@ -39,6 +39,20 @@
   --preset-btn-bg: #e0f2fe;
   --preset-btn-text: #075985;
   --preset-btn-border: #bae6fd;
+  --bg-secondary: var(--button-secondary-bg);
+  --bg-tertiary: var(--input-bg);
+  --bg-primary: var(--panel-bg);
+  --primary-color: var(--accent-blue);
+  --danger-color: var(--accent-red);
+  --shadow-sm: var(--shadow);
+  --shadow-md: var(--shadow-lg);
+  --panel-border: var(--border-color);
+  --border-hover: var(--text-secondary);
+  --danger-custom: var(--accent-red);
+  --btn-bg: var(--button-secondary-bg);
+  --btn-primary-bg: var(--accent-blue);
+  --btn-primary-hover: #2563eb;
+  --btn-primary-text: #ffffff;
   /* --- SIZES & SPACING --- */
   --control-height: 2.625rem; /* 42px */
   --btn-icon-gap: 0.5rem; /* 8px */
@@ -168,6 +182,13 @@ body.dark-theme {
   --preset-btn-text: #58a6ff;
   --preset-btn-border: #30363d;
 
+  /* Dark-mode button surfaces for better contrast */
+  --bg-secondary: var(--surface-3);
+  --bg-tertiary: var(--surface-3);
+  --btn-bg: var(--surface-3);
+  --btn-primary-hover: #1f6feb;
+  --btn-primary-text: #0d1117;
+
   --focus-ring-color: var(--accent-blue);
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
@@ -245,14 +266,8 @@ body {
 }
 
 .theme-btn:hover {
-  background  --btn-bg: var(--bg-secondary);
-  --btn-hover: var(--bg-tertiary);
-  --btn-active: var(--bg-primary);
-
-  /* Primary Action (Blue) */
-  --btn-primary-bg: var(--primary-color);
-  --btn-primary-hover: #2563eb; /* Darker blue */
-  --btn-primary-text: #ffffff;
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
 }
 
 /* Specific button colors */

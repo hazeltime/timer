@@ -352,8 +352,8 @@ body.dark-theme .theme-btn .fa-moon {
 }
 
 /* Standardize Icon Buttons in Repo */
-.task-actions-col .btn,
-.lap-list-item .btn {
+.task-actions-col .btn-icon,
+.lap-list-item .btn-icon {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
@@ -362,8 +362,8 @@ body.dark-theme .theme-btn .fa-moon {
   background-color: var(--bg-secondary); /* Give them a 'button' look */
   border: 1px solid var(--border-color);
 }
-.task-actions-col .btn:hover,
-.lap-list-item .btn:hover {
+.task-actions-col .btn-icon:hover,
+.lap-list-item .btn-icon:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
   border-color: var(--border-hover);
