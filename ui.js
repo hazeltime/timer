@@ -37,6 +37,24 @@ export const createActionButton = (iconClass, tooltip, cssClass = "") => {
   });
 };
 
+export const showToast = (message, type = "info", timeout = 2400) => {
+  if (typeof document === "undefined") return;
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+  const toast = document.createElement("div");
+  toast.className = `toast toast--${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  const show = () => toast.classList.add("show");
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(show);
+  else setTimeout(show, 0);
+  const remove = () => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  };
+  setTimeout(remove, timeout);
+};
+
 /**
  * Creates a consistent Task Row element (for Repo or Playlist) from a template or generator
  * (Currently keeping logic inline but refined, future TODO: fully abstract entire row)
@@ -171,19 +189,13 @@ export const createPlaylistRow = (
   item.className = "lap-list-item" + (isRunning ? " running" : "");
   item.dataset.id = task.id;
 
-  if (sessionInactive) {
-    item.setAttribute("draggable", "true");
-
-    // Maxed out check
-    const completedOccurrences =
-      state.sessionCache.completedOccurrencesMap?.get(task.id) || 0;
-    if (
-      task.maxOccurrences > 0 &&
-      completedOccurrences >= task.maxOccurrences
-    ) {
-      item.classList.add("maxed-out");
-    }
+  const completedOccurrences =
+    state.sessionCache?.completedOccurrencesMap?.get(task.id) || 0;
+  if (task.maxOccurrences > 0 && completedOccurrences >= task.maxOccurrences) {
+    item.classList.add("maxed-out");
   }
+
+  if (sessionInactive) item.setAttribute("draggable", "true");
 
   // Icon
   const icon = createIconElement(category.icon);

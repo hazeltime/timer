@@ -6,6 +6,12 @@ import { clamp, validateTaskInput } from "./utils.js";
 import * as Runner from "./runner.js";
 import { categoryMap } from "./constants.js";
 
+const notify = (message, type) => {
+  if (typeof UI.showToast === "function") {
+    UI.showToast(message, type);
+  }
+};
+
 export const getTaskMap = () => new Map(state.tasks.map((t) => [t.id, t]));
 
 export const sortTasks = (list) => {
@@ -64,7 +70,7 @@ export const resetTaskForm = (formDOM) => {
 export const handleTaskFormSubmit = (formDOM, DOM) => {
   const title = formDOM.taskInput.value.trim();
   if (!title) {
-    UI.showToast("Task title cannot be empty.", "error"); // Toast
+    notify("Task title cannot be empty.", "error"); // Toast
     return;
   }
   const minutes = parseInt(formDOM.durationMinutesInput.value, 10) || 0;
@@ -87,7 +93,7 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
   );
   const errors = validateTaskInput(title, totalDuration);
   if (errors.length > 0) {
-    UI.showToast(errors[0], "error"); // Toast
+    notify(errors[0], "error"); // Toast
     return;
   }
   let msg = "Task created successfully.";
@@ -119,12 +125,12 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
   saveState();
   renderAll(DOM);
   resetTaskForm(formDOM);
-  UI.showToast(msg, "success");
+  notify(msg, "success");
 };
 
 export const loadTaskIntoForm = (id, formDOM, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showToast("Cannot edit a task during an active session.", "error");
+    notify("Cannot edit a task during an active session.", "error");
     return;
   }
   const task = state.tasks.find((t) => t.id === id);
@@ -133,19 +139,19 @@ export const loadTaskIntoForm = (id, formDOM, DOM) => {
   state.selectedCategoryId = task.categoryId;
   UI.loadTaskIntoFormUI(formDOM, task);
   UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
-  UI.showToast("Task loaded for editing.", "info");
+  notify("Task loaded for editing.", "info");
 };
 
 export const deleteTask = (id, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showToast("Cannot delete a task during an active session.", "error");
+    notify("Cannot delete a task during an active session.", "error");
     return;
   }
   state.tasks = state.tasks.filter((t) => t.id !== id);
   state.lapList = state.lapList.filter((l) => l !== id);
   saveState();
   renderAll(DOM);
-  UI.showToast("Task deleted.", "info");
+  notify("Task deleted.", "info");
 };
 
 export const duplicateTask = (id, DOM) => {
@@ -163,33 +169,33 @@ export const duplicateTask = (id, DOM) => {
   state.tasks.push(copy);
   saveState();
   renderAll(DOM);
-  UI.showToast("Task duplicated.", "success");
+  notify("Task duplicated.", "success");
 };
 
 export const addTaskToLap = (id, playlistDOM, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showToast("Stop session to modify playlist.", "error");
+    notify("Stop session to modify playlist.", "error");
     return;
   }
   if (!state.lapList.includes(id)) {
     state.lapList.push(id);
     saveState();
     UI.renderLapList(playlistDOM, state, getTaskMap());
-    UI.showToast("Added to playlist.", "success");
+    notify("Added to playlist.", "success");
   } else {
-    UI.showToast("Task already in playlist.", "info");
+    notify("Task already in playlist.", "info");
   }
 };
 
 export const removeTaskFromLap = (id, playlistDOM, DOM) => {
   if (Runner.isSessionActive()) {
-    UI.showToast("Stop session to modify playlist.", "error");
+    notify("Stop session to modify playlist.", "error");
     return;
   }
   state.lapList = state.lapList.filter((l) => l !== id);
   saveState();
   UI.renderLapList(playlistDOM, state, getTaskMap());
-  UI.showToast("Removed from playlist.", "info");
+  notify("Removed from playlist.", "info");
 };
 
 export const isModificationAllowed = (msg, DOM) => {

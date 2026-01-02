@@ -373,6 +373,68 @@ body.dark-theme .theme-btn .fa-moon {
   color: white;
   border-color: var(--danger-custom);
 }
+.task-actions-col .copy-btn:hover,
+.task-actions-col .edit-btn:hover {
+  background-color: var(--btn-primary-bg);
+  color: white;
+  border-color: var(--btn-primary-bg);
+}
+.task-actions-col .add-to-lap-btn:hover {
+  background-color: #238636;
+  color: white;
+  border-color: #238636;
+}
+
+/* Outline Buttons for Repo Header */
+.btn-outline-success {
+  background-color: transparent;
+  color: #238636;
+  border: 1px solid #238636;
+}
+.btn-outline-success:hover {
+  background-color: #238636;
+  color: white;
+}
+.btn-outline-danger {
+  background-color: transparent;
+  color: var(--danger-custom);
+  border: 1px solid var(--danger-custom);
+}
+.btn-outline-danger:hover {
+  background-color: var(--danger-custom);
+  color: white;
+}
+.task-actions-col .copy-btn:hover,
+.task-actions-col .edit-btn:hover {
+  background-color: var(--btn-primary-bg);
+  color: white;
+  border-color: var(--btn-primary-bg);
+}
+.task-actions-col .add-to-lap-btn:hover {
+  background-color: #238636;
+  color: white;
+  border-color: #238636;
+}
+
+/* Outline Buttons for Repo Header */
+.btn-outline-success {
+  background-color: transparent;
+  color: #238636;
+  border: 1px solid #238636;
+}
+.btn-outline-success:hover {
+  background-color: #238636;
+  color: white;
+}
+.btn-outline-danger {
+  background-color: transparent;
+  color: var(--danger-custom);
+  border: 1px solid var(--danger-custom);
+}
+.btn-outline-danger:hover {
+  background-color: var(--danger-custom);
+  color: white;
+}
 
 .lap-list-item {
   cursor: grab; /* DnD cue */
@@ -827,6 +889,33 @@ textarea::placeholder {
   flex-direction: column;
   gap: 0.75rem;
   pointer-events: none;
+}
+
+.toast {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background-color: var(--panel-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-layer-1), var(--shadow-layer-2);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s var(--ease-smooth),
+    transform 0.2s var(--ease-smooth);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.toast--success {
+  border-color: var(--accent-green);
+}
+.toast--error {
+  border-color: var(--accent-red);
+}
+.toast--info {
+  border-color: var(--accent-blue);
 }
 
 /* --- Tooltips --- */
