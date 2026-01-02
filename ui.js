@@ -82,6 +82,7 @@ export const renderEmptyState = (message) => {
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   // Clear existing
   formDOM.categoryGrid.innerHTML = "";
+  formDOM.categoryGrid.setAttribute("role", "radiogroup");
   const frag = document.createDocumentFragment();
   CATEGORIES.forEach((cat) => {
     const isActive = cat.id === selectedCategoryId;
@@ -89,6 +90,9 @@ export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
     btn.className = `category-btn ${isActive ? "active" : ""}`;
     btn.dataset.id = cat.id;
     btn.style.outlineColor = isActive ? cat.color : "transparent";
+    btn.setAttribute("role", "radio");
+    btn.setAttribute("aria-checked", String(isActive));
+    btn.tabIndex = isActive ? 0 : -1;
 
     const iconEl = createIconElement(cat.icon);
     const name = document.createElement("span");

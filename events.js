@@ -279,6 +279,36 @@ export const setupEventListeners = (DOM) => {
     UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
   });
 
+  const moveCategorySelection = (direction) => {
+    const buttons = [
+      ...formDOM.categoryGrid.querySelectorAll(".category-btn"),
+    ];
+    if (buttons.length === 0) return;
+    const currentIndex = buttons.findIndex(
+      (btn) => btn.dataset.id === state.selectedCategoryId,
+    );
+    const startIndex = currentIndex === -1 ? 0 : currentIndex;
+    const nextIndex =
+      (startIndex + direction + buttons.length) % buttons.length;
+    const nextId = buttons[nextIndex].dataset.id;
+    state.selectedCategoryId = nextId;
+    UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
+    const nextButton = formDOM.categoryGrid.querySelector(
+      `[data-id="${nextId}"]`,
+    );
+    if (nextButton) nextButton.focus();
+  };
+
+  formDOM.categoryGrid.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      moveCategorySelection(1);
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      moveCategorySelection(-1);
+      e.preventDefault();
+    }
+  });
+
   runnerDOM.playPauseBtn.addEventListener("click", Runner.playPauseSession);
   runnerDOM.nextTaskBtn.addEventListener("click", Runner.nextTask);
   runnerDOM.prevTaskBtn.addEventListener("click", Runner.prevTask);
