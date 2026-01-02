@@ -1,5 +1,27 @@
 /* css/base.css */
 
+/* --- CUSTOM SCROLLBAR --- */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-tertiary);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary); 
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+  border: 2px solid var(--bg-tertiary);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+
 /* --- THEME & COLOR PALETTE (V2 - ENHANCED CONTRAST) --- */
 :root {
   --bg-color: #f3f4f6;
@@ -12,6 +34,9 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-lg:
     0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Unified Borders */
+  --panel-border: var(--border-color);
+  --input-border: var(--border-color); /* Consistency */
   /* Layered shadows and highlights for 3D/bevel effect */
   --shadow-layer-1: 0 6px 20px rgba(16, 24, 40, 0.06);
   --shadow-layer-2: 0 2px 8px rgba(16, 24, 40, 0.04);
@@ -222,8 +247,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem; /* Increased height */
   background-color: var(--panel-bg);
+  flex-wrap: wrap;
+  gap: 1rem;
   border-bottom: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   position: sticky;
@@ -235,6 +262,13 @@ body {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-color);
+  margin: 0 0.5rem;
 }
 
 .theme-btn {
@@ -259,9 +293,13 @@ body {
   display: none; 
 }
 
-@media (min-width: 900px) { /* Increased breakpoint to prevent overlap */
+@media (min-width: 1100px) {
   .theme-btn .btn-label {
-    display: none; /* Reverted to hidden for cleaner look */
+    display: inline-block;
+  }
+  .header-controls .theme-btn {
+    width: auto;
+    padding-inline: 0.75rem;
   }
 }
 
@@ -291,7 +329,7 @@ h4 {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.5rem, 4vw, 2.25rem); /* Fluid type: 24px to 36px */
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.2;

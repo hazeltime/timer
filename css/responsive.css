@@ -69,6 +69,21 @@
   }
 }
 
+@media (max-width: 640px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  header h1 {
+    width: 100%;
+  }
+  .header-controls {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
 /* mobile: make lap-list smaller to avoid long panels */
 @media (max-width: 480px) {
   .lap-list {

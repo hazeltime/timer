@@ -3,8 +3,8 @@
 .container {
   width: 100%;
   margin: 0 auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
   /* Use a readable measure but allow expansion on large screens */
   max-width: clamp(1100px, 90%, 2200px);
 }
@@ -85,8 +85,10 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding: 0.75rem 0 1.25rem;
   border-bottom: 1px solid var(--border-color);
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 header h1 i {
