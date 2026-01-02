@@ -125,17 +125,13 @@ export const setupEventListeners = (DOM) => {
       const { action } = btn.dataset;
       const idx = state.lapList.indexOf(id);
       if (idx === -1) return;
-      state.lapList.splice(idx, 1);
-      if (action === "up") {
-        if (idx > 0) {
-          state.lapList.splice(idx, 1);
-          state.lapList.splice(idx - 1, 0, id);
-        }
-      } else if (action === "down") {
-        if (idx < state.lapList.length - 1) {
-          state.lapList.splice(idx, 1);
-          state.lapList.splice(idx + 1, 0, id);
-        }
+      const [removed] = state.lapList.splice(idx, 1);
+      if (action === "up" && idx > 0) {
+        state.lapList.splice(idx - 1, 0, removed);
+      } else if (action === "down" && idx < state.lapList.length) {
+        state.lapList.splice(idx + 1, 0, removed);
+      } else {
+        state.lapList.splice(idx, 0, removed);
       }
       saveState();
       UI.renderLapList(playlistDOM, state, getTaskMap());
