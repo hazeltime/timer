@@ -121,14 +121,14 @@ fieldset {
   align-items: center; /* Horizontal alignment */
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.1rem; /* Larger Pill */
+  padding: 0.75rem 1.25rem; /* Larger Pill (Item 5) */
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full); /* Pill shape */
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s var(--ease-smooth);
-  font-size: 0.95rem; /* Larger Text */
+  font-size: 1rem; /* Larger Text (Item 5) */
   min-height: auto; 
   flex: 0 0 auto;
   line-height: normal; /* Fix alignment */
@@ -257,15 +257,16 @@ fieldset {
 }
 /* Zebra Striping */
 .task-item:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.015);
+  background-color: rgba(0, 0, 0, 0.03); /* Increase contrast (Item 12) */
 }
 body.dark-theme .task-item:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 /* Hover Highlight */
 .task-item:hover {
   background-color: var(--hover-bg);
   z-index: 1; /* Ensure tooltips/shadows pop */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .task-cell {
   display: flex;
@@ -797,6 +798,10 @@ body.runner-active #runner-task-title {
 }
 .lap-list-item[draggable="true"]:active {
   cursor: grabbing;
+  background-color: var(--bg-secondary);
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.02);
+  z-index: 10;
 }
 .lap-list-item.dragging {
   opacity: 0.4;
