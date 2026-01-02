@@ -511,6 +511,9 @@ export const scrollToRunningTask = (playlistDOM) => {
   }
 };
 
+const calcPercent = (part, total) =>
+  total > 0 ? Math.floor((part / total) * 100) : 0;
+
 /**
  * Updates the Runner Timer display with current task and lap progress
  * @param {Object} runnerDOM
@@ -526,10 +529,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
   const { taskId, calculatedDuration, lap, taskIndexInLap, totalTasksInLap } =
     currentVirtualTask;
   const elapsed = calculatedDuration - state.currentTaskTimeLeft;
-  const taskPercent =
-    calculatedDuration > 0
-      ? Math.floor((elapsed / calculatedDuration) * 100)
-      : 0;
+  const taskPercent = calcPercent(elapsed, calculatedDuration);
   const sessionTotalTime =
     (state.sessionCache.completedTaskDurationsMap.get(taskId) || 0) + elapsed;
 
@@ -548,10 +548,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
     ] || 0) - lapStartTime;
   const lapTimeElapsed = completedDurationInLap + elapsed;
   const lapTimeRemaining = currentLapDuration - lapTimeElapsed;
-  const lapPercent =
-    currentLapDuration > 0
-      ? Math.floor((lapTimeElapsed / currentLapDuration) * 100)
-      : 0;
+  const lapPercent = calcPercent(lapTimeElapsed, currentLapDuration);
 
   runnerDOM.lapProgressBar.style.width = `${lapPercent}%`;
   runnerDOM.lapPercentage.textContent = `${lapPercent}%`;
@@ -566,10 +563,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
       state.currentVirtualTaskIndex
     ] || 0) + elapsed;
   const sessionTimeRemaining = totalSessionDuration - sessionTimeElapsed;
-  const sessionPercent =
-    totalSessionDuration > 0
-      ? Math.floor((sessionTimeElapsed / totalSessionDuration) * 100)
-      : 0;
+  const sessionPercent = calcPercent(sessionTimeElapsed, totalSessionDuration);
 
   runnerDOM.sessionProgressBar.style.width = `${sessionPercent}%`;
   runnerDOM.sessionPercentage.textContent = `${sessionPercent}%`;
