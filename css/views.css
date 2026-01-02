@@ -134,9 +134,13 @@ fieldset {
   line-height: normal; /* Fix alignment */
 }
 
-.category-btn i {
+.category-btn .icon {
   font-size: 1.1rem; /* Smaller icon */
-  margin-bottom: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-1px);
 }
 
 .category-btn.active {
