@@ -55,6 +55,15 @@
   border-radius: var(--radius-sm);
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* --- Standardized Divider --- */
 .divider {
   height: 1px;
@@ -63,12 +72,6 @@
   margin: 1.5rem 0;
   width: 100%;
   display: block;
-}
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
 }
 
 .panel-header {
@@ -672,6 +675,12 @@ textarea::placeholder {
   border: 1px solid var(--input-border);
   position: relative;
   z-index: 2;
+  width: 36px; /* Larger tap target */
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 .stepper-input .stepper-btn:hover {
   filter: brightness(0.95);
