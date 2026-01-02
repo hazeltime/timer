@@ -883,6 +883,8 @@ body.runner-active #runner-task-title {
   color: var(--accent-red);
 }
 .lap-item-actions .move-btn:hover {
+  color: var(--accent-blue);
+}
 .lap-list::-webkit-scrollbar {
   width: 8px;
 }
