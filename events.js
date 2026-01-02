@@ -79,6 +79,18 @@ export const setupEventListeners = (DOM) => {
     UI.toggleRunnerPopout(runnerDOM, state),
   );
 
+  // Back-to-Top (Sprint 8: Polish)
+  const backToTopBtn = document.getElementById("back-to-top");
+  if (backToTopBtn) {
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) backToTopBtn.classList.add("show");
+      else backToTopBtn.classList.remove("show");
+    });
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
   document.addEventListener("mousedown", (e) => {
     const panel = document.getElementById("task-runner-panel");
     if (!panel) return;
