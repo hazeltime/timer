@@ -7,6 +7,7 @@ import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import { ModalManager } from "./modal.js";
 import { setupAdvancedModeToggle } from "./scripts/advanced-mode.js";
 import { setupLimitToggle } from "./scripts/limit-toggle.js";
+import { clamp } from "./utils.js";
 
 let modalManager;
 import {
@@ -32,6 +33,27 @@ const dispatchButtonAction = (btn, handlers) => {
     }
   }
   return false;
+};
+
+const getInputBounds = (input) => {
+  const minRaw = parseInt(input.min, 10);
+  const maxRaw = parseInt(input.max, 10);
+  return {
+    min: Number.isNaN(minRaw) ? 0 : minRaw,
+    max: Number.isNaN(maxRaw) ? Infinity : maxRaw,
+  };
+};
+
+const clampInputToMin = (input) => {
+  const value = parseInt(input.value, 10);
+  const { min } = getInputBounds(input);
+  if (!Number.isNaN(value) && value < min) input.value = min;
+};
+
+const clampInputToBounds = (input) => {
+  const value = parseInt(input.value, 10) || 0;
+  const { min, max } = getInputBounds(input);
+  input.value = clamp(value, min, max);
 };
 
 export const setupEventListeners = (DOM) => {
@@ -369,28 +391,25 @@ export const setupEventListeners = (DOM) => {
     }),
   );
 
+  const stepperInputs = {
+    laps: runnerDOM.lapsInput,
+    minutes: formDOM.durationMinutesInput,
+    seconds: formDOM.durationSecondsInput,
+    lapInterval: formDOM.lapIntervalInput,
+    growthFactor: formDOM.growthFactorInput,
+    maxOccurrences: formDOM.maxOccurrencesInput,
+  };
+
   document.querySelectorAll(".stepper-btn").forEach((btn) => {
     let interval;
     const stopInterval = () => clearInterval(interval);
     const { field, step } = btn.dataset;
-    const input =
-      field === "laps"
-        ? runnerDOM.lapsInput
-        : field === "minutes"
-          ? formDOM.durationMinutesInput
-          : field === "lapInterval"
-            ? formDOM.lapIntervalInput
-            : field === "growthFactor"
-              ? formDOM.growthFactorInput
-              : field === "maxOccurrences"
-                ? formDOM.maxOccurrencesInput
-                : formDOM.durationSecondsInput;
+    const input = stepperInputs[field] || formDOM.durationSecondsInput;
     const update = () => {
-      let val = parseInt(input.value, 10) || 0;
-      const min = parseInt(input.min, 10) || 0;
-      const max = parseInt(input.max, 10) || Infinity;
-      val = Math.max(min, Math.min(max, val + parseInt(step)));
-      input.value = val;
+      const current = parseInt(input.value, 10) || 0;
+      const { min, max } = getInputBounds(input);
+      const next = clamp(current + parseInt(step, 10), min, max);
+      input.value = next;
     };
     btn.addEventListener("mousedown", () => {
       update();
@@ -401,22 +420,12 @@ export const setupEventListeners = (DOM) => {
 
   document.querySelectorAll("input[type='number']").forEach((input) => {
     input.addEventListener("input", () => {
-      let val = parseInt(input.value, 10);
-      const min = parseInt(input.min, 10);
-      const max = parseInt(input.max, 10) || Infinity;
-      if (!isNaN(val) && !isNaN(min) && val < min) input.value = min;
-      // We don't strictly clamp max on input while typing to allow large numbers,
-      // but min should be enforced to prevent negatives.
-      // Actually, standard behavior is usually clamp on blur, but user asked for "Manual input... allows negatives. Add input listener to clamp."
-      // So immediate clamp:
-      if (!isNaN(val) && val < min) input.value = min;
+      // Clamp the min immediately to prevent negatives while typing.
+      clampInputToMin(input);
     });
     // Ensure strict clamp on blur
     input.addEventListener("blur", () => {
-      let val = parseInt(input.value, 10) || 0;
-      const min = parseInt(input.min, 10) || 0;
-      const max = parseInt(input.max, 10) || Infinity;
-      input.value = Math.max(min, Math.min(max, val));
+      clampInputToBounds(input);
     });
   });
 
