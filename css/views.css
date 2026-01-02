@@ -195,6 +195,11 @@ fieldset {
   gap: 1rem;
   width: 100%;
 }
+@media (max-width: 800px) {
+  .add-btn-group #add-task-btn {
+    flex: 1; /* Full width on smaller screens (Item 3) */
+  }
+}
 #add-task-btn, #cancel-edit-btn {
   height: 3rem; /* Taller touch target */
   font-size: 1rem;
@@ -299,20 +304,22 @@ body.dark-theme .task-item:nth-child(even) {
 }
 .task-title-col {
   grid-area: title;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.125rem;
+  overflow: hidden; /* Ensure parent clips */
+  min-width: 0;     /* Allow flexing below content size */
 }
 .task-title {
   font-weight: 600;
-  font-size: 1rem; /* Fix Table Font Size (Item 4) */
+  font-size: 1rem;
   line-height: var(--leading-tight);
-  /* Truncation / Wrap logic */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: var(--text-primary);
+  width: 100%;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
 }
 .task-description {
   font-size: 0.875rem;
@@ -738,6 +745,17 @@ body.runner-active #runner-task-title {
 #task-runner-panel.task-runner-popout .panel-content {
   max-height: calc(100vh - 8rem);
   overflow: auto;
+}
+#task-runner-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Grow to fill panel */
+  justify-content: center; /* Default center, will be overridden if content flows */
+  min-height: 200px;
+}
+/* When running, align top */
+.runner-active #task-runner-content {
+  justify-content: flex-start;
 }
 .lap-list-item {
   display: flex;

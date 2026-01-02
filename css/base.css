@@ -260,8 +260,11 @@ body {
 
 .header-controls {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem !important; /* Force 16px gap */
   align-items: center;
+}
+.header-controls i {
+  font-size: 1.25rem; /* Increase icon size (Item 6) */
 }
 
 .divider-vertical {
