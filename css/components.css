@@ -348,10 +348,37 @@ body.dark-theme .theme-btn .fa-moon {
 .btn-icon:hover {
   background-color: var(--btn-ghost-hover);
   color: var(--text-primary);
-  transform: trans  line-height: 1;
+  transform: translateY(-1px);
 }
 
-  line-height: 1;
+/* Standardize Icon Buttons in Repo */
+.task-actions-col .btn,
+.lap-list-item .btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  background-color: var(--bg-secondary); /* Give them a 'button' look */
+  border: 1px solid var(--border-color);
+}
+.task-actions-col .btn:hover,
+.lap-list-item .btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+.task-actions-col .delete-btn:hover {
+  background-color: var(--danger-custom);
+  color: white;
+  border-color: var(--danger-custom);
+}
+
+.lap-list-item {
+  cursor: grab; /* DnD cue */
+}
+.lap-list-item:active {
+  cursor: grabbing;
 }
 
 .btn-primary {

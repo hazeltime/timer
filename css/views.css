@@ -98,16 +98,16 @@ fieldset {
   align-items: center; /* Horizontal alignment */
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem; /* Pill shape padding */
+  padding: 0.6rem 1.1rem; /* Larger Pill */
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full); /* Pill shape */
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s var(--ease-smooth);
-  font-size: 0.9rem;
-  min-height: auto; /* Remove fixed height */
-  flex: 0 0 auto; /* Don't stretch */
+  font-size: 0.95rem; /* Larger Text */
+  min-height: auto; 
+  flex: 0 0 auto;
 }
 
 .category-btn i {
