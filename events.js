@@ -24,6 +24,16 @@ import {
   getTaskMap,
 } from "./actions.js";
 
+const dispatchButtonAction = (btn, handlers) => {
+  for (const [className, handler] of handlers) {
+    if (btn.classList.contains(className)) {
+      handler();
+      return true;
+    }
+  }
+  return false;
+};
+
 export const setupEventListeners = (DOM) => {
   const {
     formDOM,
@@ -148,36 +158,43 @@ export const setupEventListeners = (DOM) => {
     const btn = e.target.closest("button");
     if (!btn) return;
     const item = e.target.closest(".task-item");
+    if (!item) return;
     const id = Number(item.dataset.id);
-    if (btn.classList.contains("delete-btn")) deleteTask(id, DOM);
-    if (btn.classList.contains("copy-btn")) duplicateTask(id, DOM);
-    if (btn.classList.contains("add-to-lap-btn"))
-      addTaskToLap(id, playlistDOM, DOM);
-    if (btn.classList.contains("edit-btn")) loadTaskIntoForm(id, formDOM, DOM);
+    dispatchButtonAction(btn, [
+      ["delete-btn", () => deleteTask(id, DOM)],
+      ["copy-btn", () => duplicateTask(id, DOM)],
+      ["add-to-lap-btn", () => addTaskToLap(id, playlistDOM, DOM)],
+      ["edit-btn", () => loadTaskIntoForm(id, formDOM, DOM)],
+    ]);
   });
 
   playlistDOM.lapListEl.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn || Runner.isSessionActive()) return;
     const item = e.target.closest(".lap-list-item");
+    if (!item) return;
     const id = Number(item.dataset.id);
-    if (btn.classList.contains("remove-btn"))
-      removeTaskFromLap(id, playlistDOM, DOM);
-    else if (btn.classList.contains("move-btn")) {
-      const { action } = btn.dataset;
-      const idx = state.lapList.indexOf(id);
-      if (idx === -1) return;
-      const [removed] = state.lapList.splice(idx, 1);
-      if (action === "up" && idx > 0) {
-        state.lapList.splice(idx - 1, 0, removed);
-      } else if (action === "down" && idx < state.lapList.length) {
-        state.lapList.splice(idx + 1, 0, removed);
-      } else {
-        state.lapList.splice(idx, 0, removed);
-      }
-      saveState();
-      UI.renderLapList(playlistDOM, state, getTaskMap());
-    }
+    dispatchButtonAction(btn, [
+      ["remove-btn", () => removeTaskFromLap(id, playlistDOM, DOM)],
+      [
+        "move-btn",
+        () => {
+          const { action } = btn.dataset;
+          const idx = state.lapList.indexOf(id);
+          if (idx === -1) return;
+          const [removed] = state.lapList.splice(idx, 1);
+          if (action === "up" && idx > 0) {
+            state.lapList.splice(idx - 1, 0, removed);
+          } else if (action === "down" && idx < state.lapList.length) {
+            state.lapList.splice(idx + 1, 0, removed);
+          } else {
+            state.lapList.splice(idx, 0, removed);
+          }
+          saveState();
+          UI.renderLapList(playlistDOM, state, getTaskMap());
+        },
+      ],
+    ]);
   });
 
   playlistDOM.lapListEl.addEventListener("dragstart", (e) => {
