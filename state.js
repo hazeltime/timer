@@ -11,19 +11,36 @@ const safeParse = (key, fallback) => {
   }
 };
 
+const STORAGE_SCHEMA = {
+  tasks: { key: "tasks", fallback: [], persist: true },
+  lapList: { key: "lapList", fallback: [], persist: true },
+  lastId: { key: "lastId", fallback: 0, persist: true },
+  panelCollapseState: { key: "panelCollapseState", fallback: {}, persist: false },
+};
+
+const loadStorage = (schema) =>
+  Object.fromEntries(
+    Object.entries(schema).map(([prop, config]) => [
+      prop,
+      safeParse(config.key, config.fallback),
+    ]),
+  );
+
+const storedState = loadStorage(STORAGE_SCHEMA);
+
 export const state = {
-  tasks: safeParse("tasks", []).map((t) => ({
+  tasks: storedState.tasks.map((t) => ({
     ...t,
     lapInterval: t.lapInterval || 1,
     growthFactor: t.growthFactor !== undefined ? t.growthFactor : 0,
     maxOccurrences: t.maxOccurrences || 0,
   })),
-  lapList: safeParse("lapList", []),
-  lastId: safeParse("lastId", 0),
+  lapList: storedState.lapList,
+  lastId: storedState.lastId,
   sortState: { field: "id", order: "desc" },
   selectedCategoryId: "cat-0",
   editingTaskId: null,
-  panelCollapseState: safeParse("panelCollapseState", {}),
+  panelCollapseState: storedState.panelCollapseState,
   draggedItemId: null,
   runnerState: "STOPPED",
   currentVirtualTaskIndex: -1,
@@ -34,7 +51,8 @@ export const state = {
 };
 
 export const saveState = () => {
-  localStorage.setItem("tasks", JSON.stringify(state.tasks));
-  localStorage.setItem("lapList", JSON.stringify(state.lapList));
-  localStorage.setItem("lastId", JSON.stringify(state.lastId));
+  Object.entries(STORAGE_SCHEMA).forEach(([prop, config]) => {
+    if (!config.persist) return;
+    localStorage.setItem(config.key, JSON.stringify(state[prop]));
+  });
 };
