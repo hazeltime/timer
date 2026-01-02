@@ -3,9 +3,20 @@
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  /* overflow: hidden; Removed to prevent focus ring clipping */
+  width: 100%;
+  box-shadow: var(--shadow-md); /* Enhanced depth */
+  box-shadow: var(--shadow-md); /* Enhanced depth */
   width: 100%;
   padding: var(--panel-padding);
+}
+/* Ensure focus rings aren't clipped */
+.panel:focus-within {
+  overflow: visible;
+}
+/* Ensure focus rings aren't clipped */
+.panel:focus-within {
+  overflow: visible;
 }
 /* Ensure header titles wrap and don't push layout */
 .panel .panel-header h2,
@@ -108,6 +119,7 @@ fieldset {
   font-size: 0.95rem; /* Larger Text */
   min-height: auto; 
   flex: 0 0 auto;
+  line-height: normal; /* Fix alignment */
 }
 
 .category-btn i {
@@ -157,6 +169,12 @@ fieldset {
 
 .preset-group > label {
   display: none; /* Hide redundant label "Presets" inside the box */
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr));
+  gap: 0.5rem;
 }
 
 .add-btn-group {
@@ -250,8 +268,15 @@ body.dark-theme .task-item:nth-child(even) {
 .sort-header:hover {
   color: var(--text-primary);
 }
-.sort-header.active {
   color: var(--accent-blue);
+}
+.sort-header.active::after {
+  content: " ▼"; /* Simplest arrow */
+  font-size: 0.8em;
+  margin-left: 2px;
+}
+.sort-header.reversed::after {
+  content: " ▲";
 }
 
 .task-id-col {
@@ -270,6 +295,12 @@ body.dark-theme .task-item:nth-child(even) {
   font-weight: 600;
   font-size: var(--text-base);
   line-height: var(--leading-tight);
+  /* Truncation / Wrap logic */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; 
 }
 .task-description {
   font-size: 0.875rem;
@@ -579,6 +610,28 @@ body.dark-theme .task-item:nth-child(even) {
   align-items: center;
   gap: var(--space-sm);
 }
+
+/* Mobile Repo Card: Reduce Density (Batch 2 Fix) */
+@media (max-width: 768px) {
+  .repository-view .task-list-header {
+    display: none;
+  }
+  .task-item {
+    display: grid;
+    grid-template-areas:
+      "title actions"
+      "details details";
+    gap: 0.5rem;
+    align-items: center;
+    padding: 1rem;
+  }
+  .task-id-col,
+  .task-growth-col,
+  .task-limit-col { display: none; }
+  .task-title-col { grid-area: title; margin-bottom: 0; }
+  .task-actions-col { grid-area: actions; justify-self: end; margin-top: 0; }
+  .task-category-col { grid-area: details; }
+}
 .runner-progress-details .divider {
   height: 1px;
   background-color: var(--border-color);
@@ -617,26 +670,41 @@ body.dark-theme .task-item:nth-child(even) {
 .lap-list-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-left: auto; /* Push controls to the right */
+  gap: 0.5rem;
+  background-color: var(--bg-tertiary); /* Pill container */
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  margin-left: auto;
 }
 #lap-list-duration {
-  font-weight: 600; /* Bolder text */
-  color: var(--text-primary); /* Better contrast */
-  background-color: var(--input-bg);
-  padding: 0.5rem 1rem; /* Larger padding matches buttons better */
-  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: var(--text-primary);
   font-size: 0.875rem;
-  border: 1px solid var(--border-color);
   font-variant-numeric: tabular-nums;
-  display: inline-flex;
-  align-items: center;
-  height: 2.25rem; /* Match small icon button height approx */
+  padding: 0 0.5rem;
 }
 .lap-list {
-  max-height: min(390px, 40vh);
   overflow-y: auto;
   padding: 4px;
+}
+.lap-list:empty::after {
+  content: "Playlist Empty. Add tasks from Repo.";
+  display: block;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  opacity: 0.6;
+}
+.lap-list:empty::after {
+  content: "Playlist Empty. Add tasks from Repo.";
+  display: block;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  opacity: 0.6;
 }
 
 /* Constrain runner popout content so inner scrolling is contained */
@@ -655,6 +723,18 @@ body.dark-theme .task-item:nth-child(even) {
   position: relative;
   border: 1px solid var(--input-border);
   transition: all 0.2s ease;
+  padding-left: 2rem; /* Make space for grip */
+}
+.lap-list-item::before {
+  content: "⋮⋮"; /* Grip handle */
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  opacity: 0.5;
+  cursor: grab;
 }
 .lap-list-item.running {
   outline: 2px solid var(--accent-blue);
