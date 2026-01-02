@@ -83,10 +83,11 @@
 
 .runner-task-description {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--text-primary); /* Was text-secondary, too faint. Increasing contrast. */
   margin-top: -0.75rem;
   margin-bottom: 0.75rem;
   font-style: italic;
+  opacity: 0.8; /* Subtle but readable */
 }
 
 .panel-header-controls {
@@ -640,6 +641,30 @@ body.dark-theme .theme-btn .fa-moon {
   transition: all 0.2s ease;
   font-family: inherit;
   height: var(--control-height);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
+  box-sizing: border-box; /* Explicit naming */
+  font-size: var(--text-base);
+  
+  /* HIGH CONTRAST BORDERS */
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg); /* Uses Surface 2 now */
+  
+  box-shadow: var(--input-inner-shadow); /* Simplified shadow strategy */
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  height: var(--control-height);
+}
+
+input:hover,
+textarea:hover {
+  border-color: var(--border-hover, #8b949e);
 }
 
 input:focus,
