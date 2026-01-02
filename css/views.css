@@ -216,8 +216,6 @@ fieldset {
 .form-compact-toggle .compact-toggle-label {
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--accent-blue);
-}
 
 /* --- Task Repository View --- */
 .repo-header {
@@ -287,17 +285,25 @@ body.dark-theme .task-item:nth-child(even) {
 .sort-header:hover {
   color: var(--text-primary);
 }
+.sort-header i {
+  display: none;
+}
+.sort-header[aria-sort="ascending"],
+.sort-header[aria-sort="descending"] {
   color: var(--accent-blue);
 }
-.sort-header.active::after {
-  content: " ▼"; /* Simplest arrow */
-  font-size: 0.8em;
-  margin-left: 2px;
+.sort-header[aria-sort="ascending"]::after,
+.sort-header[aria-sort="descending"]::after {
+  font-size: 0.75em;
+  margin-left: 0.35rem;
+  opacity: 0.85;
 }
-.sort-header.reversed::after {
-  content: " ▲";
+.sort-header[aria-sort="ascending"]::after {
+  content: "▲";
 }
-
+.sort-header[aria-sort="descending"]::after {
+  content: "▼";
+}
 .task-id-col {
   grid-area: id;
   font-size: 0.95rem;
@@ -410,8 +416,6 @@ body.dark-theme .task-item:nth-child(even) {
   color: var(--accent-green);
 }
 .task-actions-col .edit-btn:hover {
-  color: var(--accent-blue);
-}
 .task-actions-col .copy-btn:hover {
   color: var(--accent-purple);
 }
@@ -879,8 +883,6 @@ body.runner-active #runner-task-title {
   color: var(--accent-red);
 }
 .lap-item-actions .move-btn:hover {
-  color: var(--accent-blue);
-}
 .lap-list::-webkit-scrollbar {
   width: 8px;
 }
