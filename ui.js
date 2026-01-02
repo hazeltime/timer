@@ -365,7 +365,9 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
   if (state.lapList.length === 0) {
     lapListEl.appendChild(
-      renderEmptyState("Add tasks from the repository to create a playlist."),
+      renderEmptyState(
+        "Add tasks by dragging from the repository to build a playlist.",
+      ),
     );
   } else {
     const runningTaskId =

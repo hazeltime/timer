@@ -744,7 +744,7 @@ body.runner-active #runner-task-title {
   padding: 4px;
 }
 .lap-list:empty::after {
-  content: "Playlist Empty. Add tasks from Repo.";
+  content: "Playlist empty. Add tasks by dragging from the repository.";
   display: block;
   text-align: center;
   padding: 2rem;
@@ -753,7 +753,7 @@ body.runner-active #runner-task-title {
   opacity: 0.6;
 }
 .lap-list:empty::after {
-  content: "Playlist Empty. Add tasks from Repo.";
+  content: "Playlist empty. Add tasks by dragging from the repository.";
   display: block;
   text-align: center;
   padding: 2rem;
