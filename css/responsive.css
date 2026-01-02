@@ -86,6 +86,10 @@
 
 /* mobile: make lap-list smaller to avoid long panels */
 @media (max-width: 480px) {
+  .container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
   .lap-list {
     max-height: min(260px, 35vh);
   }
