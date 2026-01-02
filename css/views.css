@@ -247,7 +247,7 @@ fieldset {
 
 .task-list-header {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--text-secondary);
 }
 
@@ -299,7 +299,7 @@ body.dark-theme .task-item:nth-child(even) {
 
 .task-id-col {
   grid-area: id;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -324,7 +324,7 @@ body.dark-theme .task-item:nth-child(even) {
   text-overflow: ellipsis;
 }
 .task-description {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
