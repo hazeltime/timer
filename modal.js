@@ -92,7 +92,7 @@ export class ModalManager {
     // Force reflow for transition? (If we had CSS transitions on display:flex, which we don't usually)
     // But we might have opacity.
     requestAnimationFrame(() => {
-      modalEl.classList.add("open");
+      modalEl.classList.add("show");
     });
     this.activeModal = modalEl;
     document.body.style.overflow = "hidden"; // Prevent background scroll
@@ -102,7 +102,7 @@ export class ModalManager {
     if (!this.activeModal) return;
 
     const el = this.activeModal;
-    el.classList.remove("open");
+    el.classList.remove("show");
     // Wait for transition? Or just hide.
     // For simplicity, hide immediately or use existing CSS logic.
     // The existing CSS likely uses display: none.
