@@ -88,6 +88,14 @@
 
             <!-- Advanced Column (Right Side) -->
             <div style="display: flex; flex-direction: column; gap: 1rem;">
+               <div class="form-group">
+                 <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                   <input type="checkbox" id="advanced-mode-toggle">
+                   <span style="font-weight: 500; color: var(--text-secondary);">Show Advanced Options</span>
+                 </label>
+               </div>
+
+               <div id="advanced-fields-wrapper" style="display: none; flex-direction: column; gap: 1rem;">
                <fieldset class="form-group">
                 <legend>Lap Interval</legend>
                 <div class="lap-interval-controls">

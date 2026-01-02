@@ -61,97 +61,102 @@ document.addEventListener("DOMContentLoaded", async () => {
   // The rest of the application logic starts only after the await above is complete
   const { $$, $ } = UI;
 
-  // DOM element references
-  const formDOM = {
-    taskForm: $("#task-form"),
-    formTitle: $("#form-title"),
-    taskInput: $("#task-input"),
-    taskDescriptionInput: $("#task-description-input"),
-    categoryGrid: $("#category-grid"),
-    durationMinutesInput: $("#task-duration-minutes"),
-    durationSecondsInput: $("#task-duration-seconds"),
-    lapIntervalInput: $("#lap-interval-input"),
-    growthFactorInput: $("#growth-factor-input"),
-    maxOccurrencesInput: $("#max-occurrences-input"),
-    addTaskBtn: $("#add-task-btn"),
-    cancelEditBtn: $("#cancel-edit-btn"),
-  };
+  const buildDomRefs = (selectors) =>
+    Object.fromEntries(
+      Object.entries(selectors).map(([key, value]) => {
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+          return [key, buildDomRefs(value)];
+        }
+        return [key, $(value)];
+      }),
+    );
 
-  const repoDOM = {
-    taskListEl: $("#task-list"),
-    deleteAllBtn: $("#delete-all-btn"),
-    addAllBtn: $("#add-all-btn"),
-    taskSummaryEl: $("#task-summary"),
-    noTasksMessage: $("#no-tasks-message"),
-  };
-
-  const playlistDOM = {
-    lapListEl: $("#lap-list"),
-    lapListDurationEl: $("#lap-list-duration"),
-    clearLapListBtn: $("#clear-lap-list-btn"),
-  };
-
-  const runnerDOM = {
-    popoutRunnerBtn: $("#popout-runner-btn"),
-    runnerTaskCategory: $("#runner-task-category"),
-    runnerTaskTitle: $("#runner-task-title"),
-    runnerTaskDescription: $("#runner-task-description"),
-    taskProgressBar: $("#task-progress-bar"),
-    taskPercentage: $("#task-percentage"),
-    timeElapsedEl: $("#time-elapsed"),
-    timeRemainingEl: $("#time-remaining"),
-    prevTaskBtn: $("#prev-task-btn"),
-    playPauseBtn: $("#play-pause-btn"),
-    nextTaskBtn: $("#next-task-btn"),
-    runnerDetails: {
-      baseDuration: $("#runner-base-duration"),
-      currentDuration: $("#runner-current-duration"),
-      occurrenceCount: $("#runner-occurrence-count"),
-      changePercentage: $("#runner-change-percentage"),
-      changeDelta: $("#runner-change-delta"),
-      sessionTotal: $("#runner-session-total"),
+  const DOM = buildDomRefs({
+    formDOM: {
+      taskForm: "#task-form",
+      formTitle: "#form-title",
+      taskInput: "#task-input",
+      taskDescriptionInput: "#task-description-input",
+      categoryGrid: "#category-grid",
+      durationMinutesInput: "#task-duration-minutes",
+      durationSecondsInput: "#task-duration-seconds",
+      lapIntervalInput: "#lap-interval-input",
+      growthFactorInput: "#growth-factor-input",
+      maxOccurrencesInput: "#max-occurrences-input",
+      addTaskBtn: "#add-task-btn",
+      cancelEditBtn: "#cancel-edit-btn",
     },
-    lapsControls: $(".laps-controls"),
-    sessionControls: $("#session-controls"),
-    lapsInput: $("#laps-input"),
-    stopLapsBtn: $("#stop-laps-btn"),
-    restartLapsBtn: $("#restart-laps-btn"),
-    prevLapBtn: $("#prev-lap-btn"),
-    nextLapBtn: $("#next-lap-btn"),
-    lapsProgressContainer: $("#laps-progress-container"),
-    lapsProgressLabel: $("#laps-progress-label"),
-    lapProgressBar: $("#lap-progress-bar"),
-    lapPercentage: $("#lap-percentage"),
-    lapTimeElapsedEl: $("#lap-time-elapsed"),
-    lapTimeRemainingEl: $("#lap-time-remaining"),
-    sessionProgressBar: $("#session-progress-bar"),
-    sessionPercentage: $("#session-percentage"),
-    sessionTimeElapsedEl: $("#session-time-elapsed"),
-    sessionTimeRemainingEl: $("#session-time-remaining"),
-  };
+    repoDOM: {
+      taskListEl: "#task-list",
+      deleteAllBtn: "#delete-all-btn",
+      addAllBtn: "#add-all-btn",
+      taskSummaryEl: "#task-summary",
+      noTasksMessage: "#no-tasks-message",
+    },
+    playlistDOM: {
+      lapListEl: "#lap-list",
+      lapListDurationEl: "#lap-list-duration",
+      clearLapListBtn: "#clear-lap-list-btn",
+    },
+    runnerDOM: {
+      popoutRunnerBtn: "#popout-runner-btn",
+      runnerTaskCategory: "#runner-task-category",
+      runnerTaskTitle: "#runner-task-title",
+      runnerTaskDescription: "#runner-task-description",
+      taskProgressBar: "#task-progress-bar",
+      taskPercentage: "#task-percentage",
+      timeElapsedEl: "#time-elapsed",
+      timeRemainingEl: "#time-remaining",
+      prevTaskBtn: "#prev-task-btn",
+      playPauseBtn: "#play-pause-btn",
+      nextTaskBtn: "#next-task-btn",
+      runnerDetails: {
+        baseDuration: "#runner-base-duration",
+        currentDuration: "#runner-current-duration",
+        occurrenceCount: "#runner-occurrence-count",
+        changePercentage: "#runner-change-percentage",
+        changeDelta: "#runner-change-delta",
+        sessionTotal: "#runner-session-total",
+      },
+      lapsControls: ".laps-controls",
+      sessionControls: "#session-controls",
+      lapsInput: "#laps-input",
+      stopLapsBtn: "#stop-laps-btn",
+      restartLapsBtn: "#restart-laps-btn",
+      prevLapBtn: "#prev-lap-btn",
+      nextLapBtn: "#next-lap-btn",
+      lapsProgressContainer: "#laps-progress-container",
+      lapsProgressLabel: "#laps-progress-label",
+      lapProgressBar: "#lap-progress-bar",
+      lapPercentage: "#lap-percentage",
+      lapTimeElapsedEl: "#lap-time-elapsed",
+      lapTimeRemainingEl: "#lap-time-remaining",
+      sessionProgressBar: "#session-progress-bar",
+      sessionPercentage: "#session-percentage",
+      sessionTimeElapsedEl: "#session-time-elapsed",
+      sessionTimeRemainingEl: "#session-time-remaining",
+    },
+    headerDOM: {
+      themeToggleBtn: "#theme-toggle-btn",
+      resetAppBtn: "#reset-app-btn",
+      globalCollapseBtn: "#global-collapse-btn",
+      globalExpandBtn: "#global-expand-btn",
+      guideBtn: "#guide-btn",
+    },
+    modalDOM: {
+      confirmModal: "#confirm-modal",
+      modalTitle: "#modal-title",
+      modalText: "#modal-text",
+      modalCancelBtn: "#modal-cancel-btn",
+      modalConfirmBtn: "#modal-confirm-btn",
+    },
+    guideModalDOM: {
+      guideModal: "#guide-modal",
+      guideModalCloseBtn: "#guide-modal-close-btn",
+    },
+  });
 
-  const headerDOM = {
-    themeToggleBtn: $("#theme-toggle-btn"),
-    resetAppBtn: $("#reset-app-btn"),
-    globalCollapseBtn: $("#global-collapse-btn"),
-    globalExpandBtn: $("#global-expand-btn"),
-    guideBtn: $("#guide-btn"),
-  };
-
-  const modalDOM = {
-    confirmModal: $("#confirm-modal"),
-    modalTitle: $("#modal-title"),
-    modalText: $("#modal-text"),
-    modalCancelBtn: $("#modal-cancel-btn"),
-    modalConfirmBtn: $("#modal-confirm-btn"),
-  };
-
-  const guideModalDOM = {
-    guideModal: $("#guide-modal"),
-    guideModalCloseBtn: $("#guide-modal-close-btn"),
-  };
-
-  const DOM = {
+  const {
     formDOM,
     repoDOM,
     playlistDOM,
@@ -159,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     headerDOM,
     modalDOM,
     guideModalDOM,
-  };
+  } = DOM;
 
   // Initialization
   const init = () => {

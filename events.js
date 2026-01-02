@@ -5,6 +5,7 @@ import * as Runner from "./runner.js";
 import { state, saveState } from "./state.js";
 import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import { ModalManager } from "./modal.js";
+import { setupAdvancedModeToggle } from "./scripts/advanced-mode.js";
 
 let modalManager;
 import {
@@ -35,6 +36,9 @@ export const setupEventListeners = (DOM) => {
 
   // Init Modal Manager
   modalManager = new ModalManager(DOM);
+
+  // Init Advanced Mode Toggle (Sprint 8)
+  setupAdvancedModeToggle(formDOM);
 
   // Auto-focus title on load
   setTimeout(() => formDOM.taskInput.focus(), 100);
