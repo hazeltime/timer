@@ -4,12 +4,23 @@ import * as UI from "./ui.js";
 import { state, saveState } from "./state.js";
 import { clamp, validateTaskInput } from "./utils.js";
 import * as Runner from "./runner.js";
-import { categoryMap } from "./constants.js";
+import { getCategoryName } from "./constants.js";
 
 const notify = (message, type) => {
   if (typeof UI.showToast === "function") {
     UI.showToast(message, type);
   }
+};
+
+const guardSessionInactive = (message, options = {}) => {
+  if (!Runner.isSessionActive()) return true;
+  const { mode = "toast", type = "error", modalDOM } = options;
+  if (mode === "alert") {
+    UI.showAlert(modalDOM, "Info", message);
+  } else {
+    notify(message, type);
+  }
+  return false;
 };
 
 export const getTaskMap = () => new Map(state.tasks.map((t) => [t.id, t]));
@@ -23,10 +34,8 @@ export const sortTasks = (list) => {
       case "duration":
         return (a.duration - b.duration) * order;
       case "category":
-        const catA = categoryMap.get(a.categoryId);
-        const nameA = catA ? catA.name : "";
-        const catB = categoryMap.get(b.categoryId);
-        const nameB = catB ? catB.name : "";
+        const nameA = getCategoryName(a.categoryId);
+        const nameB = getCategoryName(b.categoryId);
         return nameA.localeCompare(nameB) * order;
       case "lapInterval":
         return ((a.lapInterval || 1) - (b.lapInterval || 1)) * order;
@@ -129,10 +138,8 @@ export const handleTaskFormSubmit = (formDOM, DOM) => {
 };
 
 export const loadTaskIntoForm = (id, formDOM, DOM) => {
-  if (Runner.isSessionActive()) {
-    notify("Cannot edit a task during an active session.", "error");
+  if (!guardSessionInactive("Cannot edit a task during an active session."))
     return;
-  }
   const task = state.tasks.find((t) => t.id === id);
   if (!task) return;
   state.editingTaskId = id;
@@ -143,10 +150,8 @@ export const loadTaskIntoForm = (id, formDOM, DOM) => {
 };
 
 export const deleteTask = (id, DOM) => {
-  if (Runner.isSessionActive()) {
-    notify("Cannot delete a task during an active session.", "error");
+  if (!guardSessionInactive("Cannot delete a task during an active session."))
     return;
-  }
   state.tasks = state.tasks.filter((t) => t.id !== id);
   state.lapList = state.lapList.filter((l) => l !== id);
   saveState();
@@ -173,10 +178,7 @@ export const duplicateTask = (id, DOM) => {
 };
 
 export const addTaskToLap = (id, playlistDOM, DOM) => {
-  if (Runner.isSessionActive()) {
-    notify("Stop session to modify playlist.", "error");
-    return;
-  }
+  if (!guardSessionInactive("Stop session to modify playlist.")) return;
   if (!state.lapList.includes(id)) {
     state.lapList.push(id);
     saveState();
@@ -195,10 +197,7 @@ export const addTaskToLap = (id, playlistDOM, DOM) => {
 };
 
 export const removeTaskFromLap = (id, playlistDOM, DOM) => {
-  if (Runner.isSessionActive()) {
-    notify("Stop session to modify playlist.", "error");
-    return;
-  }
+  if (!guardSessionInactive("Stop session to modify playlist.")) return;
   state.lapList = state.lapList.filter((l) => l !== id);
   saveState();
   UI.renderLapList(playlistDOM, state, getTaskMap());
@@ -206,11 +205,10 @@ export const removeTaskFromLap = (id, playlistDOM, DOM) => {
 };
 
 export const isModificationAllowed = (msg, DOM) => {
-  if (Runner.isSessionActive()) {
-    UI.showAlert(DOM, "Info", msg);
-    return false;
-  }
-  return true;
+  return guardSessionInactive(msg, {
+    mode: "alert",
+    modalDOM: DOM?.modalDOM || DOM,
+  });
 };
 
 export const getDragAfterElement = (container, y) => {

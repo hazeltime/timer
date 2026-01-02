@@ -240,7 +240,7 @@ button,
 }
 
 .theme-btn {
-  background-color: var(--panel-bg);
+  background-color: var(--button-secondary-bg);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: var(--radius-md);
@@ -371,9 +371,12 @@ body.dark-theme .theme-btn .fa-moon {
   justify-content: center;
 }
 /* Solid Colors for Actions */
-.task-actions-col .edit-btn,
-.task-actions-col .copy-btn {
+.task-actions-col .edit-btn {
   background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+.task-actions-col .copy-btn {
+  background-color: var(--accent-purple) !important;
   color: white !important;
 }
 .task-actions-col .delete-btn {
@@ -395,11 +398,15 @@ body.dark-theme .theme-btn .fa-moon {
   color: white;
   border-color: var(--danger-custom);
 }
-.task-actions-col .copy-btn:hover,
 .task-actions-col .edit-btn:hover {
   background-color: var(--btn-primary-bg);
   color: white;
   border-color: var(--btn-primary-bg);
+}
+.task-actions-col .copy-btn:hover {
+  background-color: var(--accent-purple);
+  color: white;
+  border-color: var(--accent-purple);
 }
 .task-actions-col .add-to-lap-btn:hover {
   background-color: #238636;
@@ -426,11 +433,15 @@ body.dark-theme .theme-btn .fa-moon {
   background-color: var(--danger-custom);
   color: white;
 }
-.task-actions-col .copy-btn:hover,
 .task-actions-col .edit-btn:hover {
   background-color: var(--btn-primary-bg);
   color: white;
   border-color: var(--btn-primary-bg);
+}
+.task-actions-col .copy-btn:hover {
+  background-color: var(--accent-purple);
+  color: white;
+  border-color: var(--accent-purple);
 }
 .task-actions-col .add-to-lap-btn:hover {
   background-color: #238636;
@@ -514,6 +525,7 @@ body.dark-theme .theme-btn .fa-moon {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
+  min-width: clamp(5.5rem, 22vw, 7.5rem);
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-md);
   font-size: 1rem;
@@ -533,6 +545,7 @@ body.dark-theme .theme-btn .fa-moon {
   color: white;
   border-color: var(--accent-blue);
   font-size: 1.125rem;
+  min-width: clamp(6rem, 26vw, 8.25rem);
   padding: 0.75rem 1.5rem;
 }
 .runner-btn.play:hover {
@@ -571,7 +584,7 @@ body.dark-theme .theme-btn .fa-moon {
 
 .preset-btn {
   padding: 0.25rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   height: auto;
   background-color: var(--preset-btn-bg);
   color: var(--preset-btn-text);
@@ -703,8 +716,8 @@ textarea::placeholder {
   color: var(--text-primary);
   position: relative;
   z-index: 2;
-  height: 3rem; /* Force 48px height (Item B/2) */
-  width: 3rem;
+  height: 3.25rem;
+  width: 3.25rem;
   display: flex;
   justify-content: center;
   align-items: center;

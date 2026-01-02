@@ -1,6 +1,6 @@
 // UI helpers and render functions
 // UI helpers and render functions
-import { CATEGORIES, categoryMap, ICONS } from "./constants.js";
+import { CATEGORIES, getCategory, ICONS } from "./constants.js";
 import { createIconElement } from "./utils.js";
 
 import { DomBuilder, TimeUtils, DataFormatter } from "./core.js";
@@ -82,6 +82,7 @@ export const renderEmptyState = (message) => {
 export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
   // Clear existing
   formDOM.categoryGrid.innerHTML = "";
+  formDOM.categoryGrid.setAttribute("role", "radiogroup");
   const frag = document.createDocumentFragment();
   CATEGORIES.forEach((cat) => {
     const isActive = cat.id === selectedCategoryId;
@@ -89,6 +90,9 @@ export const renderCategoryButtons = (formDOM, selectedCategoryId) => {
     btn.className = `category-btn ${isActive ? "active" : ""}`;
     btn.dataset.id = cat.id;
     btn.style.outlineColor = isActive ? cat.color : "transparent";
+    btn.setAttribute("role", "radio");
+    btn.setAttribute("aria-checked", String(isActive));
+    btn.tabIndex = isActive ? 0 : -1;
 
     const iconEl = createIconElement(cat.icon);
     const name = document.createElement("span");
@@ -287,51 +291,46 @@ export const renderTasks = (repoDOM, tasks, _sortState) => {
     return;
   }
   // Grouping Logic (Sprint 8: Miller's Law)
-  // We sort by Category first if the current sort is by ID (default) or by Category.
-  // Otherwise, we respect the user sort but might lose grouping visual cohesion.
-  // Let's enforce grouping if NOT sorting by a specific numeric field? 
-  // For now, let's just group them visually in the output if possible, or just render category headers.
-  
-  // Actually, to do visual grouping, the list MUST be sorted by category.
-  // Let's implement a "Grouped View" logic.
-  
+  // Visual grouping requires rendering by category.
   const groupedTasks = new Map();
-  // Ensure we consistently group, sorting tasks within category by ID or user sort
-  tasks.forEach(task => {
-    const catId = task.categoryId || 'cat-0';
+  tasks.forEach((task) => {
+    const catId = task.categoryId || "cat-0";
     if (!groupedTasks.has(catId)) groupedTasks.set(catId, []);
     groupedTasks.get(catId).push(task);
   });
-  
-  // Render groups
+
   const renderFragment = document.createDocumentFragment();
-  
-  // Iterate categories in defined order (from constants or map keys)
-  // We'll iterate the map keys we just built, or use CATEGORIES constant for order
-  const sortedCatIds = [...groupedTasks.keys()].sort(); // Simple sort or specific order
-  
-  sortedCatIds.forEach(catId => {
-    const cat = categoryMap.get(catId);
-    const groupTasks = groupedTasks.get(catId);
-    
-    // Group Header
-    const groupHeader = document.createElement('div');
-    groupHeader.className = 'repo-group-header';
-    groupHeader.style.color = cat ? cat.color : 'var(--text-secondary)';
-    groupHeader.style.borderLeft = `4px solid ${cat ? cat.color : 'gray'}`;
-    groupHeader.innerHTML = `<span>${cat ? cat.name : 'Uncategorized'}</span> <span class="badge">${groupTasks.length}</span>`;
+  const orderedCatIds = [
+    ...CATEGORIES.map((category) => category.id).filter((id) =>
+      groupedTasks.has(id),
+    ),
+    ...[...groupedTasks.keys()]
+      .filter((id) => !CATEGORIES.some((category) => category.id === id))
+      .sort(),
+  ];
+
+  orderedCatIds.forEach((catId) => {
+    const category = getCategory(catId);
+    const groupTasks = groupedTasks.get(catId) || [];
+
+    const groupHeader = document.createElement("div");
+    groupHeader.className = "repo-group-header";
+    groupHeader.style.color = category?.color || "var(--text-secondary)";
+    groupHeader.style.borderLeft = `4px solid ${
+      category?.color || "gray"
+    }`;
+    groupHeader.innerHTML = `<span>${
+      category?.name || "Uncategorized"
+    }</span> <span class="badge">${groupTasks.length}</span>`;
     renderFragment.appendChild(groupHeader);
-    
-    // Tasks
-    groupTasks.forEach(task => {
-       const category = cat || categoryMap.get("cat-0");
-       // Check existing (logic skipped for brevity, full rebuild is safer for grouping)
-       let item = createTaskRepoRow(task, category);
-       renderFragment.appendChild(item);
+
+    groupTasks.forEach((task) => {
+      const item = createTaskRepoRow(task, category);
+      renderFragment.appendChild(item);
     });
   });
-  
-  taskListEl.innerHTML = ""; // Full clear for grouping
+
+  taskListEl.innerHTML = "";
   taskListEl.appendChild(renderFragment);
 
   renderTaskSummary(repoDOM, tasks);
@@ -366,7 +365,9 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
 
   if (state.lapList.length === 0) {
     lapListEl.appendChild(
-      renderEmptyState("Add tasks from the repository to create a playlist."),
+      renderEmptyState(
+        "Add tasks by dragging from the repository to build a playlist.",
+      ),
     );
   } else {
     const runningTaskId =
@@ -377,8 +378,7 @@ export const renderLapList = (playlistDOM, state, taskMap) => {
     for (const id of state.lapList) {
       const task = taskMap.get(id);
       if (!task) continue;
-      const category =
-        categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+      const category = getCategory(task.categoryId);
 
       const item = createPlaylistRow(
         task,
@@ -417,15 +417,34 @@ export const updateSortHeaders = (sortState) => {
 
 // --- UI STATE MODIFICATION ---
 
+const applyTaskFormValues = (formDOM, values) => {
+  const {
+    title,
+    description,
+    durationSeconds,
+    lapInterval,
+    growthFactor,
+    maxOccurrences,
+  } = values;
+  formDOM.taskInput.value = title;
+  formDOM.taskDescriptionInput.value = description;
+  formDOM.durationMinutesInput.value = Math.floor(durationSeconds / 60);
+  formDOM.durationSecondsInput.value = durationSeconds % 60;
+  formDOM.lapIntervalInput.value = lapInterval;
+  formDOM.growthFactorInput.value = growthFactor;
+  formDOM.maxOccurrencesInput.value = maxOccurrences;
+};
+
 export const resetTaskFormUI = (formDOM) => {
   formDOM.formTitle.textContent = "Create New Task";
-  formDOM.taskInput.value = "";
-  formDOM.taskDescriptionInput.value = "";
-  formDOM.durationMinutesInput.value = 1;
-  formDOM.durationSecondsInput.value = 30;
-  formDOM.lapIntervalInput.value = 1;
-  formDOM.growthFactorInput.value = 0;
-  formDOM.maxOccurrencesInput.value = 0;
+  applyTaskFormValues(formDOM, {
+    title: "",
+    description: "",
+    durationSeconds: 90,
+    lapInterval: 1,
+    growthFactor: 0,
+    maxOccurrences: 0,
+  });
   formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.PLUS}"></i> Add Task`;
   formDOM.cancelEditBtn.style.display = "none";
   formDOM.taskInput.focus();
@@ -433,13 +452,14 @@ export const resetTaskFormUI = (formDOM) => {
 
 export const loadTaskIntoFormUI = (formDOM, task) => {
   formDOM.formTitle.textContent = `Editing Task #${task.id}`;
-  formDOM.taskInput.value = task.title;
-  formDOM.taskDescriptionInput.value = task.description;
-  formDOM.durationMinutesInput.value = Math.floor(task.duration / 60);
-  formDOM.durationSecondsInput.value = task.duration % 60;
-  formDOM.lapIntervalInput.value = task.lapInterval || 1;
-  formDOM.growthFactorInput.value = task.growthFactor || 0;
-  formDOM.maxOccurrencesInput.value = task.maxOccurrences || 0;
+  applyTaskFormValues(formDOM, {
+    title: task.title,
+    description: task.description || "",
+    durationSeconds: task.duration,
+    lapInterval: task.lapInterval || 1,
+    growthFactor: task.growthFactor || 0,
+    maxOccurrences: task.maxOccurrences || 0,
+  });
   formDOM.addTaskBtn.innerHTML = `<i class="${ICONS.SAVE}"></i> Save Changes`;
   formDOM.cancelEditBtn.style.display = "inline-block";
 };
@@ -456,6 +476,9 @@ export const resetRunnerDisplay = (runnerDOM) => {
       <span style="font-size: 1rem; font-weight: 500;">No task selected</span>
     </div>
   `;
+  if (runnerDOM.runnerTaskTitle?.classList) {
+    runnerDOM.runnerTaskTitle.classList.add("is-empty");
+  }
   runnerDOM.taskProgressBar.style.width = "0%";
   runnerDOM.taskPercentage.textContent = "0%";
   runnerDOM.timeElapsedEl.textContent = "0s";
@@ -497,6 +520,9 @@ export const scrollToRunningTask = (playlistDOM) => {
   }
 };
 
+const calcPercent = (part, total) =>
+  total > 0 ? Math.floor((part / total) * 100) : 0;
+
 /**
  * Updates the Runner Timer display with current task and lap progress
  * @param {Object} runnerDOM
@@ -512,10 +538,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
   const { taskId, calculatedDuration, lap, taskIndexInLap, totalTasksInLap } =
     currentVirtualTask;
   const elapsed = calculatedDuration - state.currentTaskTimeLeft;
-  const taskPercent =
-    calculatedDuration > 0
-      ? Math.floor((elapsed / calculatedDuration) * 100)
-      : 0;
+  const taskPercent = calcPercent(elapsed, calculatedDuration);
   const sessionTotalTime =
     (state.sessionCache.completedTaskDurationsMap.get(taskId) || 0) + elapsed;
 
@@ -534,10 +557,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
     ] || 0) - lapStartTime;
   const lapTimeElapsed = completedDurationInLap + elapsed;
   const lapTimeRemaining = currentLapDuration - lapTimeElapsed;
-  const lapPercent =
-    currentLapDuration > 0
-      ? Math.floor((lapTimeElapsed / currentLapDuration) * 100)
-      : 0;
+  const lapPercent = calcPercent(lapTimeElapsed, currentLapDuration);
 
   runnerDOM.lapProgressBar.style.width = `${lapPercent}%`;
   runnerDOM.lapPercentage.textContent = `${lapPercent}%`;
@@ -552,10 +572,7 @@ export const updateTimerDisplay = (runnerDOM, state) => {
       state.currentVirtualTaskIndex
     ] || 0) + elapsed;
   const sessionTimeRemaining = totalSessionDuration - sessionTimeElapsed;
-  const sessionPercent =
-    totalSessionDuration > 0
-      ? Math.floor((sessionTimeElapsed / totalSessionDuration) * 100)
-      : 0;
+  const sessionPercent = calcPercent(sessionTimeElapsed, totalSessionDuration);
 
   runnerDOM.sessionProgressBar.style.width = `${sessionPercent}%`;
   runnerDOM.sessionPercentage.textContent = `${sessionPercent}%`;

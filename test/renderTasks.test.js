@@ -27,7 +27,8 @@ describe("renderTasks", () => {
       },
     ];
     renderTasks(dom, tasks, {});
-    expect(dom.taskListEl.children.length).toBe(1);
+    expect(dom.taskListEl.querySelectorAll(".repo-group-header").length).toBe(1);
+    expect(dom.taskListEl.querySelectorAll(".task-item").length).toBe(1);
     expect(dom.taskSummaryEl.textContent).toContain("Total Tasks");
   });
 
@@ -50,7 +51,8 @@ describe("renderTasks", () => {
       '<span class="task-title">Old</span><span class="task-description"></span><span class="task-category-badge"></span><div class="task-duration-col"></div><div class="task-interval-col"></div><div class="task-limit-col"></div><div class="task-growth-col"></div>';
     dom.taskListEl.appendChild(existing);
     renderTasks(dom, [task], {});
-    expect(dom.taskListEl.children.length).toBe(1);
+    expect(dom.taskListEl.querySelectorAll(".repo-group-header").length).toBe(1);
+    expect(dom.taskListEl.querySelectorAll(".task-item").length).toBe(1);
     expect(dom.taskListEl.querySelector(".task-title").textContent).toBe("Two");
   });
 });

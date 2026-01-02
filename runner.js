@@ -1,7 +1,7 @@
 // Task runner: builds virtual playlist and controls session timer
 import * as UI from "./ui.js";
 import {
-  categoryMap,
+  getCategory,
   MAX_DURATION_SECONDS,
   MIN_DURATION_SECONDS,
 } from "./constants.js";
@@ -27,7 +27,15 @@ const playBeep = (freq = 880, dur = 0.1) => {
     gain.gain.value = 0.1; // Low volume
     osc.start();
     osc.stop(ctx.currentTime + dur);
-  } catch (e) { console.warn("Audio play failed", e); }
+  } catch (e) {
+    console.warn("Audio play failed", e);
+  }
+};
+
+const getDeltaColor = (value) => {
+  if (value > 0) return "var(--accent-green)";
+  if (value < 0) return "var(--accent-red)";
+  return "var(--text-secondary)";
 };
 
 const stopTimerInterval = () => {
@@ -103,7 +111,7 @@ const loadTaskToRunner = (virtualIndex) => {
   const task = state.sessionCache.taskMap.get(taskId);
   if (!task) return stopSession(true);
 
-  const category = categoryMap.get(task.categoryId) || categoryMap.get("cat-0");
+  const category = getCategory(task.categoryId);
   // Render category icon and name using DOM APIs to avoid string-based HTML injection
   runnerDOM.runnerTaskCategory.textContent = "";
   const catIcon = createIconElement(category.icon);
@@ -112,6 +120,9 @@ const loadTaskToRunner = (virtualIndex) => {
     document.createTextNode(" " + category.name),
   );
   runnerDOM.runnerTaskTitle.textContent = task.title;
+  if (runnerDOM.runnerTaskTitle?.classList) {
+    runnerDOM.runnerTaskTitle.classList.remove("is-empty");
+  }
   runnerDOM.runnerTaskDescription.textContent = task.description;
   state.currentTaskTimeLeft = calculatedDuration;
 
@@ -132,17 +143,8 @@ const loadTaskToRunner = (virtualIndex) => {
     UI.formatTime(sessionTotalTime);
 
   runnerDOM.runnerDetails.changePercentage.style.color =
-    changePercentage > 0
-      ? "var(--accent-green)"
-      : changePercentage < 0
-        ? "var(--accent-red)"
-        : "var(--text-secondary)";
-  runnerDOM.runnerDetails.changeDelta.style.color =
-    changeDelta > 0
-      ? "var(--accent-green)"
-      : changeDelta < 0
-        ? "var(--accent-red)"
-        : "var(--text-secondary)";
+    getDeltaColor(changePercentage);
+  runnerDOM.runnerDetails.changeDelta.style.color = getDeltaColor(changeDelta);
 
   UI.updateTimerDisplay(runnerDOM, state);
   const playlistTarget = {

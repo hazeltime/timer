@@ -7,6 +7,7 @@ import { DEMO_TASKS, DEMO_LAP_LIST } from "./demo-data.js";
 import { ModalManager } from "./modal.js";
 import { setupAdvancedModeToggle } from "./scripts/advanced-mode.js";
 import { setupLimitToggle } from "./scripts/limit-toggle.js";
+import { clamp } from "./utils.js";
 
 let modalManager;
 import {
@@ -23,6 +24,37 @@ import {
   renderAll,
   getTaskMap,
 } from "./actions.js";
+
+const dispatchButtonAction = (btn, handlers) => {
+  for (const [className, handler] of handlers) {
+    if (btn.classList.contains(className)) {
+      handler();
+      return true;
+    }
+  }
+  return false;
+};
+
+const getInputBounds = (input) => {
+  const minRaw = parseInt(input.min, 10);
+  const maxRaw = parseInt(input.max, 10);
+  return {
+    min: Number.isNaN(minRaw) ? 0 : minRaw,
+    max: Number.isNaN(maxRaw) ? Infinity : maxRaw,
+  };
+};
+
+const clampInputToMin = (input) => {
+  const value = parseInt(input.value, 10);
+  const { min } = getInputBounds(input);
+  if (!Number.isNaN(value) && value < min) input.value = min;
+};
+
+const clampInputToBounds = (input) => {
+  const value = parseInt(input.value, 10) || 0;
+  const { min, max } = getInputBounds(input);
+  input.value = clamp(value, min, max);
+};
 
 export const setupEventListeners = (DOM) => {
   const {
@@ -128,56 +160,64 @@ export const setupEventListeners = (DOM) => {
     modalManager.openGuide();
   });
 
-  guideModalDOM.guideModal.addEventListener("click", (e) => {
-    if (e.target === guideModalDOM.guideModal) {
-      guideModalDOM.guideModal.classList.remove("show");
-      setTimeout(() => {
-        guideModalDOM.guideModal.style.display = "none";
-      }, 300);
-    }
-  });
-
-  guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
+  const closeGuideModal = () => {
     guideModalDOM.guideModal.classList.remove("show");
     setTimeout(() => {
       guideModalDOM.guideModal.style.display = "none";
     }, 300);
+  };
+
+  guideModalDOM.guideModal.addEventListener("click", (e) => {
+    if (e.target === guideModalDOM.guideModal) {
+      closeGuideModal();
+    }
+  });
+
+  guideModalDOM.guideModalCloseBtn.addEventListener("click", () => {
+    closeGuideModal();
   });
 
   repoDOM.taskListEl.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
     const item = e.target.closest(".task-item");
+    if (!item) return;
     const id = Number(item.dataset.id);
-    if (btn.classList.contains("delete-btn")) deleteTask(id, DOM);
-    if (btn.classList.contains("copy-btn")) duplicateTask(id, DOM);
-    if (btn.classList.contains("add-to-lap-btn"))
-      addTaskToLap(id, playlistDOM, DOM);
-    if (btn.classList.contains("edit-btn")) loadTaskIntoForm(id, formDOM, DOM);
+    dispatchButtonAction(btn, [
+      ["delete-btn", () => deleteTask(id, DOM)],
+      ["copy-btn", () => duplicateTask(id, DOM)],
+      ["add-to-lap-btn", () => addTaskToLap(id, playlistDOM, DOM)],
+      ["edit-btn", () => loadTaskIntoForm(id, formDOM, DOM)],
+    ]);
   });
 
   playlistDOM.lapListEl.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn || Runner.isSessionActive()) return;
     const item = e.target.closest(".lap-list-item");
+    if (!item) return;
     const id = Number(item.dataset.id);
-    if (btn.classList.contains("remove-btn"))
-      removeTaskFromLap(id, playlistDOM, DOM);
-    else if (btn.classList.contains("move-btn")) {
-      const { action } = btn.dataset;
-      const idx = state.lapList.indexOf(id);
-      if (idx === -1) return;
-      const [removed] = state.lapList.splice(idx, 1);
-      if (action === "up" && idx > 0) {
-        state.lapList.splice(idx - 1, 0, removed);
-      } else if (action === "down" && idx < state.lapList.length) {
-        state.lapList.splice(idx + 1, 0, removed);
-      } else {
-        state.lapList.splice(idx, 0, removed);
-      }
-      saveState();
-      UI.renderLapList(playlistDOM, state, getTaskMap());
-    }
+    dispatchButtonAction(btn, [
+      ["remove-btn", () => removeTaskFromLap(id, playlistDOM, DOM)],
+      [
+        "move-btn",
+        () => {
+          const { action } = btn.dataset;
+          const idx = state.lapList.indexOf(id);
+          if (idx === -1) return;
+          const [removed] = state.lapList.splice(idx, 1);
+          if (action === "up" && idx > 0) {
+            state.lapList.splice(idx - 1, 0, removed);
+          } else if (action === "down" && idx < state.lapList.length) {
+            state.lapList.splice(idx + 1, 0, removed);
+          } else {
+            state.lapList.splice(idx, 0, removed);
+          }
+          saveState();
+          UI.renderLapList(playlistDOM, state, getTaskMap());
+        },
+      ],
+    ]);
   });
 
   playlistDOM.lapListEl.addEventListener("dragstart", (e) => {
@@ -237,6 +277,36 @@ export const setupEventListeners = (DOM) => {
     if (!btn) return;
     state.selectedCategoryId = btn.dataset.id;
     UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
+  });
+
+  const moveCategorySelection = (direction) => {
+    const buttons = [
+      ...formDOM.categoryGrid.querySelectorAll(".category-btn"),
+    ];
+    if (buttons.length === 0) return;
+    const currentIndex = buttons.findIndex(
+      (btn) => btn.dataset.id === state.selectedCategoryId,
+    );
+    const startIndex = currentIndex === -1 ? 0 : currentIndex;
+    const nextIndex =
+      (startIndex + direction + buttons.length) % buttons.length;
+    const nextId = buttons[nextIndex].dataset.id;
+    state.selectedCategoryId = nextId;
+    UI.renderCategoryButtons(formDOM, state.selectedCategoryId);
+    const nextButton = formDOM.categoryGrid.querySelector(
+      `[data-id="${nextId}"]`,
+    );
+    if (nextButton) nextButton.focus();
+  };
+
+  formDOM.categoryGrid.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      moveCategorySelection(1);
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      moveCategorySelection(-1);
+      e.preventDefault();
+    }
   });
 
   runnerDOM.playPauseBtn.addEventListener("click", Runner.playPauseSession);
@@ -352,28 +422,25 @@ export const setupEventListeners = (DOM) => {
     }),
   );
 
+  const stepperInputs = {
+    laps: runnerDOM.lapsInput,
+    minutes: formDOM.durationMinutesInput,
+    seconds: formDOM.durationSecondsInput,
+    lapInterval: formDOM.lapIntervalInput,
+    growthFactor: formDOM.growthFactorInput,
+    maxOccurrences: formDOM.maxOccurrencesInput,
+  };
+
   document.querySelectorAll(".stepper-btn").forEach((btn) => {
     let interval;
     const stopInterval = () => clearInterval(interval);
     const { field, step } = btn.dataset;
-    const input =
-      field === "laps"
-        ? runnerDOM.lapsInput
-        : field === "minutes"
-          ? formDOM.durationMinutesInput
-          : field === "lapInterval"
-            ? formDOM.lapIntervalInput
-            : field === "growthFactor"
-              ? formDOM.growthFactorInput
-              : field === "maxOccurrences"
-                ? formDOM.maxOccurrencesInput
-                : formDOM.durationSecondsInput;
+    const input = stepperInputs[field] || formDOM.durationSecondsInput;
     const update = () => {
-      let val = parseInt(input.value, 10) || 0;
-      const min = parseInt(input.min, 10) || 0;
-      const max = parseInt(input.max, 10) || Infinity;
-      val = Math.max(min, Math.min(max, val + parseInt(step)));
-      input.value = val;
+      const current = parseInt(input.value, 10) || 0;
+      const { min, max } = getInputBounds(input);
+      const next = clamp(current + parseInt(step, 10), min, max);
+      input.value = next;
     };
     btn.addEventListener("mousedown", () => {
       update();
@@ -384,22 +451,12 @@ export const setupEventListeners = (DOM) => {
 
   document.querySelectorAll("input[type='number']").forEach((input) => {
     input.addEventListener("input", () => {
-      let val = parseInt(input.value, 10);
-      const min = parseInt(input.min, 10);
-      const max = parseInt(input.max, 10) || Infinity;
-      if (!isNaN(val) && !isNaN(min) && val < min) input.value = min;
-      // We don't strictly clamp max on input while typing to allow large numbers,
-      // but min should be enforced to prevent negatives.
-      // Actually, standard behavior is usually clamp on blur, but user asked for "Manual input... allows negatives. Add input listener to clamp."
-      // So immediate clamp:
-      if (!isNaN(val) && val < min) input.value = min;
+      // Clamp the min immediately to prevent negatives while typing.
+      clampInputToMin(input);
     });
     // Ensure strict clamp on blur
     input.addEventListener("blur", () => {
-      let val = parseInt(input.value, 10) || 0;
-      const min = parseInt(input.min, 10) || 0;
-      const max = parseInt(input.max, 10) || Infinity;
-      input.value = Math.max(min, Math.min(max, val));
+      clampInputToBounds(input);
     });
   });
 
