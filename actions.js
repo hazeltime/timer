@@ -180,8 +180,15 @@ export const addTaskToLap = (id, playlistDOM, DOM) => {
   if (!state.lapList.includes(id)) {
     state.lapList.push(id);
     saveState();
+    saveState();
     UI.renderLapList(playlistDOM, state, getTaskMap());
     notify("Added to playlist.", "success");
+    
+    // Auto-Scroll to Playlist (Sprint 8: Flow)
+    if (window.innerWidth < 800) {
+      const playlist = document.getElementById("playlist-view-placeholder");
+      if (playlist) playlist.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   } else {
     notify("Task already in playlist.", "info");
   }

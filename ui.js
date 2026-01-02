@@ -205,6 +205,13 @@ export const createPlaylistRow = (
 
   if (sessionInactive) item.setAttribute("draggable", "true");
 
+  // Drag Grip (Affordance)
+  if (sessionInactive) {
+    const grip = document.createElement("i");
+    grip.className = "fas fa-grip-vertical drag-grip";
+    item.appendChild(grip);
+  }
+
   // Icon
   const icon = createIconElement(category.icon);
   icon.classList.add("lap-category-icon");
