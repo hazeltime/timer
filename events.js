@@ -100,10 +100,6 @@ export const setupEventListeners = (DOM) => {
     document.body.classList.remove("runner-popped-out");
   });
 
-    if (panel.contains(e.target)) return;
-    panel.classList.remove("task-runner-popout");
-    document.body.classList.remove("runner-popped-out");
-  });
 
   // Global Shortcuts (Sprint 8: Jakob's Law)
   document.addEventListener("keydown", (e) => {

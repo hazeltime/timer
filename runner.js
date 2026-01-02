@@ -9,8 +9,8 @@ import { clamp, createIconElement } from "./utils.js";
 
 let state = null;
 let runnerDOM = null;
-let runnerDOM = null;
 let modalDOM = null;
+
 
 // Audio Context for Beep (Sprint 8: Accessibility)
 const playBeep = (freq = 880, dur = 0.1) => {
