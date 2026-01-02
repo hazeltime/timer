@@ -91,6 +91,12 @@ header {
   flex-wrap: wrap;
 }
 
+header h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 header h1 i {
   margin-right: 0.75rem;
   color: var(--accent-blue);
